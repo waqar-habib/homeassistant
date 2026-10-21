@@ -1,0 +1,39 @@
+# --- Secrets ---
+secrets.yaml
+*.pem
+*.key
+.ssh/
+
+# --- HA internal state (UI-managed; backed up via HA backups, not git) ---
+.storage/
+.cloud/
+.HA_VERSION
+.uuid
+.ha_run.lock
+home-assistant_v2.db*
+*.db
+*.db-shm
+*.db-wal
+home-assistant.log*
+*.log
+*.log.*
+deps/
+tts/
+backups/
+__pycache__/
+
+# --- HACS-installed code (reinstall via HACS) ---
+custom_components/
+www/community/
+
+# --- Large binaries ---
+media/
+*.mp3
+*.mp4
+
+# --- Add-on scratch ---
+esphome/.esphome/
+zigbee2mqtt/log/
+
+# --- Claude Code local overrides ---
+.claude/settings.local.json

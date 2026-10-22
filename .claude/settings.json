@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(secrets.yaml)",
+      "Edit(secrets.yaml)",
+      "Edit(.storage/**)",
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)"
+    ],
+    "ask": [
+      "Bash(ha core restart:*)",
+      "Bash(ha host reboot:*)",
+      "Bash(ha os update:*)",
+      "Bash(ha core update:*)",
+      "Bash(git push:*)"
+    ]
+  }
+}

@@ -45,7 +45,7 @@ git init -b main
 git remote add origin https://github.com/waqar-habib/homeassistant.git
 git fetch origin
 git reset origin/main                       # adopt remote history; leaves Pi files untouched
-git checkout origin/claude/pilot-foundation -- \
+git checkout origin/main -- \
   README.md LICENSE .gitignore CLAUDE.md secrets.yaml.example .claude packages dashboards docs
 
 git status                                  # STOP if secrets.yaml or .storage/ appear

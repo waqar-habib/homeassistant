@@ -2,10 +2,10 @@
 
 Status legend: ☐ to do · ☑ done
 
-## 1.1 Backup ☐
+## 1.1 Backup ☑
 Settings → System → Backups → **Back up now** (full). Download a copy off the Pi.
 
-## 1.2 HACS ☐
+## 1.2 HACS ☑
 **Check (any one is conclusive):**
 1. Sidebar shows **HACS**.
 2. Settings → Devices & services → Integrations → search `HACS`.
@@ -17,18 +17,18 @@ Settings → System → Backups → **Back up now** (full). Download a copy off 
 3. Settings → System → Restart Home Assistant.
 4. Settings → Devices & services → Add integration → **HACS** → tick all boxes → authorize with the GitHub device code.
 
-## 1.3 Claude Code add-on ☐
+## 1.3 Claude Code add-on ☑
 1. Settings → Apps → ⋮ → Repositories → add `https://github.com/ESJavadex/claude-code-ha`.
 2. Install **Claude Terminal Pro** → Start → enable **Show in sidebar**.
 3. Open it from the sidebar → sign in with the Claude account (Pro, OAuth). No API key needed here.
 4. Confirm the config path: `ls /config/configuration.yaml || ls /homeassistant/configuration.yaml`. Use whichever exists as `$HA` below.
 
-## 1.4 ha-mcp add-on ☐
+## 1.4 ha-mcp add-on ☑
 1. Settings → Apps → ⋮ → Repositories → add `https://github.com/homeassistant-ai/ha-mcp`.
 2. Install **Home Assistant MCP Server** → Start → Logs → copy the unique MCP URL. Treat it like a password.
 3. In Claude Terminal: `claude mcp add --transport http ha-mcp "<MCP URL>"` then `claude mcp list` → expect `ha-mcp: connected`.
 
-## 1.5 Link `/config` to GitHub ☐
+## 1.5 Link `/config` to GitHub ☑
 **Token:** GitHub → Settings → Developer settings → Fine-grained tokens → new token.
 Repository access: **only** `waqar-habib/homeassistant`. Permissions: **Contents: Read and write**. Expiry: 90 days.
 

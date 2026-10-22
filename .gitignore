@@ -37,3 +37,6 @@ zigbee2mqtt/log/
 
 # --- Claude Code local overrides ---
 .claude/settings.local.json
+
+# --- HA add-on cache (regenerated; not versioned) ---
+.cache/

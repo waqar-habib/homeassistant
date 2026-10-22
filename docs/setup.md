@@ -76,3 +76,21 @@ In Claude Terminal, run `claude` inside `$HA` and ask:
 ## Storage note (SD card)
 Pilot scope (config edits, Nuvio, adhan) adds negligible writes. The main SD-wear driver is the HA recorder database.
 Upgrade to NVMe (Pi 5 M.2 HAT) before adding camera AI, long history retention, or heavy agent workloads.
+
+## Token rotation (GitHub)
+Current token expires **2027-04-22**; reminder is in Apple Calendar. Rotate about a week before expiry. Never paste the token into chat, files, or screenshots.
+
+1. GitHub → Settings → Developer settings → Fine-grained tokens → Generate new token.
+   - Name: `ha-pi-config` (add the date if you like). Expiry: up to 6 months.
+   - Repository access: only `waqar-habib/homeassistant`. Permissions: Contents → Read and write (Metadata read-only is added automatically).
+2. In Claude Terminal on the Pi: exit Claude, then `cd /config`.
+3. `gh auth login --with-token` → paste token → Enter → Ctrl-D (nothing is echoed). This replaces the stored token.
+4. `gh auth status` → expect logged in to github.com as `waqar-habib`.
+5. `git ls-remote origin HEAD` → expect a commit hash.
+6. Only after step 5 succeeds, revoke the old token under Developer settings → Fine-grained tokens.
+7. Update the calendar reminder to the new expiry.
+
+Troubleshooting:
+- Invalid token on login: re-copy the full string, no spaces.
+- Push rejected with 403: fix the repo selection or Contents permission on the existing token; no new token needed.
+- `git` still uses the old token: run `gh auth setup-git` again.

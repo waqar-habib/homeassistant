@@ -11,6 +11,11 @@
 - Owner approved the merge. `main` fast-forwarded to `cf00c01`, so the tiers and session protocol are now in force.
 - Owner answers recorded: DHCP reservations done; backup size 254-260 MB (retention fits, D19); domain must be location-neutral (D22); onboarding flow (D23); partial device list from the router app added to `docs/devices.md`.
 
+- OS captured: Raspberry Pi OS Lite 64-bit, Debian 13.5 (trixie) (I3 closed).
+- Owner approved turning Wi-Fi off on the Pi 5 (I8). Not yet executed.
+- Drafted `networkpi/bootstrap.sh` on branch `feat/networkpi-bootstrap` for review. Not run.
+- Garage: owner has a Meross MSG100HK that failed at the previous house; lower priority. Ring: events and alerts first, video low priority.
+
 ## Findings
 - HA OS cannot run Raspberry Pi Connect (I4).
 - Nuvio cannot run on an ESP32 display (I5).
@@ -19,4 +24,4 @@
 - Devices that live natively in Apple Home must not be bridged back from HA (D23).
 
 ## Resume point
-Draft the networkpi bootstrap once the owner supplies `cat /etc/os-release`. Then Phase A as listed in `HANDOFF.md`.
+Owner reviews `networkpi/bootstrap.sh` on `feat/networkpi-bootstrap`. On "GREEN LIGHT", run Phase A as listed in `HANDOFF.md`.

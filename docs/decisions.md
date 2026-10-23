@@ -37,12 +37,14 @@
 ### Open: networkpi / remote-access pipeline (updated 2026-10-23)
 - Domain name to buy through Cloudflare Registrar (see D22); Cloudflare account status
 - Router: can it set the DNS server handed to clients? DHCP reservations are done. See `docs/issues.md` I1
-- networkpi: `cat /etc/os-release` output (still missing) and the SD card's endurance rating. See I2, I3
+- networkpi: SD card endurance rating. See I2
+- networkpi bootstrap script is drafted on branch `feat/networkpi-bootstrap`, awaiting the owner's "GREEN LIGHT" (Tier 3: firewall, SSH, Samba). Repo visibility (public or private) decides how networkpi clones it
+- Monitoring approach: proposed a lightweight script plus ntfy plus an external heartbeat instead of Uptime Kuma, to save RAM on the 3B+
 - Display for the common area: tablet, or ESP32 touchscreen (ESP32 cannot run Nuvio). See I5
 - Device inventory: run setup.md step 1.6 (`docs/entities.md`) and compare it with the router client list. See `docs/voice-feasibility.md`
 - The Pi 5 appears on the router twice (Home Assistant-WiFi and Home Assistant-Eth). See I8
-- Garage: myQ has no HA support. Choose a local route (ratgdo or Meross) once the opener model is known. Treat the garage door as Tier 3 when onboarded
-- Ring: set up the HA Ring integration after Phase A
+- Garage (lower priority): the owner has a Meross MSG100HK (HomeKit) that did not work correctly at the previous house with the same myQ opener. Retry through HA and record what failed; ratgdo remains the fallback. The garage door is Tier 3 when onboarded
+- Ring: events and alerts first. Video into Apple Home is low priority
 - Pi 5 break-glass hop (networkpi to Pi 5 over SSH add-on) is confirmed in principle; set up with the networkpi runbook
 
 ## Backlog (parked, revisit later)

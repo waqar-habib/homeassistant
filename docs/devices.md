@@ -12,7 +12,7 @@ Facts only. Unknowns are tracked in `docs/decisions.md` under Open and in `docs/
 
 ## networkpi (always-on backend)
 - Hardware: Raspberry Pi 3B+, wired Ethernet
-- OS: 64-bit (`uname -m` = aarch64), boots from `/boot/firmware`, zram swap. Release name not yet captured (I3)
+- OS: Raspberry Pi OS Lite 64-bit, Debian 13.5 (trixie), aarch64, zram swap
 - Hostname and user: `networkpi`
 - Address: 192.168.1.39 (confirmed in Raspberry Pi Connect's remote terminal)
 - Memory: 905 MB total, 151 MB used and 753 MB available at idle, 904 MB zram swap

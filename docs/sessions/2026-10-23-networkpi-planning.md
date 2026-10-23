@@ -8,11 +8,15 @@
 - Adopted the autonomy tiers (D15), the automatic session-end protocol (D14), alerts (D16), Claude auth (D17), HA user roles (D18), backup plan (D19), domain purchase path (D20), and voice feasibility first (D21).
 - Recorded networkpi facts from the owner's terminal output: aarch64, 905 MB RAM, SD reported at 29.1 GB (I2), IP 192.168.1.39. The `os-release` command had a typo (I3).
 - Created `docs/devices.md`, `docs/issues.md`, `docs/milestones.md`, `docs/voice-feasibility.md`, `HANDOFF.md`.
+- Owner approved the merge. `main` fast-forwarded to `cf00c01`, so the tiers and session protocol are now in force.
+- Owner answers recorded: DHCP reservations done; backup size 254-260 MB (retention fits, D19); domain must be location-neutral (D22); onboarding flow (D23); partial device list from the router app added to `docs/devices.md`.
 
 ## Findings
 - HA OS cannot run Raspberry Pi Connect (I4).
-- The Spectrum router may not support DHCP reservation or custom DNS (I1). AdGuard is built last for this reason.
 - Nuvio cannot run on an ESP32 display (I5).
+- The Pi 5 appears on the router on both Wi-Fi and Ethernet (I8).
+- myQ has no HA support. Local options are ratgdo or Meross, pending the opener model.
+- Devices that live natively in Apple Home must not be bridged back from HA (D23).
 
 ## Resume point
-Phase A build, once the owner closes the open items in `HANDOFF.md`: networkpi hardening and stable IP, then Claude Code CLI with `/remote-control`, then the Samba backup target, Cloudflare Tunnel, and monitoring.
+Draft the networkpi bootstrap once the owner supplies `cat /etc/os-release`. Then Phase A as listed in `HANDOFF.md`.

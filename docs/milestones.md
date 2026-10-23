@@ -12,3 +12,4 @@
 | M7 | AdGuard Home live (depends on I1) | To do | |
 | M8 | Voice control feasibility tests F1-F4 | To do | |
 | M9 | Dashboard (Nuvio) with owner, MKH and guest views | To do | |
+| M10 | Ring in HA and a local garage controller (ratgdo or Meross) | To do | |

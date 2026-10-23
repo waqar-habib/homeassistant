@@ -16,7 +16,7 @@ Facts only. Unknowns are tracked in `docs/decisions.md` under Open and in `docs/
 - Hostname and user: `networkpi`
 - Address: 192.168.1.39 (confirmed in Raspberry Pi Connect's remote terminal)
 - Memory: 905 MB total, 151 MB used and 753 MB available at idle, 904 MB zram swap
-- Storage: SD card, `lsblk` reports 29.1 GB (root partition 29 GB, 2.8 GB used, 25 GB free). The owner believes it is a 64 GB card, see I2
+- Storage: SD card, `lsblk` reports 29.1 GB (root partition 29 GB, 2.8 GB used, 25 GB free). The owner expected 64 GB, see I2
 - Remote access: Raspberry Pi Connect (iPhone-capable)
 - Planned services (D7, D8):
   - AdGuard Home (DNS and ad blocking), after the router check in I1
@@ -26,4 +26,6 @@ Facts only. Unknowns are tracked in `docs/decisions.md` under Open and in `docs/
 - Not planned: Home Assistant itself (RAM)
 
 ## Network
-- Router: Spectrum SBE1V1R, managed through the My Spectrum app. No admin console known. DHCP reservation and custom DNS support unverified (I1)
+- Router: Spectrum SBE1V1R, managed through the My Spectrum app. DHCP reservations exist for the critical devices. Custom DNS unverified (I1)
+- Clients seen in the My Spectrum Services list (partial, the screenshot ends at networkpi): Google Nest Thermostat (2), Rain Bird Sprinkler, Home Assistant-WiFi, Home Assistant-Eth, LG Washer, LG Dryer, LG Refrigerator, Chamberlain myQ, Brother Printer, Amazon Ring, networkpi. Bulbs, plugs and other devices were not captured
+- Backup size: 254 MB automatic, 260 MB manual (2026-10-23)

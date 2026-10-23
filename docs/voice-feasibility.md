@@ -2,9 +2,22 @@
 
 Goal: Home Assistant as the single controller for Apple Home, Aidot, Tapo and Google Home devices, with natural-language voice that stays simple for MKH and guests. Test before building (D21).
 
-## Inputs needed from the owner
-- Every device, by current app or ecosystem
+## Inputs
+- Device inventory without typing it by hand: (1) run setup.md step 1.6 so Claude writes `docs/entities.md` from HA; (2) export the router client list from the My Spectrum app (scroll the full Services list); (3) compare. Devices on the router but not in HA are the onboarding gaps. Apple-only accessories need a short manual list from the Home app.
 - How each Apple Home device reaches HA today (I7)
+
+## Starting inventory (expected HA path, to verify in F4)
+
+| Device | Expected path |
+|---|---|
+| Google Nest Thermostat (2) | HA Nest integration, which uses Google's Device Access API. A one-time registration fee applies (verify) |
+| Rain Bird Sprinkler | HA Rain Bird integration |
+| LG Washer, Dryer, Refrigerator | HA LG ThinQ integration (cloud) |
+| Chamberlain myQ garage opener | No HA support. Needs a local controller (ratgdo or Meross). Opener model needed |
+| Amazon Ring | HA Ring integration (cloud, Ring login with 2FA). Ring has no local stream |
+| Brother Printer | HA IPP or Brother integration |
+| Aidot and Tapo bulbs | Aidot and TP-Link integrations |
+| Linkind plugs | Matter, paired to Apple Home. Add to HA through Matter multi-admin |
 
 ## Tests
 

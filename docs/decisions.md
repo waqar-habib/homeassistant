@@ -21,9 +21,11 @@
 | D16 | Alerts: ntfy.sh with a private topic, plus an external uptime monitor on the public HA URL | Works even when the Pi 5 or networkpi is down |
 | D17 | Claude on networkpi: OAuth for interactive use; a dedicated API key (cap on file, about $10/mo) for scheduled runs. Key never goes in chat or the repo | Keeps unattended spend bounded |
 | D18 | HA users: owner (admin); MKH (just below admin, simple view); guests (simplified dashboard, access granted when needed). Dashboards limit what users see; they are not a permission boundary | MKH is used to Apple Home simplicity |
-| D19 | HA backups to networkpi's Samba share: target 7 daily + 4 weekly, subject to the size check. Encryption key stored in Apple Keychain | Automatic, off-device, recoverable |
+| D19 | HA backups to networkpi's Samba share: 7 daily + 4 weekly. Backup size is 254-260 MB, so 11 backups is about 2.9 GB against 25 GB free. Encryption key stored in Apple Keychain | Automatic, off-device, recoverable |
 | D20 | Domain bought through Cloudflare Registrar (name not chosen) | One vendor for domain, DNS and tunnel |
 | D21 | Voice control: feasibility test before any build (`docs/voice-feasibility.md`) | Avoid building something that does not work |
+| D22 | Domain is location-neutral (family name, no city or address). One subdomain per service and site, for example `ha.<domain>`. The tunnel is outbound, so moving house means moving the Pi and reconnecting; the hostname stays | Scales to a new home or a second site |
+| D23 | Device onboarding: manufacturer app, then an official HA integration discovers the device as entities, then HA exposes it to Apple Home through HomeKit Bridge. Matter-only devices (for example Linkind plugs) pair to Apple Home and are added to HA through Matter multi-admin. Never bridge a device back into Apple Home when it already lives there natively | One controller (HA), Apple Home as the front end, no duplicate or looping devices |
 
 ## Open (blocking)
 - Calendar source: Apple (CalDAV) / Google / both
@@ -33,12 +35,14 @@
 - HACS installed? (check in docs/setup.md 1.2)
 
 ### Open: networkpi / remote-access pipeline (updated 2026-10-23)
-- Domain name to buy through Cloudflare Registrar; Cloudflare account status
-- Router (Spectrum SBE1V1R, My Spectrum app): can it reserve DHCP addresses or set the DNS server handed to clients? DHCP pool range. See `docs/issues.md` I1
-- networkpi: `cat /etc/os-release` output (first attempt had a typo) and SD capacity (reported 29.1 GB vs. 64 GB stated). See I2, I3
-- HA backup file size, to confirm the 7 daily + 4 weekly retention fits on networkpi
+- Domain name to buy through Cloudflare Registrar (see D22); Cloudflare account status
+- Router: can it set the DNS server handed to clients? DHCP reservations are done. See `docs/issues.md` I1
+- networkpi: `cat /etc/os-release` output (still missing) and the SD card's endurance rating. See I2, I3
 - Display for the common area: tablet, or ESP32 touchscreen (ESP32 cannot run Nuvio). See I5
-- Voice feasibility inputs: full device list by ecosystem (Apple Home, Aidot, Tapo, Google Home) and how Apple Home devices reach HA today. See `docs/voice-feasibility.md`
+- Device inventory: run setup.md step 1.6 (`docs/entities.md`) and compare it with the router client list. See `docs/voice-feasibility.md`
+- The Pi 5 appears on the router twice (Home Assistant-WiFi and Home Assistant-Eth). See I8
+- Garage: myQ has no HA support. Choose a local route (ratgdo or Meross) once the opener model is known. Treat the garage door as Tier 3 when onboarded
+- Ring: set up the HA Ring integration after Phase A
 - Pi 5 break-glass hop (networkpi to Pi 5 over SSH add-on) is confirmed in principle; set up with the networkpi runbook
 
 ## Backlog (parked, revisit later)

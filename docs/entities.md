@@ -217,18 +217,18 @@ Unassigned entries with no state (disabled by their integration) are not listed 
 | Living Room HomePod, Bedroom HomePod (HomePod Mini) | **Apple TV integration** (`apple_tv`) | Two `media_player` and `remote` entities per HomePod |
 | Nest Thermostat (2 units) | **Matter** (`matter`), through the Matter Server add-on. Shared with Apple Home (multi-admin) | Matter fabrics on one unit: Apple Home, Apple Keychain, Home Assistant, Google |
 | Leedarson smart plugs (Study Floor Lamp, Guest Nightstand) | **Matter** (`matter`). Shared with Apple Home (multi-admin) | Matter fabrics on the Study plug: Apple Home, Apple Keychain, Home Assistant. `switch_as_x` light helpers sit on top |
-| Front Door lock (Allegion BE469ZP) | Z-Wave JS (`zwave_js`) through the Zooz Stick. Exported to Apple Home twice: by the HomeKit Bridge (lock domain) and as the "Front Door" accessory | `lock.living_room_front_door`; `homekit` entries "HASS Bridge:21064" (mode `bridge`) and "Front Door" (mode `accessory`) |
+| Front Door lock (Allegion BE469ZP) | Z-Wave JS (`zwave_js`) through the Zooz Stick. Exported to Apple Home once, as the standalone "Front Door" accessory (verified in Apple Home 2026-10-23) | `lock.living_room_front_door`; `homekit` entries "HASS Bridge:21064" (mode `bridge`) and "Front Door" (mode `accessory`) |
 
 Findings:
 - **No HomeKit Device pairings.** There are no `homekit_controller` config entries. HA does not pull any device in through HomeKit Device pairing.
 - **HomeKit Bridge (HA to Apple Home).** The bridge's filter is domains `light` and `lock`, with no entity or exclude lists. It exposes 16 entities: all 15 lights and the lock. The HomePods, Nest thermostats, and smart-plug switches are not in those domains, so they are not bridged.
-- **Duplicates in Apple Home.** The two Matter-backed `switch_as_x` lights (`light.study_study_floor_lamp`, `light.upstairs_guest_guest_nightstand`) are also in Apple Home through Matter. The bridge exposes them as lights too. The lock is exposed twice, by the bridge and by the "Front Door" accessory.
+- **Duplicates in Apple Home.** The two Matter-backed `switch_as_x` lights (`light.study_study_floor_lamp`, `light.upstairs_guest_guest_nightstand`) are also in Apple Home through Matter. The bridge exposes them as lights too. The lock is not duplicated: Apple Home shows it only as the standalone "Front Door" accessory, and the bridge's 15 accessories are all lights (owner-verified 2026-10-23). The bridge is named "HASS Bridge:21064" in both HA and Apple Home (renamed in Apple Home by the owner). Its firmware shows 2026.10.2, the HA version.
 - **Not checked.** The TP-Link and aidot lights are not Matter or HomeKit devices in HA. Whether either is HomeKit-native is not verified here.
-- **Proposed fix (not applied).** Remove the two Matter plug lights from the bridge. Drop the lock domain from the bridge so the "Front Door" accessory alone exposes the lock. This is a Tier 3 change (HomeKit Bridge reload) and waits for owner GREEN LIGHT. Full detail is in `docs/issues.md` (I7).
+- **Proposed fix (not applied).** Remove the two Matter plug lights from the bridge. Dropping the `lock` domain from the bridge filter is optional hygiene only, since the bridge does not expose the lock. If done, bundle it with the same reload. This is a Tier 3 change (HomeKit Bridge reload) and waits for owner GREEN LIGHT. Full detail is in `docs/issues.md` (I7).
 
 ## Open items
 
 1. `media_player.living_room_tv` is unavailable and has no area. Check whether the onn box is powered and on the network, then assign an area.
 2. Assign areas to the no-area entities above, starting with the Nest thermostats and the Waqar's iPhone sensors.
 3. Kitchen and Formal Living have no entities. Add devices there or remove the areas.
-4. I7: get GREEN LIGHT for the bridge change above, then check Apple Home for duplicates.
+4. I7: confirm in Apple Home that the two Matter plugs also appear as bridge lights (duplicate not yet seen on the iPhone), then get GREEN LIGHT for the bridge change above.

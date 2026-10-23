@@ -208,25 +208,27 @@ These entities have no area. Assign an area in the entity or device registry if 
 | `update.claude_terminal_pro_update` | Claude Terminal Pro Update | update | hassio | off | |
 | `update.home_assistant_mcp_server_update` | Home Assistant MCP Server Update | update | hassio | off | |
 
-Also unassigned, but with no state (disabled by integration): the Home Assistant host, Core, and Supervisor diagnostic sensors, the Waqar's iPhone sensors other than those above, the Z-Wave JS, Matter Server, Get HACS, Claude Terminal Pro, and MCP Server diagnostic entities, the Unk 1 and Unk 2 lights (`light.unk_1`, `light.unk_2`, aidot, no area, no state), and the Nest diagnostic sensors. Both are listed by device in the registry.
+Unassigned entries with no state (disabled by their integration) are not listed here. They appear per device in the entity registry. They include the Home Assistant host, Core, and Supervisor diagnostic sensors, the Waqar's iPhone sensors other than those above, the Z-Wave JS, Matter Server, Get HACS, Claude Terminal Pro, and MCP Server diagnostics, the Nest diagnostic sensors, and the `light.unk_1` and `light.unk_2` lights.
 
-## Apple Home connection method (closes I7)
+## Apple Home connection method (I7)
 
 | Device | How HA connects | Evidence |
 |---|---|---|
 | Living Room HomePod, Bedroom HomePod (HomePod Mini) | **Apple TV integration** (`apple_tv`) | Two `media_player` and `remote` entities per HomePod |
-| Nest Thermostat (2 units) | **Matter** (`matter`), through the Matter Server add-on | `climate.upstairs`, `climate.downstairs`, Matter device diagnostics |
-| Leedarson smart plugs (Study Floor Lamp, Guest Nightstand) | **Matter** (`matter`) | Matter device entities; `switch_as_x` light helpers on top |
-| Front Door lock (Allegion BE469ZP) | Z-Wave JS (`zwave_js`) through the Zooz Stick. Also exported to Apple Home by the HomeKit Bridge | `lock.living_room_front_door`; `homekit` entry titled "Front Door", source `accessory` |
+| Nest Thermostat (2 units) | **Matter** (`matter`), through the Matter Server add-on. Shared with Apple Home (multi-admin) | Matter fabrics on one unit: Apple Home, Apple Keychain, Home Assistant, Google |
+| Leedarson smart plugs (Study Floor Lamp, Guest Nightstand) | **Matter** (`matter`). Shared with Apple Home (multi-admin) | Matter fabrics on the Study plug: Apple Home, Apple Keychain, Home Assistant. `switch_as_x` light helpers sit on top |
+| Front Door lock (Allegion BE469ZP) | Z-Wave JS (`zwave_js`) through the Zooz Stick. Exported to Apple Home twice: by the HomeKit Bridge (lock domain) and as the "Front Door" accessory | `lock.living_room_front_door`; `homekit` entries "HASS Bridge:21064" (mode `bridge`) and "Front Door" (mode `accessory`) |
 
 Findings:
 - **No HomeKit Device pairings.** There are no `homekit_controller` config entries. HA does not pull any device in through HomeKit Device pairing.
-- **HomeKit Bridge (HA to Apple Home).** The `homekit` integration has one bridge entry, "HASS Bridge:21064" (loaded, source `user`). It also has the "Front Door" accessory entry (source `accessory`). The bridge device has no entities of its own. The bridge's include filter was not read here. Confirm in Apple Home which HA entities it exposes, so Matter devices are not bridged back and duplicated.
-- **Duplication risk.** The Nest thermostats and smart plugs reach HA over Matter. If Apple Home also shows them as Matter devices, they appear once in Apple Home and once in HA. This is expected and does not loop unless they are also bridged out of HA.
+- **HomeKit Bridge (HA to Apple Home).** The bridge's filter is domains `light` and `lock`, with no entity or exclude lists. It exposes 16 entities: all 15 lights and the lock. The HomePods, Nest thermostats, and smart-plug switches are not in those domains, so they are not bridged.
+- **Duplicates in Apple Home.** The two Matter-backed `switch_as_x` lights (`light.study_study_floor_lamp`, `light.upstairs_guest_guest_nightstand`) are also in Apple Home through Matter. The bridge exposes them as lights too. The lock is exposed twice, by the bridge and by the "Front Door" accessory.
+- **Not checked.** The TP-Link and aidot lights are not Matter or HomeKit devices in HA. Whether either is HomeKit-native is not verified here.
+- **Proposed fix (not applied).** Remove the two Matter plug lights from the bridge. Drop the lock domain from the bridge so the "Front Door" accessory alone exposes the lock. This is a Tier 3 change (HomeKit Bridge reload) and waits for owner GREEN LIGHT. Full detail is in `docs/issues.md` (I7).
 
 ## Open items
 
 1. `media_player.living_room_tv` is unavailable and has no area. Check whether the onn box is powered and on the network, then assign an area.
 2. Assign areas to the no-area entities above, starting with the Nest thermostats and the Waqar's iPhone sensors.
 3. Kitchen and Formal Living have no entities. Add devices there or remove the areas.
-4. Confirm the HomeKit Bridge include list in the HA UI, so I7 can close.
+4. I7: get GREEN LIGHT for the bridge change above, then check Apple Home for duplicates.

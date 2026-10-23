@@ -4,7 +4,7 @@
 |---|---|---|---|
 | M0 | Phase 1 foundation: backup, HACS, Claude Terminal, ha-mcp, repo link (setup.md 1.1-1.5) | Done | 2026-10-22 |
 | M1 | Remote-access and networkpi decisions recorded (D6-D21), session protocol and autonomy tiers adopted | Done | 2026-10-23 |
-| M2 | Phase 1 step 1.6: `docs/entities.md` entity inventory | To do | |
+| M2 | Phase 1 step 1.6: `docs/entities.md` entity inventory | Done | 2026-10-23 |
 | M3 | networkpi base: hardening, stable IP, Claude Code CLI with `/remote-control`, repo clone | To do | |
 | M4 | HA backups to networkpi Samba share, automatic | To do | |
 | M5 | Cloudflare Tunnel live for HA, with 2FA and an external uptime monitor | To do | |

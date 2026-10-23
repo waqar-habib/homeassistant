@@ -224,11 +224,11 @@ Findings:
 - **HomeKit Bridge (HA to Apple Home).** The bridge's filter is domains `light` and `lock`, with no entity or exclude lists. It exposes 16 entities: all 15 lights and the lock. The HomePods, Nest thermostats, and smart-plug switches are not in those domains, so they are not bridged.
 - **Duplicates in Apple Home.** The two Matter-backed `switch_as_x` lights (`light.study_study_floor_lamp`, `light.upstairs_guest_guest_nightstand`) are also in Apple Home through Matter. The bridge exposes them as lights too. The lock is not duplicated: Apple Home shows it only as the standalone "Front Door" accessory, and the bridge's 15 accessories are all lights (owner-verified 2026-10-23). The bridge is named "HASS Bridge:21064" in both HA and Apple Home (renamed in Apple Home by the owner). Its firmware shows 2026.10.2, the HA version.
 - **Not checked.** The TP-Link and aidot lights are not Matter or HomeKit devices in HA. Whether either is HomeKit-native is not verified here.
-- **Proposed fix (not applied).** Remove the two Matter plug lights from the bridge. Dropping the `lock` domain from the bridge filter is optional hygiene only, since the bridge does not expose the lock. If done, bundle it with the same reload. This is a Tier 3 change (HomeKit Bridge reload) and waits for owner GREEN LIGHT. Full detail is in `docs/issues.md` (I7).
+- **Proposed fix (not applied).** Remove `light.study_study_floor_lamp` from the bridge (the Guest Nightstand shows once in Apple Home and stays). Dropping the `lock` domain from the bridge filter is optional hygiene only, since the bridge does not expose the lock. If done, bundle it with the same reload. This is a Tier 3 change (HomeKit Bridge reload) and waits for owner GREEN LIGHT. Full detail is in `docs/issues.md` (I7).
 
 ## Open items
 
-1. `media_player.living_room_tv` is unavailable and has no area. Check whether the onn box is powered and on the network, then assign an area.
+1. `media_player.living_room_tv` is unavailable and has no area. The TV is unplugged for now (I10, backlog).
 2. Assign areas to the no-area entities above, starting with the Nest thermostats and the Waqar's iPhone sensors.
 3. Kitchen and Formal Living have no entities. Add devices there or remove the areas.
-4. I7: confirm in Apple Home that the two Matter plugs also appear as bridge lights (duplicate not yet seen on the iPhone), then get GREEN LIGHT for the bridge change above.
+4. I7 (backlog): `light.study_study_floor_lamp` shows twice in Apple Home. Remove it from the bridge filter after GREEN LIGHT. The Guest Nightstand shows once and needs no change.

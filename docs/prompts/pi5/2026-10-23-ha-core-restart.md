@@ -1,5 +1,10 @@
 # Prompt: HA core restart and I8 close-out (Pi 5, Claude Terminal)
 
+Target: pi5
+Date: 2026-10-23
+Tier: 3
+GREEN LIGHT: yes (2026-10-23)
+
 ```
 Resume from HANDOFF.md. Task: restart HA core and close the I8 follow-up.
 The owner gave GREEN LIGHT for this restart on 2026-10-23 (Tier 3, approved).

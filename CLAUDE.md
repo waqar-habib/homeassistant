@@ -57,6 +57,15 @@ homeassistant:
 8. **Verify, don't assume.** After a change, confirm via ha-mcp that the entity/automation exists and behaves (check traces).
 9. **Entity IDs come from `docs/entities.md` or ha-mcp** — never guess an entity ID.
 
+## Cross-device prompts
+
+Prompts for another device or session live in `docs/prompts/<target>/`, where `<target>` is `pi5`, `networkpi`, `mac` or `cloud`. Filename: `YYYY-MM-DD-<slug>.md`. Each file has a header (target, date, tier, GREEN LIGHT status) and the prompt body in a code block. See `docs/prompts/README.md`.
+
+- When the owner needs another device or session to run something, Claude commits the prompt file and pushes to `main` (Tier 1, docs only). Claude never asks the owner to copy and paste a full prompt.
+- Claude replies with a short pointer (`git pull` and the file path, plus the short commit ID) that fits in a mobile terminal.
+- Committing a prompt does not authorize running it. The receiving device follows the tier rules. A Tier 3 action needs a GREEN LIGHT, and the file may record only a GREEN LIGHT the owner actually gave.
+- Prompts contain no secrets, tokens or passwords. The repo is public until D25.
+
 ## Session protocol (hardened)
 
 **Start of every session:** read `HANDOFF.md`, then the open items in `docs/issues.md` and `docs/decisions.md`. Resume from the recorded point. Do not ask the owner to re-explain prior work.

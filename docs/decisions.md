@@ -29,6 +29,7 @@
 | D24 | Monitoring: a lightweight check script on networkpi, alerts through ntfy, and an external heartbeat (healthchecks.io) so networkpi's own death is noticed. Uptime Kuma only if a status page is wanted later | Saves RAM on the 3B+; fewer moving parts |
 | D25 | Repo visibility: the repo is public today. networkpi clones it once while public, then the owner makes it private. The `claude` user on networkpi gets its own fine-grained read/write token. The Pi 5's existing token keeps working | The repo records home layout and security design; networkpi needs no token for the bootstrap clone |
 | D26 | Nabu Casa: 1-month free trial only (owner, 2026-10-23), used for remote access until the Cloudflare Tunnel is tested. D6 stands; no paid subscription | Bridge while the domain and tunnel are set up; avoids the recurring cost rejected in D6. Cancel the trial before it bills |
+| D27 | Cross-device prompts live in `docs/prompts/<target>/` and are committed to `main`. The owner runs a short pointer (`git pull`, file path, short commit ID) instead of pasting prompts. Committing a prompt does not authorize running it (tiers still apply) | Works from mobile terminals where paste is unavailable; one source of truth in git |
 
 ## Open (blocking)
 - Calendar source: Apple (CalDAV) / Google / both

@@ -1,19 +1,26 @@
 # HANDOFF
 
-Last updated: 2026-10-23. Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-10-23 (night). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-Review the networkpi bootstrap script on branch `feat/networkpi-bootstrap` (`networkpi/bootstrap.sh`). It is Tier 3 (firewall, SSH, Samba): do not run it until the owner says "GREEN LIGHT". Nothing has been changed on either device yet.
+The networkpi bootstrap is approved (GREEN LIGHT, 2026-10-23) and waits for the owner to run it in the morning. Claude cannot reach networkpi, so the owner runs the commands below once. Nothing has been changed on either device yet.
 
-## Owner inputs and approvals needed
-1. "GREEN LIGHT" on the bootstrap script, and whether the repo is public or private (decides how networkpi clones it; a private repo needs a read-only token).
-2. Choice of monitoring approach (see Open in `docs/decisions.md`).
-3. Domain name, pending an availability check on Cloudflare Registrar (D22).
-4. Optional: check for a 64 GB high-endurance SD card (I2).
-5. Run setup.md step 1.6 on the Pi 5 to produce `docs/entities.md`.
-
-## Approved, not yet done
-- Turn off Wi-Fi on the Pi 5 (I8). Approved 2026-10-23. Run it from the Pi 5's Claude Terminal before the networkpi Samba share goes live.
+## Owner's morning checklist (in this order)
+1. **Pi 5, Claude Terminal:** turn Wi-Fi off (I8, approved). Prompt: back up with `ha backups new --name "pre-wifi-off"`; confirm Ethernet holds 192.168.1.36 with `ha network info`; disable wlan0; verify HA and ha-mcp; close I8; commit. Do this first because the networkpi share allows only 192.168.1.36.
+2. **Pi 5, Claude Terminal:** run setup.md step 1.6 to produce `docs/entities.md`, commit it.
+3. **networkpi via Raspberry Pi Connect, at home.** The repo is public, so no token. Run inside tmux so a dropped phone session does not kill the upgrade:
+   ```
+   sudo apt-get update && sudo apt-get install -y git tmux
+   tmux new -s bootstrap
+   git clone -b feat/networkpi-bootstrap https://github.com/waqar-habib/homeassistant.git ~/homeassistant
+   bash ~/homeassistant/networkpi/bootstrap.sh
+   ```
+   If the session drops: `tmux attach -t bootstrap`.
+4. `sudo smbpasswd -a habackup`; save the password in Apple Keychain.
+5. Reboot networkpi. Confirm Raspberry Pi Connect reconnects from the iPhone within about 2 minutes with nobody logged in.
+6. Paste the bootstrap's "Verify" output into the next session.
+7. Check the domain on Cloudflare Registrar and tell Claude the name.
+8. After step 3 succeeds: make the repo private on GitHub (D25).
 
 ## Pending proposals
 - Weekly encrypted backup copy to cloud storage (I9).
@@ -23,14 +30,12 @@ Review the networkpi bootstrap script on branch `feat/networkpi-bootstrap` (`net
 - **networkpi** (192.168.1.39, wired): Raspberry Pi OS Lite 64-bit, Debian 13.5 (trixie), 905 MB RAM, 29.1 GB SD (25 GB free), reachable through Raspberry Pi Connect. Nothing installed beyond the base OS. DHCP reservation created.
 - **Router**: DHCP reservations done. Custom DNS unverified (I1).
 
-## Build order (Phase A, no router dependency)
-1. Pi 5: Wi-Fi off (approved).
-2. networkpi hardening: `networkpi/bootstrap.sh` (SSH keys only, firewall, automatic security updates, journal cap, watchdog, Samba share, `claude` user). Run it at home, then reboot and confirm Raspberry Pi Connect reconnects from the iPhone.
-3. Claude Code CLI as the `claude` user under tmux and systemd with `/remote-control`; test by hand first; clone this repo.
-4. Point HA's backup location at the Samba share (daily, keep 7) plus a weekly copy job on networkpi (keep 4).
-5. Cloudflare Tunnel on the Pi 5 with the new domain, HA 2FA, and `http` trusted proxy settings.
-6. Monitoring and alerts.
-Then Phase B: AdGuard Home (depends on I1). Phase C: setup.md step 1.6 inventory, then voice feasibility tests F4, F1, F2, F3. Ring events and the garage after that.
+## Build order after the morning checklist
+1. Claude Code CLI as the `claude` user under tmux and systemd with `/remote-control`; sign in once (OAuth) through Raspberry Pi Connect; test by hand first; give it its own fine-grained token; clone this repo.
+2. Point HA's backup location at the Samba share (daily, keep 7) plus a weekly copy job on networkpi (keep 4).
+3. Cloudflare Tunnel on the Pi 5 with the domain, HA 2FA, and `http` trusted proxy settings.
+4. Monitoring (D24): check script, ntfy, healthchecks.io heartbeat.
+Then AdGuard Home (depends on I1), the voice feasibility tests F4, F1, F2, F3, then Ring events and the garage (Meross MSG100HK; the earlier failure was physical wiring to the Chamberlain controller).
 
 ## Rules in force
 Autonomy tiers 0-3 and the session protocol in `CLAUDE.md`. Tier 3 actions (restarts, tunnel, DNS, firewall, credentials, deletions, garage door) wait for the owner's "GREEN LIGHT".

@@ -26,6 +26,8 @@
 | D21 | Voice control: feasibility test before any build (`docs/voice-feasibility.md`) | Avoid building something that does not work |
 | D22 | Domain is location-neutral (family name, no city or address). One subdomain per service and site, for example `ha.<domain>`. The tunnel is outbound, so moving house means moving the Pi and reconnecting; the hostname stays | Scales to a new home or a second site |
 | D23 | Device onboarding: manufacturer app, then an official HA integration discovers the device as entities, then HA exposes it to Apple Home through HomeKit Bridge. Matter-only devices (for example Linkind plugs) pair to Apple Home and are added to HA through Matter multi-admin. Never bridge a device back into Apple Home when it already lives there natively | One controller (HA), Apple Home as the front end, no duplicate or looping devices |
+| D24 | Monitoring: a lightweight check script on networkpi, alerts through ntfy, and an external heartbeat (healthchecks.io) so networkpi's own death is noticed. Uptime Kuma only if a status page is wanted later | Saves RAM on the 3B+; fewer moving parts |
+| D25 | Repo visibility: the repo is public today. networkpi clones it once while public, then the owner makes it private. The `claude` user on networkpi gets its own fine-grained read/write token. The Pi 5's existing token keeps working | The repo records home layout and security design; networkpi needs no token for the bootstrap clone |
 
 ## Open (blocking)
 - Calendar source: Apple (CalDAV) / Google / both
@@ -38,12 +40,11 @@
 - Domain name to buy through Cloudflare Registrar (see D22); Cloudflare account status
 - Router: can it set the DNS server handed to clients? DHCP reservations are done. See `docs/issues.md` I1
 - networkpi: SD card endurance rating. See I2
-- networkpi bootstrap script is drafted on branch `feat/networkpi-bootstrap`, awaiting the owner's "GREEN LIGHT" (Tier 3: firewall, SSH, Samba). Repo visibility (public or private) decides how networkpi clones it
-- Monitoring approach: proposed a lightweight script plus ntfy plus an external heartbeat instead of Uptime Kuma, to save RAM on the 3B+
+- networkpi bootstrap (`networkpi/bootstrap.sh` on branch `feat/networkpi-bootstrap`): approved 2026-10-23, to be run by the owner in the morning. See `HANDOFF.md`
 - Display for the common area: tablet, or ESP32 touchscreen (ESP32 cannot run Nuvio). See I5
 - Device inventory: run setup.md step 1.6 (`docs/entities.md`) and compare it with the router client list. See `docs/voice-feasibility.md`
 - The Pi 5 appears on the router twice (Home Assistant-WiFi and Home Assistant-Eth). See I8
-- Garage (lower priority): the owner has a Meross MSG100HK (HomeKit) that did not work correctly at the previous house with the same myQ opener. Retry through HA and record what failed; ratgdo remains the fallback. The garage door is Tier 3 when onboarded
+- Garage (lower priority): the owner has a Meross MSG100HK (HomeKit) that did not work at the previous house with the same myQ opener because of the physical wiring to the Chamberlain controller, not software. Recheck the wiring when retrying; ratgdo remains the fallback. The garage door is Tier 3 when onboarded
 - Ring: events and alerts first. Video into Apple Home is low priority
 - Pi 5 break-glass hop (networkpi to Pi 5 over SSH add-on) is confirmed in principle; set up with the networkpi runbook
 

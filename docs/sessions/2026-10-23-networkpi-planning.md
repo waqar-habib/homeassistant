@@ -16,6 +16,9 @@
 - Drafted `networkpi/bootstrap.sh` on branch `feat/networkpi-bootstrap` for review. Not run.
 - Garage: owner has a Meross MSG100HK that failed at the previous house; lower priority. Ring: events and alerts first, video low priority.
 
+- Owner gave "GREEN LIGHT" for `networkpi/bootstrap.sh`; chose the lightweight monitoring plan (D24); plans to make the repo private after the bootstrap clone (D25). The garage failure at the old house was physical wiring to the Chamberlain controller.
+- Domain check and the entity list (step 1.6) come from the owner in the morning.
+
 ## Findings
 - HA OS cannot run Raspberry Pi Connect (I4).
 - Nuvio cannot run on an ESP32 display (I5).
@@ -24,4 +27,4 @@
 - Devices that live natively in Apple Home must not be bridged back from HA (D23).
 
 ## Resume point
-Owner reviews `networkpi/bootstrap.sh` on `feat/networkpi-bootstrap`. On "GREEN LIGHT", run Phase A as listed in `HANDOFF.md`.
+Owner works the morning checklist in `HANDOFF.md`, then pastes the bootstrap's Verify output into the next session. Claude continues with Claude Code on networkpi.

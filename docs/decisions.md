@@ -28,6 +28,7 @@
 | D23 | Device onboarding: manufacturer app, then an official HA integration discovers the device as entities, then HA exposes it to Apple Home through HomeKit Bridge. Matter-only devices (for example Linkind plugs) pair to Apple Home and are added to HA through Matter multi-admin. Never bridge a device back into Apple Home when it already lives there natively | One controller (HA), Apple Home as the front end, no duplicate or looping devices |
 | D24 | Monitoring: a lightweight check script on networkpi, alerts through ntfy, and an external heartbeat (healthchecks.io) so networkpi's own death is noticed. Uptime Kuma only if a status page is wanted later | Saves RAM on the 3B+; fewer moving parts |
 | D25 | Repo visibility: the repo is public today. networkpi clones it once while public, then the owner makes it private. The `claude` user on networkpi gets its own fine-grained read/write token. The Pi 5's existing token keeps working | The repo records home layout and security design; networkpi needs no token for the bootstrap clone |
+| D26 | Nabu Casa: 1-month free trial only (owner, 2026-10-23), used for remote access until the Cloudflare Tunnel is tested. D6 stands; no paid subscription | Bridge while the domain and tunnel are set up; avoids the recurring cost rejected in D6. Cancel the trial before it bills |
 
 ## Open (blocking)
 - Calendar source: Apple (CalDAV) / Google / both
@@ -37,13 +38,13 @@
 - HACS installed? (check in docs/setup.md 1.2)
 
 ### Open: networkpi / remote-access pipeline (updated 2026-10-23)
-- Domain name to buy through Cloudflare Registrar (see D22); Cloudflare account status
+- Domain name to buy through Cloudflare Registrar (see D22): purchase in progress 2026-10-23, name not yet recorded
 - Router: can it set the DNS server handed to clients? DHCP reservations are done. See `docs/issues.md` I1
 - networkpi: SD card endurance rating. See I2
-- networkpi bootstrap (`networkpi/bootstrap.sh` on branch `feat/networkpi-bootstrap`): approved 2026-10-23, to be run by the owner in the morning. See `HANDOFF.md`
+- networkpi bootstrap (`networkpi/bootstrap.sh` on branch `feat/networkpi-bootstrap`): approved 2026-10-23; the full networkpi setup moves to a later, separate session. See `HANDOFF.md`
 - Display for the common area: tablet, or ESP32 touchscreen (ESP32 cannot run Nuvio). See I5
 - Device inventory: run setup.md step 1.6 (`docs/entities.md`) and compare it with the router client list. See `docs/voice-feasibility.md`
-- The Pi 5 appears on the router twice (Home Assistant-WiFi and Home Assistant-Eth). See I8
+- HA core restart (GREEN LIGHT given 2026-10-23) to clear the stale wlan0 health entry. See I8
 - Garage (lower priority): the owner has a Meross MSG100HK (HomeKit) that did not work at the previous house with the same myQ opener because of the physical wiring to the Chamberlain controller, not software. Recheck the wiring when retrying; ratgdo remains the fallback. The garage door is Tier 3 when onboarded
 - Ring: events and alerts first. Video into Apple Home is low priority
 - Pi 5 break-glass hop (networkpi to Pi 5 over SSH add-on) is confirmed in principle; set up with the networkpi runbook

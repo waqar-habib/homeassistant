@@ -1,35 +1,38 @@
 # HANDOFF
 
-Last updated: 2026-10-23 (afternoon). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-10-23 (end of session). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-Done 2026-10-23: Pi 5 Wi-Fi off (I8 closed), `docs/entities.md` built (M2 done). The networkpi bootstrap is approved (GREEN LIGHT, 2026-10-23) and waits for the owner to run it. Claude cannot reach networkpi, so the owner runs the commands below once. Nothing has been changed on networkpi yet.
+Next session: Pi 5 Claude Terminal. Restart HA core (GREEN LIGHT given 2026-10-23, backup first with `ha backups new --name "pre-restart"`, `ha core check` before, verify HA and ha-mcp after), then confirm system health no longer lists wlan0 192.168.1.37 and close the I8 follow-up. The restart has not been run yet: this Mac session has no `ha` CLI or ha-mcp.
 
-## Owner's open checklist (in this order)
-1. **networkpi via Raspberry Pi Connect, at home.** The repo is public, so no token. Run inside tmux so a dropped phone session does not kill the upgrade:
-   ```
-   sudo apt-get update && sudo apt-get install -y git tmux
-   tmux new -s bootstrap
-   git clone -b feat/networkpi-bootstrap https://github.com/waqar-habib/homeassistant.git ~/homeassistant
-   bash ~/homeassistant/networkpi/bootstrap.sh
-   ```
-   If the session drops: `tmux attach -t bootstrap`.
-2. `sudo smbpasswd -a habackup`; save the password in Apple Keychain.
-3. Reboot networkpi. Confirm Raspberry Pi Connect reconnects from the iPhone within about 2 minutes with nobody logged in.
-4. Paste the bootstrap's "Verify" output into the next session.
-5. Domain: purchase on Cloudflare Registrar is in progress (owner, 2026-10-23). Tell Claude the name when done.
-6. After step 1 succeeds: make the repo private on GitHub (D25).
-7. Decide Nabu Casa: the owner started a trial (2026-10-23) for remote access, which conflicts with D6 (Nabu Casa rejected for the recurring cost; Cloudflare Tunnel chosen). Either keep D6 and cancel the trial before it bills, or record a new decision.
+The full networkpi setup is deferred to a later, separate session (owner, 2026-10-23). The bootstrap stays approved (GREEN LIGHT) but has not been run.
+
+## Open items
+1. HA core restart and I8 recheck (above).
+2. Domain: Cloudflare Registrar purchase in progress. Tell Claude the name when done.
+3. Nabu Casa trial (1 month, D26): cancel before it bills once the Cloudflare Tunnel is tested.
+4. networkpi setup, in a later session, in this order:
+   - Run the bootstrap inside tmux via Raspberry Pi Connect:
+     ```
+     sudo apt-get update && sudo apt-get install -y git tmux
+     tmux new -s bootstrap
+     git clone -b feat/networkpi-bootstrap https://github.com/waqar-habib/homeassistant.git ~/homeassistant
+     bash ~/homeassistant/networkpi/bootstrap.sh
+     ```
+   - `sudo smbpasswd -a habackup`; save the password in Apple Keychain.
+   - Reboot networkpi; confirm Raspberry Pi Connect reconnects from the iPhone within about 2 minutes.
+   - Paste the bootstrap's "Verify" output into the session.
+   - Make the repo private on GitHub (D25).
 
 ## Pending proposals
 - Weekly encrypted backup copy to cloud storage (I9).
 
 ## Device state
-- **Pi 5** (192.168.1.36): HA OS 2026.10.2, Claude Terminal and ha-mcp running, `/config` linked to GitHub. Wi-Fi (wlan0) disabled; Ethernet `end0` only. System health still lists the stale wlan0 address 192.168.1.37 until the next core restart (I8). Remote access: Nabu Casa trial being set up; Cloudflare Tunnel not started.
+- **Pi 5** (192.168.1.36): HA OS 2026.10.2, Claude Terminal and ha-mcp running, `/config` linked to GitHub. Wi-Fi (wlan0) disabled; Ethernet `end0` only. System health still lists the stale wlan0 address 192.168.1.37 until the next core restart (I8). Remote access: Nabu Casa 1-month trial (D26); Cloudflare Tunnel not started.
 - **networkpi** (192.168.1.39, wired): Raspberry Pi OS Lite 64-bit, Debian 13.5 (trixie), 905 MB RAM, 29.1 GB SD (25 GB free), reachable through Raspberry Pi Connect. Nothing installed beyond the base OS. DHCP reservation created.
 - **Router**: DHCP reservations done. Custom DNS unverified (I1).
 
-## Build order after the open checklist
+## Build order after the open items
 1. Claude Code CLI as the `claude` user under tmux and systemd with `/remote-control`; sign in once (OAuth) through Raspberry Pi Connect; test by hand first; give it its own fine-grained token; clone this repo.
 2. Point HA's backup location at the Samba share (daily, keep 7) plus a weekly copy job on networkpi (keep 4).
 3. Cloudflare Tunnel on the Pi 5 with the domain, HA 2FA, and `http` trusted proxy settings.

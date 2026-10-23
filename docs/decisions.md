@@ -14,6 +14,16 @@
 | D9 | Operating rule: nothing may depend on the MacBook, being on the home network, or hand-typed terminal commands. Break-glass is iPhone-only via Raspberry Pi Connect to networkpi | Owner is often away; manual upkeep is the failure mode being designed out |
 | D10 | Git is the source of truth: core config, handoff notes, session summaries, milestones, issue logs for both devices live in the repo | A fresh Claude session (terminal or cloud) must resume from the last stopping point without being re-briefed |
 | D11 | One agentic pipeline: Claude Code manages Pi 5 and networkpi together; playbooks, status, issue logs and configs for both are kept in sync | Both devices operate as one smart-home system |
+| D12 | Tailscale dropped | Cloudflare Tunnel (HA) and Raspberry Pi Connect (networkpi) are two independent paths with no client software to break |
+| D13 | Single repo (this one) for both devices: `HANDOFF.md`, `docs/sessions/`, `docs/milestones.md`, `docs/issues.md`, `networkpi/` | A fresh session reads one place |
+| D14 | Session end is automatic: summary, `HANDOFF.md`, milestones/issues, commit and push to `main`, no prompt (CLAUDE.md "Session protocol") | Resume without re-briefing, even after a partial stop |
+| D15 | Autonomy tiers 0-3 (CLAUDE.md rule 6). Tier 2 proceeds if `ha core check` is clean. Tier 3 needs the owner's "GREEN LIGHT" | Minimal upkeep without unattended risk |
+| D16 | Alerts: ntfy.sh with a private topic, plus an external uptime monitor on the public HA URL | Works even when the Pi 5 or networkpi is down |
+| D17 | Claude on networkpi: OAuth for interactive use; a dedicated API key (cap on file, about $10/mo) for scheduled runs. Key never goes in chat or the repo | Keeps unattended spend bounded |
+| D18 | HA users: owner (admin); MKH (just below admin, simple view); guests (simplified dashboard, access granted when needed). Dashboards limit what users see; they are not a permission boundary | MKH is used to Apple Home simplicity |
+| D19 | HA backups to networkpi's Samba share: target 7 daily + 4 weekly, subject to the size check. Encryption key stored in Apple Keychain | Automatic, off-device, recoverable |
+| D20 | Domain bought through Cloudflare Registrar (name not chosen) | One vendor for domain, DNS and tunnel |
+| D21 | Voice control: feasibility test before any build (`docs/voice-feasibility.md`) | Avoid building something that does not work |
 
 ## Open (blocking)
 - Calendar source: Apple (CalDAV) / Google / both
@@ -22,19 +32,14 @@
 - HomePod entity IDs and routing (Fajr in bedroom/nursery?)
 - HACS installed? (check in docs/setup.md 1.2)
 
-### Open: networkpi / remote-access pipeline (raised 2026-10-23)
-- Domain name for Cloudflare Tunnel (own one, or buy via Cloudflare Registrar) and Cloudflare account status
-- Repo layout: keep both devices in this repo vs. a separate ops repo
-- Commit policy for handoff/status/log files: direct to `main` vs. branch + review
-- Autonomy tiers: what Claude may change unattended vs. what needs iPhone approval (CLAUDE.md rule 6 paths: adhan, lock, climate, restarts)
-- Alert channel when HA or networkpi is down
-- Claude auth on networkpi: subscription (OAuth) vs. API key with a monthly cap
-- Tailscale: dropped entirely, or kept as optional admin path
-- Pi 5 break-glass: HA OS cannot run Raspberry Pi Connect, so confirm the hop networkpi -> Pi 5 (SSH add-on) or HA web terminal via Cloudflare
-- Dashboard users: MKH, owner, guests; kiosk account and permissions
-- Router model, DHCP reservations for both Pis, Pi 5 address
-- networkpi image/OS, SD card size, and whether a USB SSD is available
-- HA backup retention and where the backup encryption key is kept
+### Open: networkpi / remote-access pipeline (updated 2026-10-23)
+- Domain name to buy through Cloudflare Registrar; Cloudflare account status
+- Router (Spectrum SBE1V1R, My Spectrum app): can it reserve DHCP addresses or set the DNS server handed to clients? DHCP pool range. See `docs/issues.md` I1
+- networkpi: `cat /etc/os-release` output (first attempt had a typo) and SD capacity (reported 29.1 GB vs. 64 GB stated). See I2, I3
+- HA backup file size, to confirm the 7 daily + 4 weekly retention fits on networkpi
+- Display for the common area: tablet, or ESP32 touchscreen (ESP32 cannot run Nuvio). See I5
+- Voice feasibility inputs: full device list by ecosystem (Apple Home, Aidot, Tapo, Google Home) and how Apple Home devices reach HA today. See `docs/voice-feasibility.md`
+- Pi 5 break-glass hop (networkpi to Pi 5 over SSH add-on) is confirmed in principle; set up with the networkpi runbook
 
 ## Backlog (parked, revisit later)
 - Martin Argalas "liquid glass" dashboard: unreleased as of 2026-10-21; he plans a custom-HACS repo. Re-evaluate vs Nuvio when published (github.com/martinargalas).

@@ -1,14 +1,17 @@
 # HANDOFF
 
-Last updated: 2026-10-23 (end of session). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-10-23 (session end, after cross-device prompt rule). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-Next session: Pi 5 Claude Terminal. Restart HA core (GREEN LIGHT given 2026-10-23, backup first with `ha backups new --name "pre-restart"`, `ha core check` before, verify HA and ha-mcp after), then confirm system health no longer lists wlan0 192.168.1.37 and close the I8 follow-up. The restart has not been run yet: this Mac session has no `ha` CLI or ha-mcp.
+Next step: HA core restart on the Pi 5 (GREEN LIGHT given 2026-10-23). Run the prompt committed as `11c6d9d`:
+`docs/prompts/pi5/2026-10-23-ha-core-restart.md`. It backs up, runs `ha core check`, restarts, verifies, and closes I8. Nothing has been run yet.
 
-The full networkpi setup is deferred to a later, separate session (owner, 2026-10-23). The bootstrap stays approved (GREEN LIGHT) but has not been run.
+Cross-device prompts now live in `docs/prompts/<target>/` (see `docs/prompts/README.md` and CLAUDE.md "Cross-device prompts", D27). The owner runs a short pointer, not a pasted prompt.
+
+The full networkpi setup is deferred to a later, separate session (owner, 2026-10-23). The bootstrap stays approved but has not been run.
 
 ## Open items
-1. HA core restart and I8 recheck (above).
+1. HA core restart and I8 recheck (above, Pi 5).
 2. Domain: Cloudflare Registrar purchase in progress. Tell Claude the name when done.
 3. Nabu Casa trial (1 month, D26): cancel before it bills once the Cloudflare Tunnel is tested.
 4. networkpi setup, in a later session, in this order:

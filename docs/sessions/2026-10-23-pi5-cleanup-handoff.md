@@ -14,5 +14,12 @@
 - The restart was not run: this Mac session has no `ha` CLI or ha-mcp. It must be run from Claude Terminal on the Pi 5.
 - Domain purchase on Cloudflare Registrar still in progress; name unknown.
 
+## Restart run (Pi 5, same day)
+- Backup `pre-restart` (slug c38f7133) taken. `ha core check` valid. HA core restart command succeeded. The API answered again within about 15 seconds, and `ha core info` showed version 2026.10.2.
+- Verified: HA and ha-mcp respond (API returns 401 as expected). 192.168.1.36 answers, end0 up, wlan0 disabled. System health no longer lists wlan0 192.168.1.37, so I8 is closed. Config check valid. HomeKit Bridge and the Front Door accessory loaded. Matter and Apple TV (two entries) loaded. Bridge still exposes 15 lights and the lock.
+- Unexpected: Z-Wave JS add-on is at 1.10.0 (was 1.9.1 this morning). It was not part of this run, and I did not find what applied the update.
+- Unexpected: aidot cloud returned 401 "Please login again" at 13:45, right after the restart. Two aidot devices (192.168.1.223 and .227) refused connections. These are not yet mapped to entities. Re-login to the aidot integration is needed; it is a Tier 3 credential action.
+- Not changed: no config edits, no `.storage/` access.
+
 ## Resume point
-Pi 5 Claude Terminal: back up, `ha core check`, restart HA core, verify HA and ha-mcp, confirm the wlan0 192.168.1.37 entry is gone, close the I8 follow-up. Then the open items in `HANDOFF.md`.
+Open items in `HANDOFF.md`: domain, Nabu Casa trial, networkpi setup. Plus the aidot login above.

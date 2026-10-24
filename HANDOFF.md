@@ -10,10 +10,10 @@ Cross-device prompts now live in `docs/prompts/<target>/` (see `docs/prompts/REA
 The full networkpi setup is deferred to a later, separate session (owner, 2026-10-23). The bootstrap stays approved but has not been run.
 
 ## Open items
-1. Domain: Cloudflare Registrar purchase in progress. Tell Claude the name when done.
-2. Nabu Casa trial (1 month, D26): cancel before it bills once the Cloudflare Tunnel is tested.
-3. aidot cloud login expired (401 "Please login again" after the restart). Re-login needed (Tier 3 credential action). See `docs/sessions/2026-10-23-pi5-cleanup-handoff.md`.
-4. networkpi setup, in a later session, in this order:
+1. Domain: Cloudflare Registrar purchase in progress (owner, 2026-10-23, setting up concurrently). Tell Claude the name when done.
+2. Nabu Casa trial (1 month, D26): remote link set up and validated working by the owner (2026-10-23). Cancel before it bills once the Cloudflare Tunnel is tested.
+3. aidot cloud login expired (401 "Please login again" after the restart). GREEN LIGHT given 2026-10-23. Run on the Pi 5: `git pull; read docs/prompts/pi5/2026-10-23-aidot-relogin.md; run it`. The owner enters the credentials in the HA UI. See `docs/sessions/2026-10-23-pi5-cleanup-handoff.md`.
+4. networkpi setup (owner started it in parallel via Raspberry Pi Connect, 2026-10-23), in this order:
    - Run the bootstrap inside tmux via Raspberry Pi Connect:
      ```
      sudo apt-get update && sudo apt-get install -y git tmux

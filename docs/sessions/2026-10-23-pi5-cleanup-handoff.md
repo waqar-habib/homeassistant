@@ -22,4 +22,11 @@
 - Not changed: no config edits, no `.storage/` access.
 
 ## Resume point
-Open items in `HANDOFF.md`: domain, Nabu Casa trial, networkpi setup. Plus the aidot login above.
+Open items in `HANDOFF.md`: domain, Nabu Casa trial, networkpi setup.
+
+## aidot re-login (prompt `docs/prompts/pi5/2026-10-23-aidot-relogin.md`)
+- Inspected only. The aidot entry (`waqarhabib94@gmail.com US`, source dhcp) is in state `loaded`, not `setup_error`. The prompt expected reauth, so the reauth flow was not started and no credentials were entered.
+- All 8 aidot lights in the prompt report a live state (`off`): buffet, console_lamp, floor_lamp, side_table, bookshelf, game_room, upstairs_guest, study_lamp.
+- The last 401 "Please login again" was at 19:45. Device connection errors (192.168.1.223 and .227) last appeared at 13:45. Neither has recurred in the log window checked.
+- Backup and restart were not needed, and neither was run. `ha core check` is valid.
+- Item removed from open items on that basis. If the 401 returns, re-login through the HA UI (Settings > Devices & services > aidot > Re-authenticate) and log it here.

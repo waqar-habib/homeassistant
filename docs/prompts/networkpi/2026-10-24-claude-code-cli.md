@@ -3,7 +3,7 @@
 Target: networkpi
 Date: 2026-10-24
 Tier: 3 (credentials, new software, OAuth sign-in)
-GREEN LIGHT: not yet given. Draft for owner review. Do not run until the owner records "GREEN LIGHT" here.
+GREEN LIGHT: Phase 0 only, given by the owner 2026-10-24. Phase A and Phase B are not approved; each needs its own GREEN LIGHT.
 Run by: the owner, by hand, in the Raspberry Pi Connect terminal. There is no Claude on networkpi yet, so this cannot be a prompt for an agent. Each command is one line in its own block so a paste cannot merge lines.
 
 ## Assumptions and risks

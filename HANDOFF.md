@@ -10,7 +10,9 @@ Cross-device prompts now live in `docs/prompts/<target>/` (see `docs/prompts/REA
 networkpi bootstrap ran 2026-10-24 and passed Verify (ufw, SSH keys only, watchdog, Samba share, `claude` user). Samba password set, reboot done, Pi Connect reconnected. Details in `docs/sessions/2026-10-24-networkpi-bootstrap.md`.
 
 ## Resume here (next session)
-Phase 0 feasibility check for the Claude Code CLI on networkpi, from `docs/prompts/networkpi/2026-10-24-claude-code-cli.md` (draft v0.1, commit `d4aed80`). The runbook has no GREEN LIGHT yet: the owner records it first. Key risk: Claude Code wants 4 GB RAM and networkpi has 905 MB (I12). Pass criteria and rollback are in the file.
+Phase 0 of `docs/prompts/networkpi/2026-10-24-claude-code-cli.md` PASSED 2026-10-24 (GREEN LIGHT `b9db0e9`): Claude Code 2.1.310 installed for the `claude` user on networkpi, `doctor` clean, 676 MB available, 0 swap, no OOM kills. Not signed in, no token, no clone yet.
+
+Next: Phase A (GitHub fine-grained token, `gh auth login`, clone, `/login`, read-only `HANDOFF.md` task while watching `free -m`). Needs its own owner GREEN LIGHT and a token the owner creates. I12 stays open until a loaded session shows memory holds (available above about 150 MB, swap under about 600 MB). Optional: add `~/.local/bin` to the `claude` user's PATH (doctor warning, harmless).
 
 ## Open items
 1. Domain: `thehabibfam.cc` bought through Cloudflare Registrar (owner, 2026-10-23). Next: tunnel hostname `ha.thehabibfam.cc` (step 3 of the build order; Tier 3).
@@ -27,7 +29,7 @@ Phase 0 feasibility check for the Claude Code CLI on networkpi, from `docs/promp
 
 ## Device state
 - **Pi 5** (192.168.1.36): HA OS 2026.10.2, Claude Terminal and ha-mcp running, `/config` linked to GitHub. Wi-Fi (wlan0) disabled; Ethernet `end0` only. The stale wlan0 health entry was cleared by the 2026-10-23 restart (I8 closed). Remote access: Nabu Casa 1-month trial (D26); Cloudflare Tunnel not started.
-- **networkpi** (192.168.1.39, wired): Raspberry Pi OS Lite 64-bit, Debian 13.5 (trixie), 905 MB RAM, 29.1 GB SD (25 GB free), reachable through Raspberry Pi Connect. Bootstrapped 2026-10-24: ufw (deny in; SSH from LAN; SMB from the Pi 5 only), SSH keys only, watchdog, Samba share `ha-backups` (user `habackup`), unprivileged `claude` user, auto security updates (reboot 04:30 if needed). Claude Code CLI not installed yet. DHCP reservation created.
+- **networkpi** (192.168.1.39, wired): Raspberry Pi OS Lite 64-bit, Debian 13.5 (trixie), 905 MB RAM, 29.1 GB SD (25 GB free), reachable through Raspberry Pi Connect. Bootstrapped 2026-10-24: ufw (deny in; SSH from LAN; SMB from the Pi 5 only), SSH keys only, watchdog, Samba share `ha-backups` (user `habackup`), unprivileged `claude` user, auto security updates (reboot 04:30 if needed). Claude Code CLI 2.1.310 installed (Phase 0 only, not signed in). DHCP reservation created.
 - **Router**: DHCP reservations done. Custom DNS unverified (I1).
 
 ## Build order after the open items

@@ -22,7 +22,7 @@
 | D17 | Claude on networkpi: OAuth for interactive use; a dedicated API key (cap on file, about $10/mo) for scheduled runs. Key never goes in chat or the repo | Keeps unattended spend bounded |
 | D18 | HA users: owner (admin); MKH (just below admin, simple view); guests (simplified dashboard, access granted when needed). Dashboards limit what users see; they are not a permission boundary | MKH is used to Apple Home simplicity |
 | D19 | HA backups to networkpi's Samba share: 7 daily + 4 weekly. Backup size is 254-260 MB, so 11 backups is about 2.9 GB against 25 GB free. Encryption key stored in Apple Keychain | Automatic, off-device, recoverable |
-| D20 | Domain bought through Cloudflare Registrar (name not chosen) | One vendor for domain, DNS and tunnel |
+| D20 | Domain bought through Cloudflare Registrar: `thehabibfam.cc` (bought 2026-10-23) | One vendor for domain, DNS and tunnel |
 | D21 | Voice control: feasibility test before any build (`docs/voice-feasibility.md`) | Avoid building something that does not work |
 | D22 | Domain is location-neutral (family name, no city or address). One subdomain per service and site, for example `ha.<domain>`. The tunnel is outbound, so moving house means moving the Pi and reconnecting; the hostname stays | Scales to a new home or a second site |
 | D23 | Device onboarding: manufacturer app, then an official HA integration discovers the device as entities, then HA exposes it to Apple Home through HomeKit Bridge. Matter-only devices (for example Linkind plugs) pair to Apple Home and are added to HA through Matter multi-admin. Never bridge a device back into Apple Home when it already lives there natively | One controller (HA), Apple Home as the front end, no duplicate or looping devices |
@@ -39,7 +39,7 @@
 - HACS installed? (check in docs/setup.md 1.2)
 
 ### Open: networkpi / remote-access pipeline (updated 2026-10-23)
-- Domain name to buy through Cloudflare Registrar (see D22): purchase in progress 2026-10-23, name not yet recorded
+- Domain: **thehabibfam.cc**, bought through Cloudflare Registrar 2026-10-23 (D20, D22). Closed. Next: Cloudflare Tunnel with `ha.thehabibfam.cc` (Tier 3, needs GREEN LIGHT)
 - Router: can it set the DNS server handed to clients? DHCP reservations are done. See `docs/issues.md` I1
 - networkpi: SD card endurance rating. See I2
 - networkpi bootstrap (`networkpi/bootstrap.sh` on branch `feat/networkpi-bootstrap`): approved 2026-10-23; the full networkpi setup moves to a later, separate session. See `HANDOFF.md`

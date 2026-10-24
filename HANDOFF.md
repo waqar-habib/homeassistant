@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last updated: 2026-10-24 (after networkpi bootstrap). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-10-24 (session closed for the night). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
 HA core restarted 2026-10-23 (backup `pre-restart`, slug c38f7133). HA, ha-mcp, Matter, Apple TV, and both HomeKit entries are loaded. System health no longer lists the stale wlan0 address, so I8 is closed.
@@ -9,12 +9,18 @@ Cross-device prompts now live in `docs/prompts/<target>/` (see `docs/prompts/REA
 
 networkpi bootstrap ran 2026-10-24 and passed Verify (ufw, SSH keys only, watchdog, Samba share, `claude` user). Samba password set, reboot done, Pi Connect reconnected. Details in `docs/sessions/2026-10-24-networkpi-bootstrap.md`.
 
+## Resume here (next session)
+Phase 0 feasibility check for the Claude Code CLI on networkpi, from `docs/prompts/networkpi/2026-10-24-claude-code-cli.md` (draft v0.1, commit `d4aed80`). The runbook has no GREEN LIGHT yet: the owner records it first. Key risk: Claude Code wants 4 GB RAM and networkpi has 905 MB (I12). Pass criteria and rollback are in the file.
+
 ## Open items
 1. Domain: `thehabibfam.cc` bought through Cloudflare Registrar (owner, 2026-10-23). Next: tunnel hostname `ha.thehabibfam.cc` (step 3 of the build order; Tier 3).
 2. Nabu Casa trial (1 month, D26): remote link set up and validated working by the owner (2026-10-23). Cancel before it bills once the Cloudflare Tunnel is tested.
 3. Make the repo private on GitHub (D25), when the owner chooses.
 4. Owner on hold: redact the owner email in the aidot note in `docs/sessions/2026-10-23-pi5-cleanup-handoff.md`.
 5. Watch: `vcgencmd get_throttled` on networkpi was `0x50000` during the first upgrade and `0x0` after reboot. Re-check if the Pi drops or misbehaves.
+
+6. Draft the Cloudflare Tunnel prompt for the Pi 5 (Tier 3; domain `thehabibfam.cc` is bought).
+7. aidot: optional light toggle test on the Pi 5 (the entry was `loaded`; the re-login was not needed).
 
 ## Pending proposals
 - Weekly encrypted backup copy to cloud storage (I9).

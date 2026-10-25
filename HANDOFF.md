@@ -10,13 +10,16 @@ Cross-device prompts now live in `docs/prompts/<target>/` (see `docs/prompts/REA
 networkpi bootstrap ran 2026-10-24 and passed Verify (ufw, SSH keys only, watchdog, Samba share, `claude` user). Samba password set, reboot done, Pi Connect reconnected. Details in `docs/sessions/2026-10-24-networkpi-bootstrap.md`.
 
 ## Resume here (next session)
-Phase 0 and Phase A of `docs/prompts/networkpi/2026-10-24-claude-code-cli.md` PASSED 2026-10-24 (GREEN LIGHTs `b9db0e9`, `df3f5a7`). On networkpi, Claude Code 2.1.310 runs as the `claude` user, signed in with `/login`, repo cloned at `~/homeassistant` (on `main`). A read-only HANDOFF summary completed with no OOM kills. Memory during the session: available 486 to 699 MB, swap 0. `git pull` works as `claude`.
+Phase A of `docs/prompts/networkpi/2026-10-24-claude-code-cli.md` PASSED 2026-10-24. Claude Code 2.1.310 runs as `claude` on networkpi, signed in, repo cloned at `~/homeassistant`. The PATH doctor warning is cleared. The stray admin clone was deleted.
+
+Phase B (Remote Control, always-on) has its GREEN LIGHT, but the owner chose to wait until tomorrow morning (2026-10-25). Steps for tomorrow:
+1. `~/.local/bin/claude doctor` as `claude`. Remote Control should show as available (it did on 2026-10-24).
+2. Review `networkpi/claude-remote.service` on branch `feat/networkpi-claude-remote` (`2110302`). Decide whether to merge it to `main`.
+3. On the owner's word, enable it: copy the unit to `~/.config/systemd/user/`, `systemctl --user daemon-reload`, `systemctl --user enable --now claude-remote.service`. Check `tmux -L default attach -t claude-rc` and a Remote Control session from claude.ai/code or the phone.
 
 GitHub token: fine-grained, repo `waqar-habib/homeassistant` only, Contents read and write, Metadata read, expires 2027-04-24. Renew before expiry. Public repos are readable by design (read-only). The owner's account had write access to `Stroupe79/repo-activity` from an old group project; the owner removed it. Check it stays removed.
 
-Next: Phase B (Remote Control and always-on). GREEN LIGHT given 2026-10-24. The unit file is on `feat/networkpi-claude-remote` (`2110302`), not yet reviewed or enabled. The runbook asks for about a day of stable running before enabling; Phase A passed on 2026-10-24. I12 stays open until then. Optional: add `~/.local/bin` to the `claude` user's PATH (doctor warning, harmless).
-
-Open: a stray `~/homeassistant` clone exists under the admin `networkpi` account from an earlier pull; the owner should decide whether to delete it.
+I12 stays open until Phase B has run stably.
 
 ## Open items
 1. Domain: `thehabibfam.cc` bought through Cloudflare Registrar (owner, 2026-10-23). Next: tunnel hostname `ha.thehabibfam.cc` (step 3 of the build order; Tier 3).

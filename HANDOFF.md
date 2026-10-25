@@ -10,9 +10,13 @@ Cross-device prompts now live in `docs/prompts/<target>/` (see `docs/prompts/REA
 networkpi bootstrap ran 2026-10-24 and passed Verify (ufw, SSH keys only, watchdog, Samba share, `claude` user). Samba password set, reboot done, Pi Connect reconnected. Details in `docs/sessions/2026-10-24-networkpi-bootstrap.md`.
 
 ## Resume here (next session)
-Phase 0 of `docs/prompts/networkpi/2026-10-24-claude-code-cli.md` PASSED 2026-10-24 (GREEN LIGHT `b9db0e9`): Claude Code 2.1.310 installed for the `claude` user on networkpi, `doctor` clean, 676 MB available, 0 swap, no OOM kills. Not signed in, no token, no clone yet.
+Phase 0 and Phase A of `docs/prompts/networkpi/2026-10-24-claude-code-cli.md` PASSED 2026-10-24 (GREEN LIGHTs `b9db0e9`, `df3f5a7`). On networkpi, Claude Code 2.1.310 runs as the `claude` user, signed in with `/login`, repo cloned at `~/homeassistant` (on `main`). A read-only HANDOFF summary completed with no OOM kills. Memory during the session: available 486 to 699 MB, swap 0. `git pull` works as `claude`.
 
-Next: Phase A (GitHub fine-grained token, `gh auth login`, clone, `/login`, read-only `HANDOFF.md` task while watching `free -m`). Needs its own owner GREEN LIGHT and a token the owner creates. I12 stays open until a loaded session shows memory holds (available above about 150 MB, swap under about 600 MB). Optional: add `~/.local/bin` to the `claude` user's PATH (doctor warning, harmless).
+GitHub token: fine-grained, repo `waqar-habib/homeassistant` only, Contents read and write, Metadata read, expires 90 days (about 2027-01-22). Renew before expiry. Public repos are readable by design (read-only). The owner's account had write access to `Stroupe79/repo-activity` from an old group project; the owner removed it. Check it stays removed.
+
+Next: Phase B (Remote Control and always-on) needs its own GREEN LIGHT and is not drafted. Phase B waits about a day of stable running first. I12 stays open until then. Optional: add `~/.local/bin` to the `claude` user's PATH (doctor warning, harmless).
+
+Open: a stray `~/homeassistant` clone exists under the admin `networkpi` account from an earlier pull; the owner should decide whether to delete it.
 
 ## Open items
 1. Domain: `thehabibfam.cc` bought through Cloudflare Registrar (owner, 2026-10-23). Next: tunnel hostname `ha.thehabibfam.cc` (step 3 of the build order; Tier 3).

@@ -5,7 +5,7 @@
 | M0 | Phase 1 foundation: backup, HACS, Claude Terminal, ha-mcp, repo link (setup.md 1.1-1.5) | Done | 2026-10-22 |
 | M1 | Remote-access and networkpi decisions recorded (D6-D21), session protocol and autonomy tiers adopted | Done | 2026-10-23 |
 | M2 | Phase 1 step 1.6: `docs/entities.md` entity inventory | Done | 2026-10-23 |
-| M3 | networkpi base: hardening, stable IP, Claude Code CLI with `/remote-control`, repo clone | In progress: hardening and stable IP done 2026-10-24; Claude Code 2.1.310 installed for the `claude` user, Phase 0 feasibility passed 2026-10-24; sign-in, repo clone and the loaded-session memory test (Phase A) to do (I12) | |
+| M3 | networkpi base: hardening, stable IP, Claude Code CLI with `/remote-control`, repo clone | In progress: hardening and stable IP done 2026-10-24; Claude Code 2.1.310 installed; Phase 0 and Phase A passed 2026-10-24 (signed in, repo cloned, loaded session with no OOM). Phase B (Remote Control, systemd) to do (I12) | |
 | M4 | HA backups to networkpi Samba share, automatic | To do | |
 | M5 | Cloudflare Tunnel live for HA, with 2FA and an external uptime monitor | To do | |
 | M6 | Alerts: Uptime Kuma and ntfy for HA, networkpi, DNS, internet | To do | |

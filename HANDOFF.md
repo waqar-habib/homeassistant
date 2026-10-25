@@ -12,9 +12,9 @@ networkpi bootstrap ran 2026-10-24 and passed Verify (ufw, SSH keys only, watchd
 ## Resume here (next session)
 Phase 0 and Phase A of `docs/prompts/networkpi/2026-10-24-claude-code-cli.md` PASSED 2026-10-24 (GREEN LIGHTs `b9db0e9`, `df3f5a7`). On networkpi, Claude Code 2.1.310 runs as the `claude` user, signed in with `/login`, repo cloned at `~/homeassistant` (on `main`). A read-only HANDOFF summary completed with no OOM kills. Memory during the session: available 486 to 699 MB, swap 0. `git pull` works as `claude`.
 
-GitHub token: fine-grained, repo `waqar-habib/homeassistant` only, Contents read and write, Metadata read, expires 90 days (about 2027-01-22). Renew before expiry. Public repos are readable by design (read-only). The owner's account had write access to `Stroupe79/repo-activity` from an old group project; the owner removed it. Check it stays removed.
+GitHub token: fine-grained, repo `waqar-habib/homeassistant` only, Contents read and write, Metadata read, expires 2027-04-24. Renew before expiry. Public repos are readable by design (read-only). The owner's account had write access to `Stroupe79/repo-activity` from an old group project; the owner removed it. Check it stays removed.
 
-Next: Phase B (Remote Control and always-on) needs its own GREEN LIGHT and is not drafted. Phase B waits about a day of stable running first. I12 stays open until then. Optional: add `~/.local/bin` to the `claude` user's PATH (doctor warning, harmless).
+Next: Phase B (Remote Control and always-on). GREEN LIGHT given 2026-10-24. The unit file is on `feat/networkpi-claude-remote` (`2110302`), not yet reviewed or enabled. The runbook asks for about a day of stable running before enabling; Phase A passed on 2026-10-24. I12 stays open until then. Optional: add `~/.local/bin` to the `claude` user's PATH (doctor warning, harmless).
 
 Open: a stray `~/homeassistant` clone exists under the admin `networkpi` account from an earlier pull; the owner should decide whether to delete it.
 

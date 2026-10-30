@@ -26,3 +26,20 @@ Prompt: `docs/prompts/pi5/2026-10-30-parallel-pi5.md` (commit `86d2530`). Run fr
 ## Resume point
 
 Owner: (1) disable I18 and confirm it is off; (2) answer the two thermostat rooms and whether Laundry and General stay; (3) decide the Remote Control test and the prayer card; (4) confirm the Cloudflare steps. Then a new run continues from step 5 (zone), then step 6 (rooms layout), and step 10.
+
+## Resume section (resume prompt `docs/prompts/pi5/2026-10-30-pi5-resume.md`, commit bfbfefc)
+
+| Step | Result | Evidence | Next |
+|---|---|---|---|
+| A Preconditions | Done | I18 read OFF before any change. `ha core check` clean. Backup `pre-zone-areas-bridge` (slug `e598fab6`) | None |
+| B Zone | Done | `zone.near_home` created: name "Near Home", 4828 m, passive. Coordinates copied from `zone.home`, not written anywhere. I18 still OFF after the change | None |
+| C Areas | Done (`67e1045`) | Downstairs Nest device → Living Room; upstairs Nest device → Game Room; Milo's Poop Can device → Laundry; weather and service entities → General (25 entities, one call each). Three could not take an area (`sun.sun`, `conversation.home_assistant`, `tts.google_translate_en_com`) | Owner reviews the General list |
+| D Hatch out of Apple Home | **Blocked.** Nothing changed | `ha_set_integration` on the HomeKit Bridge (`HASS Bridge:21064`) was denied by the auto-mode classifier. Options flow has no exclusion field on its first step, so the exclusion needs the second step | I23 |
+| E Prayer times dashboard | Done (dashboard). Branch not merged | `prayer-times` created, sidebar on. Markdown card renders next prayer and the five times, verified with `ha_eval_template` against `sensor.living_room_adhan_*_prayer`. Export `dashboards/prayer-times-2026-10-30.json` on `feat/prayer-dashboard` (`dbbf0ba`) | Owner checks on the iPhone |
+| F LG ThinQ | Skipped | Owner has not added the integration | When the owner says it is added |
+| G Cloudflare Tunnel | Waiting on owner | Checklist `docs/prompts/pi5/2026-10-30-tunnel-owner-checklist.md` not confirmed by the owner in this run. No restart | Owner confirms, then a live "restart OK" |
+| H Geofencing | Skipped | Only `person.waqar_habib` exists. No MKH person | Owner adds MKH (M15) |
+
+Notes:
+- Denials are not worked around. Each is recorded: I23 (bridge), and the earlier I18 and Remote Control denials in I18 and I20.
+- `habib-home` (Nuvio) and `prayer-times` are both kept. `nuvio-test` is kept until the owner confirms `habib-home`.

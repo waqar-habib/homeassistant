@@ -1,9 +1,10 @@
 # HANDOFF
 
-Last updated: 2026-10-30 ~01:40 CDT (Mac session closed; owner resumes in a fresh session). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-10-30 ~10:30 CDT (parallel Pi 5 lane run). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-0. **URGENT, owner decision (I18):** `automation.front_door_geofence_auto_lock_unlock` is live. It unlocks the front door when a phone enters the zone, with no notify-only step, and it is not in git. D35 keeps the front door lock out of scope. Claude has not changed it. Recommended now: disable it in HA (Settings, Automations) and tell Claude, so it can be reviewed and committed, or removed, on purpose.
+0. **URGENT, I18 is STILL ON.** `automation.front_door_geofence_auto_lock_unlock` unlocks the front door on zone entry and is not in git. The owner-approved disable was denied by the auto-mode classifier in the parallel lane run, so it was not done. Claude did not try another route. Disable it in HA (Settings, Automations) or re-run the disable, then confirm the state is off. The `zone.near_home` zone (I21) must not be created until it is off.
+0a. **Parallel lane (2026-10-30), status:** step 1 baseline OK (backup `pre-parallel-2026-10-30`, slug `02d37f95`). Step 2 I18 disable blocked. Step 3 Hatch refresh pushed (`25cbb1b`). Step 4 Movie Night removed on `feat/scenes` (`4cb5cee`, pushed, not merged). Step 5 zone blocked by I18; area audit reported (I21). Step 6 `habib-home` created (I22; prayer card and rooms layout pending). Step 7 Cloudflare waiting on owner. Step 8 skipped: no MKH person entity. Step 9 not run. Step 10 Remote Control blocked by the classifier (I20). See `docs/sessions/2026-10-30-parallel-pi5.md`.
 1. **Geofence automation needs an owner decision (I18).** `automation.front_door_geofence_auto_lock_unlock` is loaded and unlocks the front door on zone entry. It is in an uncommitted `automations.yaml` change. Claude has not changed it.
 2. **Adhan (M12, I17):** package on `main` (`6316775`), toggle OFF, verified. Live test (play, volume, enabling the toggle) is held for a separate GREEN LIGHT with the baby awake. See `docs/sessions/2026-10-30-adhan-setup.md`.
 3. **Scenes (M11, I19):** on `feat/scenes` (`02588c7`), not merged. Owner tests pending (Welcome Home, Movie Night, Evening, Good Night with the lock). Then fast-forward merge to `main`.

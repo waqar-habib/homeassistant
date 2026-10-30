@@ -1,0 +1,151 @@
+# Adhan (M12, D28, D29, D34). Shipped with the master switch OFF.
+# Setup only. Live test needs its own GREEN LIGHT. Do not turn the switch on before that.
+# Prayer times: Islamic Prayer Times integration (ISNA, Shafi), verified 2026-10-30.
+# Audio: /media/Adhan.mp3 and /media/Fajr.mp3 (not in git).
+
+input_boolean:
+  adhan_enabled:
+    name: Adhan enabled
+    icon: mdi:mosque
+    initial: false
+
+script:
+  adhan_play:
+    alias: Adhan play
+    mode: queued
+    max: 3
+    fields:
+      track:
+        description: adhan or fajr
+      speakers:
+        description: list of media_player entity IDs
+    sequence:
+      - repeat:
+          for_each: "{{ speakers }}"
+          sequence:
+            - action: script.turn_on
+              target:
+                entity_id: script.adhan_play_one
+              data:
+                variables:
+                  speaker: "{{ repeat.item }}"
+                  track: "{{ track }}"
+
+  adhan_play_one:
+    alias: Adhan play one speaker
+    mode: parallel
+    max: 4
+    sequence:
+      - variables:
+          target_volume: 0.2
+          file: >-
+            {{ 'media-source://media_source/local/Fajr.mp3' if track == 'fajr'
+               else 'media-source://media_source/local/Adhan.mp3' }}
+          prev: "{{ state_attr(speaker, 'volume_level') }}"
+      - if:
+          - condition: template
+            value_template: "{{ prev is none }}"
+        then:
+          - action: notify.send_message
+            target:
+              entity_id: notify.waqars_iphone
+            data:
+              message: "Adhan not played: previous volume of {{ speaker }} unknown"
+          - stop: "previous volume unknown"
+            error: true
+      - action: media_player.volume_set
+        target:
+          entity_id: "{{ speaker }}"
+        data:
+          volume_level: "{{ target_volume }}"
+        continue_on_error: true
+      - delay: "00:00:02"
+      - if:
+          - condition: template
+            value_template: >-
+              {{ (state_attr(speaker, 'volume_level') | float(-1) - target_volume) | abs > 0.02 }}
+        then:
+          - action: notify.send_message
+            target:
+              entity_id: notify.waqars_iphone
+            data:
+              message: "Adhan not played: could not set volume on {{ speaker }}"
+          - stop: "volume not set"
+            error: true
+      - action: media_player.play_media
+        target:
+          entity_id: "{{ speaker }}"
+        data:
+          media_content_id: "{{ file }}"
+          media_content_type: music
+        continue_on_error: true
+      - wait_template: "{{ is_state(speaker, 'playing') }}"
+        timeout: "00:00:30"
+        continue_on_timeout: true
+      - if:
+          - condition: template
+            value_template: "{{ not is_state(speaker, 'playing') }}"
+        then:
+          - action: media_player.volume_set
+            target:
+              entity_id: "{{ speaker }}"
+            data:
+              volume_level: "{{ prev }}"
+          - action: notify.send_message
+            target:
+              entity_id: notify.waqars_iphone
+            data:
+              message: "Adhan did not start on {{ speaker }}; volume restored"
+          - stop: "playback did not start"
+            error: true
+      - wait_template: "{{ not is_state(speaker, 'playing') }}"
+        timeout: "00:10:00"
+        continue_on_timeout: true
+      - action: media_player.volume_set
+        target:
+          entity_id: "{{ speaker }}"
+        data:
+          volume_level: "{{ prev }}"
+
+automation:
+  - id: adhan_prayer_times
+    alias: Adhan prayer times
+    mode: queued
+    triggers:
+      - trigger: time
+        at: sensor.living_room_adhan_fajr_prayer
+        id: fajr
+      - trigger: time
+        at: sensor.living_room_adhan_dhuhr_prayer
+        id: dhuhr
+      - trigger: time
+        at: sensor.living_room_adhan_asr_prayer
+        id: asr
+      - trigger: time
+        at: sensor.living_room_adhan_maghrib_prayer
+        id: maghrib
+      - trigger: time
+        at: sensor.living_room_adhan_isha_prayer
+        id: isha
+    conditions:
+      - condition: state
+        entity_id: input_boolean.adhan_enabled
+        state: "on"
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: fajr
+            sequence:
+              - action: script.adhan_play
+                data:
+                  track: fajr
+                  speakers:
+                    - media_player.living_room_living_room_homepod
+        default:
+          - action: script.adhan_play
+            data:
+              track: adhan
+              speakers:
+                - media_player.living_room_living_room_homepod
+                - media_player.master_bedroom_homepod

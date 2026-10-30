@@ -3,12 +3,14 @@
 Last updated: 2026-10-30 ~01:20 CDT (Mac session closed; owner signing off). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-Scenes (M11, D33). Branch `feat/scenes` at `02588c7`, not yet merged. Six scenes exist (`scene.good_night`, `leaving`, `lock_up`, `welcome_home`, `movie_night`, `evening`). Backup `pre-scenes` (slug `76459749`). Full notes in `docs/sessions/2026-10-30-scenes.md`.
+Adhan (M12, D34). Partial GREEN LIGHT: setup only, toggle OFF, no playback. Integration loaded (ISNA, Shafi), sensors and HomePod volume checked read-only, backup `pre-adhan` (slug `b4a1a3aa`). Waiting for today's masjid times to compare. Full notes in `docs/sessions/2026-10-30-adhan-setup.md`. Prompt: `docs/prompts/pi5/2026-10-30-adhan-setup.md` (commit `2729082`).
 
 Resume steps, in order:
-1. Owner runs the scene tests (Welcome Home, Movie Night, Evening, Good Night with the lock) and confirms the six buttons in the Nuvio "Scenes and scripts" panel.
-2. If all pass: fast-forward `main` to `feat/scenes`, push, mark M11 done.
-3. Nuvio test (`nuvio-test`) is still pending owner review (M9), and I14 (no `pre-glass-cards` backup) is still open.
+1. Owner gives the five masjid times. Compare with the sensors (within 2 minutes or stop).
+2. Write `packages/adhan.yaml` on `feat/adhan` (toggle OFF), validate, reload, verify nothing played.
+3. Owner confirms, then merge to `main`. Live test needs a separate GREEN LIGHT.
+
+Scenes (M11): branch `feat/scenes` at `02588c7`, owner tests pending. Nuvio `nuvio-test` (M9): owner reviewing.
 
 ## Networkpi
 Where it stands: bootstrap done 2026-10-24 (ufw, SSH keys only, watchdog, Samba share `ha-backups`, `claude` user). Claude Code 2.1.310 is installed and signed in as `claude`, repo cloned. Phase 0 and Phase A passed with no out-of-memory kills (available memory 486 to 699 MB, swap 0). Phase B (Remote Control, always-on) has its GREEN LIGHT (2026-10-24). The owner chose to wait until 2026-10-25. There is no record since, so it is unknown whether Phase B ran.

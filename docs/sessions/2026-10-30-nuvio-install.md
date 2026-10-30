@@ -39,3 +39,8 @@ Ran `docs/prompts/pi5/2026-10-30-nuvio-install.md` (commit `94844cb`, Tier 2). S
 - Stopped before step 2. No changes to the Pi, Glass Cards, dashboards, or automations.
 
 Resume point: restart the session, confirm ha-mcp tools load, run the read-only ha-mcp call (step 1b), then continue from step 2. Backup `ha-pre-nuvio-backup_10-29` (slug `023157b8`) still applies.
+
+## Third run (after session restart)
+- ha-mcp tools still not available in this session. ToolSearch reports the server failed to connect (ECONNREFUSED) at session level. `claude mcp list` shows ha-mcp Connected, and `http://192.168.1.36:9583/` answers 403.
+- Step 1b not done. No substitute used (no `ha` CLI or direct HTTP calls for steps 4 and 5). Stopped before step 2. No changes to the Pi.
+- Next: check the ha-mcp connection from the owner's side (the MCP registration in this session may point at a stale URL; the prompt says the owner re-registers it from the add-on log), then restart again.

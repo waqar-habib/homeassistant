@@ -30,13 +30,17 @@
 | D25 | Repo visibility: the repo is public today. networkpi clones it once while public, then the owner makes it private. The `claude` user on networkpi gets its own fine-grained read/write token. The Pi 5's existing token keeps working | The repo records home layout and security design; networkpi needs no token for the bootstrap clone |
 | D26 | Nabu Casa: 1-month free trial only (owner, 2026-10-23), used for remote access until the Cloudflare Tunnel is tested. D6 stands; no paid subscription | Bridge while the domain and tunnel are set up; avoids the recurring cost rejected in D6. Cancel the trial before it bills |
 | D27 | Cross-device prompts live in `docs/prompts/<target>/` and are committed to `main`. The owner runs a short pointer (`git pull`, file path, short commit ID) instead of pasting prompts. Committing a prompt does not authorize running it (tiers still apply) | Works from mobile terminals where paste is unavailable; one source of truth in git |
+| D28 | Prayer times: `islamic_prayer_times` integration, calculation method ISNA, Asr standard/Shafi (D4). Owner also named the fiqh as Hanbali (2026-10-30); HA has no Hanbali option and standard Asr is the matching setting. At setup, compare the integration's times with the masjid timetable and reopen this if they differ | Owner choice. Closes the open masjid timetable and method item, subject to that check |
+| D29 | Adhan playback (owner, 2026-10-30): files `Adhan.mp3` and `Fajr.mp3` already in HA media. Volume 20% until a live test. Fajr only on `media_player.living_room_living_room_homepod`. Dhuhr, Asr, Maghrib and Isha on that and `media_player.master_bedroom_homepod`. Restore the previous volume and notify on failure. Test HomePod playback before building the automation | Past attempts failed; the playback path is the likely weak point. Closes HomePod routing |
+| D30 | Calendar: Apple Calendar "M&W Family" through CalDAV (owner, 2026-10-30). The owner creates the app-specific password and enters it in HA. It never goes in chat or the repo | Closes the calendar source item. Credential step is Tier 3 |
+| D31 | MKH becomes an HA admin user (owner, 2026-10-30). Amends D18, which had her below admin. She still gets a simple Nuvio layout. Admin means full control of HA; dashboards are not a permission boundary | Owner wants her to move from Apple Home to the HA app. Tradeoff: an admin can change or break any config |
+| D32 | Geofencing automations, designs approved in concept 2026-10-30. "Everyone" is the owner and MKH. Away Evening: select lights on for 3 hours when both are away. Away AC: both thermostats to 78F when both are away. Cool Down: downstairs thermostat to 75F on entering a 3 mile (about 4,828 m) zone. Evening: all lights on when at least one of us is home. Each is Tier 3 and is deployed by the owner. Needs MKH's phone as a person (M15) and remote access kept up (D26) | Location only reaches HA while the phone can reach HA from outside. Dry run first (notify only) before real actions |
+| D33 | Scenes: owner gave GREEN LIGHT 2026-10-30 to create simple scenes at Claude's discretion, including ones that lock the front door. No Unlock scene unless asked. The owner also wrote "GREEN LIGHT to make the changes at your discretion" on 2026-10-30 after plan v0.1; Claude reads that as covering the doc changes and prompt drafts, not Tier 3 deployment | Recorded as given |
 
 ## Open (blocking)
-- Calendar source: Apple (CalDAV) / Google / both
 - Tablet model + OS
-- Masjid timetable / calculation method
-- HomePod entity IDs and routing (Fajr in bedroom/nursery?)
-- HACS installed? (check in docs/setup.md 1.2)
+- Cool Down trigger: first of us entering the 3 mile zone while the house is empty (proposed), or both (owner to confirm)
+- Evening trigger: sunset (proposed) and when the lights go off (owner to confirm)
 
 ### Open: networkpi / remote-access pipeline (updated 2026-10-23)
 - Domain: **thehabibfam.cc**, bought through Cloudflare Registrar 2026-10-23 (D20, D22). Closed. Next: Cloudflare Tunnel with `ha.thehabibfam.cc` (Tier 3, needs GREEN LIGHT)

@@ -59,16 +59,6 @@ scene:
       light.side_table:
         state: on
 
-  - id: movie_night
-    name: Movie Night
-    entities:
-      light.buffet: off
-      light.console_lamp: off
-      light.side_table: off
-      light.floor_lamp:
-        state: on
-        brightness: 51  # about 20%
-
   - id: evening
     name: Evening
     entities:

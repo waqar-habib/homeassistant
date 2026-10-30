@@ -32,6 +32,12 @@ Facts only. Unknowns are tracked in `docs/decisions.md` under Open and in `docs/
 - Apple Home: not bridged as of 2026-10-30. The HomeKit Bridge filter (`domain: light`) would expose the two lights after a bridge reload (Tier 3, not approved)
 - Detail: `docs/entities.md`, section Hatch
 
+## Areas (2026-10-30)
+- Nest thermostats (Matter): downstairs in Living Room, upstairs in Game Room. Owner's answers. Their switch and sensor entities inherit the device area.
+- Milo's Poop Can (Litter Robot 4): Laundry. Owner's answer: Laundry stays.
+- Hatch: Nursery.
+- Weather, sun, backup, updates and to-do entities with no room: General. Owner's answer: General stays. Detail in `docs/entities.md`.
+
 ## Network
 - Router: Spectrum SBE1V1R, managed through the My Spectrum app. DHCP reservations exist for the critical devices. Custom DNS unverified (I1)
 - Clients seen in the My Spectrum Services list (partial, the screenshot ends at networkpi): Google Nest Thermostat (2), Rain Bird Sprinkler, Home Assistant-WiFi, Home Assistant-Eth, LG Washer, LG Dryer, LG Refrigerator, Chamberlain myQ, Brother Printer, Amazon Ring, networkpi. Bulbs, plugs and other devices were not captured

@@ -189,9 +189,25 @@ No entities are assigned to this area.
 | `sensor.milos_poop_can_litter_level` | Milo's Poop Can Litter level | sensor | litterrobot | 90.0 |
 | `sensor.milos_poop_can_pet_weight` | Milo's Poop Can Pet weight | sensor | litterrobot | 13.43 |
 
-## No area (38 live) — flagged
+## Areas assigned 2026-10-30 (parallel lane and resume run)
 
-These entities have no area. Assign an area in the entity or device registry if they should appear under one of the rooms above.
+Owner answers (2026-10-30):
+- `climate.downstairs` (Nest, Matter device `257afb86…`): **Living Room** (device area). Its switch and sensors inherit it.
+- `climate.upstairs` (Nest, Matter device `612b653f…`): **Game Room** (device area). Its switch and sensors inherit it.
+- **Laundry** stays. Milo's Poop Can (Litter Robot 4, device `be6c8236…`) set to Laundry at device level.
+- **General** stays. These no-room entities were set to General at entity level: `sun.sun` (not in the registry, see below), `sensor.sun_next_*` (6), `weather.forecast_home`, `event.backup_automatic_backup`, `sensor.backup_*` (4 backup sensors), `todo.shopping_list`, `binary_sensor.raspberry_pi_power_status`, `update.raspberry_pi_5_firmware`, `update.home_assistant_{core,supervisor,operating_system}_update`, `update.matter_server_update`, `update.z_wave_js_update`, `update.get_hacs_update`, `update.claude_terminal_pro_update`, `update.home_assistant_mcp_server_update`.
+- **Hatch** stays in Nursery (device area).
+
+Not assigned, and why:
+- `sun.sun`: no entity-registry entry; can't take an area. Sun sensors are in General.
+- `conversation.home_assistant`: not in the entity registry.
+- `tts.google_translate_en_com`: no name of its own; can only take an area through its device, which is the integration's (not changed).
+- `media_player.living_room_tv`: unavailable (I10). Left alone.
+- `device_tracker.waqars_iphone`, `notify.waqars_iphone`, `person.waqar_habib`, `zone.home`: owner's phone and zones, not rooms.
+
+## No area (38 live) — flagged (as of 2026-10-23; see the section above for 2026-10-30 changes)
+
+These entities had no area on 2026-10-23. Assign an area in the entity or device registry if they should appear under one of the rooms above.
 
 | Entity | Friendly name | Domain | Integration | State | Flag |
 |---|---|---|---|---|---|

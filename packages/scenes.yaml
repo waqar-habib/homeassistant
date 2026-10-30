@@ -1,0 +1,98 @@
+# Simple scenes (M11, D33). Owner GREEN LIGHT 2026-10-30.
+# Entity IDs come from docs/entities.md. Locking is physical; nothing here unlocks.
+
+scene:
+  - id: good_night
+    name: Good Night
+    entities:
+      light.buffet: off
+      light.console_lamp: off
+      light.floor_lamp: off
+      light.side_table: off
+      light.dresser: off
+      light.mahams_lamp: off
+      light.waqars_lamp: off
+      light.bookshelf: off
+      light.changing_table: off
+      light.nursery_floor_lamp: off
+      light.game_room: off
+      light.upstairs_guest: off
+      light.upstairs_guest_guest_nightstand: off
+      light.study_lamp: off
+      light.study_study_floor_lamp: off
+      lock.living_room_front_door: locked
+
+  - id: leaving
+    name: Leaving
+    entities:
+      light.buffet: off
+      light.console_lamp: off
+      light.floor_lamp: off
+      light.side_table: off
+      light.dresser: off
+      light.mahams_lamp: off
+      light.waqars_lamp: off
+      light.bookshelf: off
+      light.changing_table: off
+      light.nursery_floor_lamp: off
+      light.game_room: off
+      light.upstairs_guest: off
+      light.upstairs_guest_guest_nightstand: off
+      light.study_lamp: off
+      light.study_study_floor_lamp: off
+      lock.living_room_front_door: locked
+
+  - id: lock_up
+    name: Lock Up
+    entities:
+      lock.living_room_front_door: locked
+
+  - id: welcome_home
+    name: Welcome Home
+    entities:
+      light.buffet:
+        state: on
+      light.console_lamp:
+        state: on
+      light.floor_lamp:
+        state: on
+      light.side_table:
+        state: on
+
+  - id: movie_night
+    name: Movie Night
+    entities:
+      light.buffet: off
+      light.console_lamp: off
+      light.side_table: off
+      light.floor_lamp:
+        state: on
+        brightness: 51  # about 20%
+
+  - id: evening
+    name: Evening
+    entities:
+      light.buffet:
+        state: on
+      light.console_lamp:
+        state: on
+      light.floor_lamp:
+        state: on
+      light.side_table:
+        state: on
+      light.dresser:
+        state: on
+      light.mahams_lamp:
+        state: on
+      light.waqars_lamp:
+        state: on
+      light.game_room:
+        state: on
+      light.upstairs_guest:
+        state: on
+      light.upstairs_guest_guest_nightstand:
+        state: on
+      light.study_lamp:
+        state: on
+      light.study_study_floor_lamp:
+        state: on

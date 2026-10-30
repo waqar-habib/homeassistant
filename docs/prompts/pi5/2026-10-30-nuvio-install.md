@@ -8,7 +8,7 @@ GREEN LIGHT: not needed (Tier 0-2)
 ## Owner steps (manual, before running)
 
 1. All pending HA OS updates applied (done 2026-10-30).
-2. Manual full backup created in HA (Settings, System, Backups). Name it `pre-nuvio` if you can. If not, the prompt creates one.
+2. Manual full backup created in HA (Settings, System, Backups), named `ha-pre-nuvio-backup_10-29` (done 2026-10-29).
 
 ## Source facts (read from the repo on 2026-10-30, not from memory)
 
@@ -35,9 +35,9 @@ GREEN LIGHT: not needed (Tier 0-2)
 Outcomes:
 - **Best:** Nuvio installed at v2.30.1, resource loaded, new `Nuvio test` dashboard builds all 8 areas, nothing else changed.
 - **Base:** installs, but some views are empty or entities are mis-grouped. Record in `docs/issues.md`; fix areas in HA, not in Nuvio.
-- **Worst:** frontend errors or a blank UI. Remove Nuvio in HACS (or remove the resource in Settings, Dashboards, Resources), hard-refresh the app, restore `pre-nuvio` only if removal does not fix it.
+- **Worst:** frontend errors or a blank UI. Remove Nuvio in HACS (or remove the resource in Settings, Dashboards, Resources), hard-refresh the app, restore `ha-pre-nuvio-backup_10-29` only if removal does not fix it.
 
-Rollback: delete the `Nuvio test` dashboard, uninstall Nuvio in HACS, refresh the browser or app cache. The `pre-nuvio` backup is the last resort.
+Rollback: delete the `Nuvio test` dashboard, uninstall Nuvio in HACS, refresh the browser or app cache. The `ha-pre-nuvio-backup_10-29` backup is the last resort.
 
 ## Prompt body
 
@@ -60,8 +60,9 @@ If any step fails or surprises you, stop and report; do not improvise.
    - Do not change Glass Cards.
 
 3. Back up first:
-   - If ha backups list already shows a fresh backup named pre-nuvio, use it.
-   - Otherwise: ha backups new --name "pre-nuvio"
+   - Run ha backups list and confirm a backup named "ha-pre-nuvio-backup_10-29" exists
+     (the owner created it manually). Record its slug. Do not create another.
+   - If it is missing, stop and ask the owner. Do not proceed without a backup.
    - Confirm it exists before continuing.
 
 4. Install Nuvio through HACS:

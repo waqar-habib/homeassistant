@@ -44,3 +44,13 @@ Resume point: restart the session, confirm ha-mcp tools load, run the read-only 
 - ha-mcp tools still not available in this session. ToolSearch reports the server failed to connect (ECONNREFUSED) at session level. `claude mcp list` shows ha-mcp Connected, and `http://192.168.1.36:9583/` answers 403.
 - Step 1b not done. No substitute used (no `ha` CLI or direct HTTP calls for steps 4 and 5). Stopped before step 2. No changes to the Pi.
 - Next: check the ha-mcp connection from the owner's side (the MCP registration in this session may point at a stale URL; the prompt says the owner re-registers it from the add-on log), then restart again.
+
+## Fourth run (ha-mcp reconnected, prompt at e1b9a09)
+- Step 1b: ha-mcp read-only calls OK (`ha_get_overview`, `ha_get_hacs_info`, `ha_config_list_dashboard_resources`). HACS loaded (2.0.5). `ha_get_system_health` config_check: valid, no errors.
+- Step 2 (Glass Cards, read-only): resource `/hacsfiles/glass-cards/glass-cards.js` registered as module. HACS reports v1.10.11 installed. `pre-glass-cards` backup **does not exist** (`ha backups list`). I14 result: resource loaded, backup missing.
+- Step 3: `ha-pre-nuvio-backup_10-29` (slug `023157b8`) confirmed. No new backup made.
+- Step 4 (Tier 2): added `kczepiec/nuvio` as a Dashboard (lovelace) custom repo, repository_id `1416967732`. Installed **v2.30.1** (matches the prompt). Auto-update not enabled (no setting changed). Resource registered: `/hacsfiles/nuvio/nuvio.js?hacstag=14169677322301`, type module. Files present at `/config/www/community/nuvio`.
+- Step 5 (Tier 2): created dashboard `nuvio-test` (title "Nuvio test", admin only, sidebar shown), config `strategy: {type: custom:nuvio}`. Read back and matches. No other dashboard touched.
+- Step 6 (partial): HA core log scan for nuvio/hacs/frontend errors found nothing. Owner test in the app and browser not yet done.
+
+Resume point: owner opens `/nuvio-test` on the iOS Companion app and a browser (hard-refresh the browser first, since the resource is new), runs the first-run wizard, and reports which views appear, whether all 8 areas show, and the glass look vs D2. Then record step 7.

@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last updated: 2026-10-30 (Nuvio prompt second partial stop, resume in CLI). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-10-30 (Nuvio installed on nuvio-test; owner test pending). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
 Dashboard work. Nuvio install prompt (`docs/prompts/pi5/2026-10-30-nuvio-install.md`, commit `94844cb`) stopped at step 4 because ha-mcp was unavailable in the session (tools failed to connect; endpoint returned 403 later). Nothing installed or changed on the Pi. Full notes in `docs/sessions/2026-10-30-nuvio-install.md`.

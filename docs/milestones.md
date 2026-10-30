@@ -11,7 +11,7 @@
 | M6 | Alerts: Uptime Kuma and ntfy for HA, networkpi, DNS, internet | To do | |
 | M7 | AdGuard Home live (depends on I1) | To do | |
 | M8 | Voice control feasibility tests F1-F4 | To do | |
-| M9 | Dashboard (Nuvio) with owner, MKH and guest views | In progress: Glass Cards installed via HACS on Pi 5 by owner (2026-10-30, v1.10.11, not yet verified from repo). Demo viewed on iOS Companion. Nuvio source identified (kczepiec/nuvio, v2.30.1). Nuvio install prompt started 2026-10-30, stopped at step 4: ha-mcp unavailable in session. Not installed yet. Backup `ha-pre-nuvio-backup_10-29` confirmed | 2026-10-30 |
+| M9 | Dashboard (Nuvio) with owner, MKH and guest views | In progress: Nuvio v2.30.1 installed on `nuvio-test` (2026-10-30), owner viewed on Mac and iOS and likes it. Glass Cards v1.10.11 also installed (I14). Views present: Home, Rooms, Media, Family, Map. Gaps vs D2: next prayer, calendar, scenes, Adhan toggle. Rooms layout to polish (M14, I16). Nuvio vs Glass Cards decision pending | 2026-10-30 |
 | M10 | Ring in HA and a local garage controller (ratgdo or Meross) | To do | |
 | M11 | Scenes: simple scenes in `packages/` (Good Night, Leaving, Lock Up, Welcome Home, Movie Night, Evening, Nursery excluded from Evening), shown in Nuvio | To do. GREEN LIGHT given 2026-10-30 (D33) | |
 | M12 | Adhan: prayer integration (D28), one automation for 5 prayers (D29), shipped switched off (D34). Live test later, separate GREEN LIGHT | To do. Tier 3 | |

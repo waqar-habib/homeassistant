@@ -1,0 +1,22 @@
+# ENABLED on networkpi since 2026-10-30 (Phase B of docs/prompts/networkpi/2026-10-24-claude-code-cli.md).
+# Install (as claude):
+#   mkdir -p ~/.config/systemd/user && cp networkpi/claude-remote.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload && systemctl --user enable --now claude-remote.service
+# Linger must be on for the claude user: loginctl show-user claude -p Linger  (expect Linger=yes)
+# Stop: systemctl --user disable --now claude-remote.service
+# Watch: tmux -L default attach -t claude-rc  (detach with Ctrl-b d)
+
+[Unit]
+Description=Claude Code Remote Control for networkpi (in tmux, restarts on exit)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# The tmux session runs a loop, so if claude exits, it restarts after 30 seconds.
+ExecStart=/usr/bin/tmux new-session -d -s claude-rc -c %h/homeassistant "bash -lc 'while true; do %h/.local/bin/claude remote-control --name networkpi --spawn=same-dir; sleep 30; done'"
+ExecStop=/usr/bin/tmux kill-session -t claude-rc
+
+[Install]
+WantedBy=default.target

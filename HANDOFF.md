@@ -3,17 +3,13 @@
 Last updated: 2026-10-30 (Nuvio installed on nuvio-test; owner test pending). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-Dashboard work. Nuvio install prompt (`docs/prompts/pi5/2026-10-30-nuvio-install.md`, commit `94844cb`) stopped at step 4 because ha-mcp was unavailable in the session (tools failed to connect; endpoint returned 403 later). Nothing installed or changed on the Pi. Full notes in `docs/sessions/2026-10-30-nuvio-install.md`.
-
-Pre-checks done: HA 2026.10.4 running, `ha core check` clean, backup `ha-pre-nuvio-backup_10-29` present (slug `023157b8`). No `pre-glass-cards` backup exists (I14).
+Dashboard work. Nuvio v2.30.1 is installed through HACS (custom repo `kczepiec/nuvio`, auto-update off). Test dashboard `nuvio-test` (admin only, sidebar) uses `strategy: custom:nuvio`. Full notes in `docs/sessions/2026-10-30-nuvio-install.md`.
 
 Resume steps, in order:
-1. Restart the session. `claude mcp list` shows ha-mcp Connected, but its tools only load in a new session. Confirm they load and run one read-only ha-mcp call.
-2. Re-run the Nuvio prompt from step 1. Do not create another backup; use `ha-pre-nuvio-backup_10-29`.
-3. Step 2: confirm the Glass Cards resource and HACS version. Record in I14.
-4. Step 4: install Nuvio v2.30.1 through HACS, auto-update off.
-5. Step 5: create the `nuvio-test` dashboard. Step 6: owner tests on the app and browser.
-6. Decide the tablet after the test (I5, tablet model still open).
+1. Owner opens `/nuvio-test` on the iOS Companion app and a browser (hard-refresh the browser first). Owner reports: views shown, whether all 8 areas appear, glass look vs D2. Then record in I13, M9, and the session note (prompt step 7).
+2. I14: Glass Cards resource is loaded (v1.10.11), but no `pre-glass-cards` backup exists. Decide whether that matters.
+3. Gaps for D2 after the test: next prayer, calendar, scenes and Adhan toggle.
+4. Decide the tablet after the test (I5, tablet model still open).
 
 ## Networkpi
 Phase B (Remote Control, always-on) has its GREEN LIGHT but was due 2026-10-25. No record since 2026-10-24. Owner to report whether it ran.

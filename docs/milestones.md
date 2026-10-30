@@ -13,10 +13,10 @@
 | M8 | Voice control feasibility tests F1-F4 | To do | |
 | M9 | Dashboard (Nuvio) with owner, MKH and guest views | In progress: Glass Cards installed via HACS on Pi 5 by owner (2026-10-30, v1.10.11, not yet verified from repo). Demo viewed on iOS Companion. Nuvio source identified (kczepiec/nuvio, v2.30.1). Nuvio install prompt started 2026-10-30, stopped at step 4: ha-mcp unavailable in session. Not installed yet. Backup `ha-pre-nuvio-backup_10-29` confirmed | 2026-10-30 |
 | M10 | Ring in HA and a local garage controller (ratgdo or Meross) | To do | |
-| M11 | Scenes: simple scenes in `packages/` (Good Night, Leaving, Lock Up, Welcome Home, Movie Night, Evening), shown in Nuvio | To do. GREEN LIGHT given 2026-10-30 (D33) | |
-| M12 | Adhan: prayer integration (D28), HomePod playback test, one automation for 5 prayers (D29) | To do. Tier 3 | |
+| M11 | Scenes: simple scenes in `packages/` (Good Night, Leaving, Lock Up, Welcome Home, Movie Night, Evening, Nursery excluded from Evening), shown in Nuvio | To do. GREEN LIGHT given 2026-10-30 (D33) | |
+| M12 | Adhan: prayer integration (D28), one automation for 5 prayers (D29), shipped switched off (D34). Live test later, separate GREEN LIGHT | To do. Tier 3 | |
 | M13 | Calendar: Apple CalDAV "M&W Family" (D30) | To do. Tier 3 (credential) | |
 | M14 | Rooms layout: smaller tiles, areas fixed, layout JSON exported to `dashboards/` | To do | |
-| M15 | MKH onboarding: admin user, app on iPhone and iPad, location permission, simple view (D31) | To do. Tier 3 (credentials) | |
+| M15 | MKH onboarding: simple (non-admin) user, app on iPhone and iPad, location permission, simple view (D31) | To do. Tier 3 (credentials) | |
 | M16 | Geofencing: 3 mile zone, "everyone away" rule, four automations (D32), dry run first | To do. Tier 3 each. Depends on M15 | |
 | M17 | Wall tablet: wall-tablet mode and kiosk-mode (I5) | To do. After the tablet is bought | |

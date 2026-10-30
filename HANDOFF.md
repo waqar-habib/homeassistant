@@ -3,22 +3,12 @@
 Last updated: 2026-10-30 ~01:20 CDT (Mac session closed; owner signing off). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-Nuvio v2.30.1 is live on `nuvio-test` (owner approved the look). Plan v0.1 is recorded (D28 to D35, M11 to M17). Four prompts are pushed; none has run yet. Notes: `docs/sessions/2026-10-30-plan-and-prompts.md`.
+Scenes (M11, D33). Branch `feat/scenes` at `02588c7`, not yet merged. Six scenes exist (`scene.good_night`, `leaving`, `lock_up`, `welcome_home`, `movie_night`, `evening`). Backup `pre-scenes` (slug `76459749`). Full notes in `docs/sessions/2026-10-30-scenes.md`.
 
-Owner runs these in Claude Terminal on the Pi 5, in order:
-1. Scenes (M11, Tier 2): `git pull; read docs/prompts/pi5/2026-10-30-scenes.md (commit 3bc3247); run it`
-2. Adhan setup (M12, Tier 3, setup only, ships OFF): `git pull; read docs/prompts/pi5/2026-10-30-adhan-setup.md (commit 2729082); run it`. Owner sets up the Islamic Prayer Times integration (ISNA, standard Asr) in the UI first. No playback, no toggle, no test.
-3. Geofencing (M16, Tier 3, D35): `git pull; read docs/prompts/pi5/2026-10-30-geofencing.md (commit fa70db0); run it`. Only after MKH is onboarded (M15) and the owner has created the `Near Home` zone (4828 m, passive).
-
-Owner to-do that Claude cannot do: onboard MKH (simple user, app on iPhone and iPad, location Always); create the zone; create an Apple app-specific password for CalDAV (M13) and enter it in HA; pick the lights for Away Evening; disable Apple Home automations that touch the thermostats or lights; delete `~/Desktop/81f33d0f_ha_mcp_*.log` (it holds the ha-mcp secret path).
-
-Next Mac work that needs no approval: draft the Calendar prompt (M13), a Rooms layout proposal (M14, I16).
-
-## Permissions in force
-- D33: scenes, including front door lock scenes (no Unlock scene).
-- D34: Adhan set up but not tested or enabled. A live test needs a separate GREEN LIGHT, with the baby awake.
-- D35: create, read, update and delete automations; thermostat changes; geofencing setup. Not the front door lock. Adhan stays excluded (Claude's reading; owner to confirm).
-- Git: basic commands run without prompts (`.claude/settings.json`). Force-push is denied. `reset --hard`, `clean`, `rebase`, `restore` and branch deletion ask first.
+Resume steps, in order:
+1. Owner runs the scene tests (Welcome Home, Movie Night, Evening, Good Night with the lock) and confirms the six buttons in the Nuvio "Scenes and scripts" panel.
+2. If all pass: fast-forward `main` to `feat/scenes`, push, mark M11 done.
+3. Nuvio test (`nuvio-test`) is still pending owner review (M9), and I14 (no `pre-glass-cards` backup) is still open.
 
 ## Networkpi
 Where it stands: bootstrap done 2026-10-24 (ufw, SSH keys only, watchdog, Samba share `ha-backups`, `claude` user). Claude Code 2.1.310 is installed and signed in as `claude`, repo cloned. Phase 0 and Phase A passed with no out-of-memory kills (available memory 486 to 699 MB, swap 0). Phase B (Remote Control, always-on) has its GREEN LIGHT (2026-10-24). The owner chose to wait until 2026-10-25. There is no record since, so it is unknown whether Phase B ran.

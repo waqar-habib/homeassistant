@@ -3,7 +3,7 @@
 Target: pi5
 Date: 2026-10-24
 Tier: 3 (tunnel, credentials, public exposure of HA)
-GREEN LIGHT: not yet given. Draft for owner review. Do not run until the owner records "GREEN LIGHT" here.
+GREEN LIGHT: yes, 2026-10-30. Owner replied "GREEN LIGHT" to the tunnel item of the 2026-10-30 plan. It covers this prompt as written. The HA restart in step 6 still needs a live "restart OK" from the owner. Start only after the owner finishes the Cloudflare steps below.
 
 ## Owner steps (manual, not for Claude)
 
@@ -31,7 +31,7 @@ Outcomes:
 
 ```
 Resume from HANDOFF.md. Task: set up the Cloudflare Tunnel for HA at ha.thehabibfam.cc.
-The owner gave GREEN LIGHT for this on <DATE> (Tier 3). If no GREEN LIGHT line is recorded
+The owner gave GREEN LIGHT for this on 2026-10-30 (Tier 3). If no GREEN LIGHT line is recorded
 in docs/prompts/pi5/2026-10-24-cloudflare-tunnel.md, stop and report.
 Do only the steps below; no other changes. Never read or print secrets.yaml. Never put the tunnel token in any file.
 

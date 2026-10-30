@@ -3,7 +3,7 @@
 Target: networkpi
 Date: 2026-10-30
 Tier: 0 and 1 (Step 3 is Tier 3 and is gated)
-GREEN LIGHT: not needed for Steps 1-2. Step 3: the Phase B GREEN LIGHT of 2026-10-24 exists, but the owner chose to wait. The owner must say "run Phase B" in this session.
+GREEN LIGHT: not needed for Steps 1-2. Step 3: the Phase B GREEN LIGHT of 2026-10-24 exists. On 2026-10-30 the owner said they are ready to run networkpi commands themselves in a Pi Connect session. Phase B runs only if the Step 1 baseline passes.
 
 Runs in parallel with the Pi 5 and Mac lanes. networkpi owns `networkpi/`. RAM is 905 MB: run one thing at a time, no builds, no package upgrades. Pull with rebase before every push.
 
@@ -32,4 +32,31 @@ Step 3 (Tier 3, GATED) Phase B, always-on Remote Control. Only after the owner s
 - Record in I12. I12 closes only after a full day of stable running.
 
 End: session protocol from CLAUDE.md (docs/sessions/2026-10-30-parallel-networkpi.md, HANDOFF.md networkpi section only, issues I11 and I12). git pull --rebase, then push to main.
+```
+
+## Owner-run version (Pi Connect terminal, in order)
+
+Run as the `claude` user (`su - claude` or `sudo -iu claude` if you land as another user). The repo is at `~/homeassistant`.
+
+```
+# A. Baseline (read only). Stop and paste the output back if any STOP condition in Step 1 trips.
+cd ~/homeassistant && git pull --rebase && bash networkpi/health.sh
+
+# B. Publish the baseline so the Mac session can read it
+git add docs/sessions && git commit -m "docs(session): networkpi health baseline" && git pull --rebase && git push
+
+# C. Phase B, only if A is clean. Reads the unit from its branch without switching branches.
+git fetch origin feat/networkpi-claude-remote
+mkdir -p ~/.config/systemd/user
+git show origin/feat/networkpi-claude-remote:networkpi/claude-remote.service > ~/.config/systemd/user/claude-remote.service
+loginctl show-user claude -p Linger        # if Linger=no: sudo loginctl enable-linger claude
+systemctl --user daemon-reload
+systemctl --user enable --now claude-remote.service
+
+# D. Verify after 30 seconds, again after 10 minutes
+systemctl --user status claude-remote.service --no-pager | head -8; tmux ls; free -m
+tmux attach -t claude-rc                   # detach with Ctrl-b d. Then open claude.ai/code on the phone: session "networkpi"
+
+# Rollback
+systemctl --user disable --now claude-remote.service && rm ~/.config/systemd/user/claude-remote.service
 ```

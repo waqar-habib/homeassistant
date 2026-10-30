@@ -1,5 +1,5 @@
-# DRAFT, NOT ENABLED. Phase B of docs/prompts/networkpi/2026-10-24-claude-code-cli.md
-# Install (as claude, after owner review and GREEN LIGHT for enabling):
+# ENABLED on networkpi since 2026-10-30 (Phase B of docs/prompts/networkpi/2026-10-24-claude-code-cli.md).
+# Install (as claude):
 #   mkdir -p ~/.config/systemd/user && cp networkpi/claude-remote.service ~/.config/systemd/user/
 #   systemctl --user daemon-reload && systemctl --user enable --now claude-remote.service
 # Linger must be on for the claude user: loginctl show-user claude -p Linger  (expect Linger=yes)

@@ -25,6 +25,13 @@ Facts only. Unknowns are tracked in `docs/decisions.md` under Open and in `docs/
   - Uptime monitoring and alerts for HA, networkpi, DNS, and internet
 - Not planned: Home Assistant itself (RAM)
 
+## Hatch Rest (Baby Noor's Rest), nursery
+- Manufacturer: Hatch, model RestIot, sw 7.1.645
+- Integration: `ha_hatch` (official HA integration), device area Nursery
+- Exposes: a light (`light.nursery_hatch_light`), a clock light (`light.nursery_hatch_clock`), a media player (sound machine), a Wi-Fi sensor, battery and charging sensors, a toddler-lock switch, and scenes (brahms lullaby, brown noise, white noise)
+- Apple Home: not bridged as of 2026-10-30. The HomeKit Bridge filter (`domain: light`) would expose the two lights after a bridge reload (Tier 3, not approved)
+- Detail: `docs/entities.md`, section Hatch
+
 ## Network
 - Router: Spectrum SBE1V1R, managed through the My Spectrum app. DHCP reservations exist for the critical devices. Custom DNS unverified (I1)
 - Clients seen in the My Spectrum Services list (partial, the screenshot ends at networkpi): Google Nest Thermostat (2), Rain Bird Sprinkler, Home Assistant-WiFi, Home Assistant-Eth, LG Washer, LG Dryer, LG Refrigerator, Chamberlain myQ, Brother Printer, Amazon Ring, networkpi. Bulbs, plugs and other devices were not captured

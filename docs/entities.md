@@ -106,6 +106,32 @@ Notes:
 | `switch.changing_table_auto_update_enabled` | Changing Table Auto-update enabled | switch | tplink | on |
 | `switch.nursery_floor_lamp_auto_update_enabled` | Nursery Floor Lamp Auto-update enabled | switch | tplink | on |
 
+## Hatch (Baby Noor's Rest, added 2026-10-30)
+
+Integration `ha_hatch`, one device (`Hatch`, model RestIot, sw 7.1.645). Device area is **Nursery**; entities inherit it (entity-level area is unset). Not bridged to Apple Home at the time of this check.
+
+| Entity | Friendly name | Domain | Integration | Area | State |
+|---|---|---|---|---|---|
+| `light.nursery_hatch_light` | Hatch Light | light | ha_hatch | Nursery (inherited) | off |
+| `light.nursery_hatch_clock` | Hatch Clock | light | ha_hatch | Nursery (inherited) | on |
+| `media_player.nursery_hatch_media_player` | Hatch Media Player | media_player | ha_hatch | Nursery (inherited) | idle |
+| `binary_sensor.nursery_hatch_wifi` | Hatch Wifi | binary_sensor | ha_hatch | Nursery (inherited) | on |
+| `sensor.nursery_hatch_battery` | Hatch Battery | sensor | ha_hatch | Nursery (inherited) | unknown |
+| `sensor.nursery_hatch_charging_status` | Hatch Charging Status | sensor | ha_hatch | Nursery (inherited) | Not Charging |
+| `switch.nursery_hatch_toddler_lock` | Hatch Toddler Lock | switch | ha_hatch | Nursery (inherited) | not checked |
+| `scene.nursery_hatch_brahms_lullaby` | Hatch Brahms Lullaby | scene | ha_hatch | Nursery (inherited) | unknown (last activation timestamp) |
+| `scene.nursery_hatch_brown_noise` | Hatch Brown Noise | scene | ha_hatch | Nursery (inherited) | last activation timestamp |
+| `scene.nursery_hatch_white_noise` | White Noise | scene | ha_hatch | Nursery (inherited) | not checked |
+| `scene.nursery_hatch_brahms_lullaby_2` | Brahms Lullaby | scene | ha_hatch | Nursery (inherited) | not checked; name duplicates the first Brahms scene |
+
+Not part of the Hatch device, listed so nobody confuses them:
+- `switch.hatch` ("Hatch Rest Mini Sound Machine", platform `hacs`, state on, no area) and `update.hatch_rest_mini_sound_machine_update`. These come from a HACS custom integration, not `ha_hatch`. Their area is unassigned.
+
+Scene and automation checks (2026-10-30, read only):
+- No scene on `feat/scenes` (Good Night, Leaving, Lock Up, Welcome Home, Movie Night, Evening) references a Hatch entity. Evening and Good Night exclude `light.nursery_hatch_light` and `light.nursery_hatch_clock`, as D32 requires.
+- No automation in the repo references the Hatch entities. Live automations that are YAML-only could not be scanned by the ha-mcp config endpoint. The only one in `automations.yaml` is the I18 geofence automation, which does not reference Hatch.
+- HomeKit Bridge filter is `domain: light`. `light.nursery_hatch_light` and `light.nursery_hatch_clock` would be exposed to Apple Home after the next bridge reload. Report only. A bridge change is Tier 3 and not approved.
+
 ## Formal Living (0 entities)
 
 No entities are assigned to this area.

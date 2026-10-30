@@ -11,5 +11,5 @@
 | M6 | Alerts: Uptime Kuma and ntfy for HA, networkpi, DNS, internet | To do | |
 | M7 | AdGuard Home live (depends on I1) | To do | |
 | M8 | Voice control feasibility tests F1-F4 | To do | |
-| M9 | Dashboard (Nuvio) with owner, MKH and guest views | To do | |
+| M9 | Dashboard (Nuvio) with owner, MKH and guest views | In progress: Glass Cards installed via HACS on Pi 5 by owner (2026-10-30, v1.10.11, not yet verified from repo). Demo viewed on iOS Companion. Nuvio source not yet identified (I13). Test dashboard next | 2026-10-30 |
 | M10 | Ring in HA and a local garage controller (ratgdo or Meross) | To do | |

@@ -1,8 +1,9 @@
 # HANDOFF
 
-Last updated: 2026-10-30 ~01:20 CDT (Mac session closed; owner signing off). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-10-30 ~01:40 CDT (Mac session closed; owner resumes in a fresh session). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
+0. **URGENT, owner decision (I18):** `automation.front_door_geofence_auto_lock_unlock` is live. It unlocks the front door when a phone enters the zone, with no notify-only step, and it is not in git. D35 keeps the front door lock out of scope. Claude has not changed it. Recommended now: disable it in HA (Settings, Automations) and tell Claude, so it can be reviewed and committed, or removed, on purpose.
 1. **Geofence automation needs an owner decision (I18).** `automation.front_door_geofence_auto_lock_unlock` is loaded and unlocks the front door on zone entry. It is in an uncommitted `automations.yaml` change. Claude has not changed it.
 2. **Adhan (M12, I17):** package on `main` (`6316775`), toggle OFF, verified. Live test (play, volume, enabling the toggle) is held for a separate GREEN LIGHT with the baby awake. See `docs/sessions/2026-10-30-adhan-setup.md`.
 3. **Scenes (M11, I19):** on `feat/scenes` (`02588c7`), not merged. Owner tests pending (Welcome Home, Movie Night, Evening, Good Night with the lock). Then fast-forward merge to `main`.
@@ -36,7 +37,7 @@ Owner to report: did Phase B run, and is networkpi's throttle status still `0x0`
 - Weekly encrypted backup copy to cloud storage (I9).
 
 ## Device state
-- **Pi 5** (192.168.1.36): HA OS and core updated (core 2026.10.4 on 2026-10-30). Claude Terminal and ha-mcp running (ha-mcp reconnected, I15). Glass Cards v1.10.11 and Nuvio v2.30.1 installed via HACS (auto-update off for Nuvio). Dashboard `nuvio-test` live. No scenes, Adhan or geofencing yet. Backups: `ha-pre-nuvio-backup_10-29` (slug 023157b8). Remote access: Nabu Casa trial; Cloudflare Tunnel not started.
+- **Pi 5** (192.168.1.36): HA OS and core updated (core 2026.10.4 on 2026-10-30). Claude Terminal and ha-mcp running (ha-mcp reconnected, I15). Glass Cards v1.10.11 and Nuvio v2.30.1 installed via HACS (auto-update off for Nuvio). Dashboard `nuvio-test` live. Scenes on `feat/scenes` (not merged). Adhan package on `main`, switched off (`6316775`). Geofencing not deployed (I18 live automation, see Resume item 0). Backups: `ha-pre-nuvio-backup_10-29` (slug 023157b8). Remote access: Nabu Casa trial; Cloudflare Tunnel not started.
 - **networkpi** (192.168.1.39, wired): see Networkpi above.
 - **Mac**: this session; caffeinate running for 8 hours from about 01:10 CDT.
 - **Router**: DHCP reservations done. Custom DNS unverified (I1).

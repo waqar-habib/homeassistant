@@ -31,3 +31,23 @@ Run on the Mac (Claude Code, remote-control on). The Pi 5 was not reachable from
 1. Owner pastes the scenes pointer, then the Adhan pointer, into Claude Terminal (see `HANDOFF.md`).
 2. Owner onboards MKH and creates the zone; then the geofencing prompt.
 3. Next Mac work that needs no approval: draft the Calendar prompt (M13) and a Rooms layout proposal (M14).
+
+## Later on the Mac, same night (through about 01:40 CDT)
+- Expanded GREEN LIGHT recorded as D35 (`ea15440`): automations, thermostats and geofencing; not the front door lock. Adhan live test still excluded. The owner's request to allow git commands without prompts is in `.claude/settings.json` (`a8c3168`).
+- Geofencing prompt drafted (`fa70db0`), Tier 3, notify-only first. It waits for MKH's person entity and the Near Home zone.
+- Networkpi: owner chose to hold Phase B tonight. Commands were written out (enable, memory monitoring, stop, rollback). Not run. Unit file is still unmerged and not enabled.
+- Remote sessions: Remote Control was never tested on the Pi 5 and is only planned for networkpi (I20). Test on the Pi 5 tomorrow.
+- caffeinate extended to 8 hours from about 01:10 CDT.
+
+## Pi 5 commits since (read by the Mac at close)
+- Scenes created on `feat/scenes` (`02588c7`), reloaded, six entities exist. Owner confirmed the six buttons show on `nuvio-test`. Owner has not yet run the tests. Not merged to `main` (I19).
+- Adhan package on `main` (`6316775`), toggle OFF. Live test held for a separate GREEN LIGHT (I17).
+- Geofence automation found live that unlocks the front door on zone entry (I18). Needs the owner's decision before anything else.
+
+## Resume point (fresh session)
+1. Owner decides on I18 (disable now, then review and commit or remove).
+2. Owner runs the scenes tests and reports. If they pass, fast-forward merge `feat/scenes` to `main`.
+3. Pi 5 Remote Control test (I20). Record the result.
+4. Geofencing prompt stays on hold until MKH is onboarded (M15) and the zone exists.
+5. Networkpi Phase B stays on hold (owner's choice).
+

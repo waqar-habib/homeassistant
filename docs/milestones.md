@@ -18,5 +18,5 @@
 | M13 | Calendar: Apple CalDAV "M&W Family" (D30) | To do. Tier 3 (credential) | |
 | M14 | Rooms layout: smaller tiles, areas fixed, layout JSON exported to `dashboards/` | To do | |
 | M15 | MKH onboarding: simple (non-admin) user, app on iPhone and iPad, location permission, simple view (D31) | To do. Tier 3 (credentials) | |
-| M16 | Geofencing: 3 mile zone, "everyone away" rule, four automations (D32), dry run first | To do. Tier 3 each. Depends on M15 | |
+| M16 | Geofencing: 3 mile zone, "everyone away" rule, Away AC, Cool Down and Evening (D32); Away Evening waits for the owner's light picks | To do. GREEN LIGHT given 2026-10-30 (D35). Depends on M15 (MKH person) and on the owner creating the zone. Ships notify-only first | |
 | M17 | Wall tablet: wall-tablet mode and kiosk-mode (I5) | To do. After the tablet is bought | |

@@ -1,0 +1,36 @@
+{
+  "url_path": "prayer-times",
+  "title": "Prayer times",
+  "icon": "mdi:mosque",
+  "show_in_sidebar": true,
+  "config": {
+    "views": [
+      {
+        "title": "Prayer times",
+        "path": "prayer-times",
+        "type": "sections",
+        "sections": [
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "markdown",
+                "content": "{% set p = [('Fajr','sensor.living_room_adhan_fajr_prayer'),('Dhuhr','sensor.living_room_adhan_dhuhr_prayer'),('Asr','sensor.living_room_adhan_asr_prayer'),('Maghrib','sensor.living_room_adhan_maghrib_prayer'),('Isha','sensor.living_room_adhan_isha_prayer')] %}{% set ns = namespace(name=none, time=none) %}{% for n, e in p %}{% if ns.name is none and states(e) not in ['unknown', 'unavailable'] and as_timestamp(states(e)) > now().timestamp() %}{% set ns.name = n %}{% set ns.time = as_local(as_datetime(states(e))) %}{% endif %}{% endfor %}## Next prayer: {{ ns.name or 'Fajr (tomorrow)' }}\n# {{ ns.time.strftime('%-I:%M %p') if ns.time else '' }}\n\n{% for n, e in p %}- {{ n }}: {{ as_local(as_datetime(states(e))).strftime('%-I:%M %p') }}\n{% endfor %}",
+                "entity_id": [
+                  "sensor.living_room_adhan_fajr_prayer",
+                  "sensor.living_room_adhan_dhuhr_prayer",
+                  "sensor.living_room_adhan_asr_prayer",
+                  "sensor.living_room_adhan_maghrib_prayer",
+                  "sensor.living_room_adhan_isha_prayer"
+                ],
+                "grid_options": {
+                  "columns": "full"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

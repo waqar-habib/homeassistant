@@ -30,3 +30,12 @@ Ran `docs/prompts/pi5/2026-10-30-nuvio-install.md` (commit `94844cb`, Tier 2). S
 4. Step 4: install Nuvio v2.30.1 through HACS. Auto-update off.
 5. Step 5: create `nuvio-test` dashboard, then step 6 verification with the owner.
 6. Step 7 records (I13, M9, session note, handoff) after the test.
+
+## Second run (e1b9a09, prompt step 1 ha-mcp check added)
+- `git pull` fast-forwarded to `e1b9a09`. Prompt file present at HEAD.
+- `ha core info`: HA 2026.10.4, `update_available: false`, watchdog on. `ha core check`: no errors.
+- `claude mcp list` / `claude mcp get ha-mcp`: ha-mcp shows **Connected** (HTTP, host and port as registered; URL not printed).
+- Step 1b not done: ha-mcp tools are not loaded into this session, and ToolSearch finds none. The session started before the connection came up, so it needs a restart.
+- Stopped before step 2. No changes to the Pi, Glass Cards, dashboards, or automations.
+
+Resume point: restart the session, confirm ha-mcp tools load, run the read-only ha-mcp call (step 1b), then continue from step 2. Backup `ha-pre-nuvio-backup_10-29` (slug `023157b8`) still applies.

@@ -3,14 +3,10 @@
 Last updated: 2026-10-30 ~01:20 CDT (Mac session closed; owner signing off). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-Adhan (M12, D34). Partial GREEN LIGHT: setup only, toggle OFF, no playback. Integration loaded (ISNA, Shafi), sensors and HomePod volume checked read-only, backup `pre-adhan` (slug `b4a1a3aa`). Waiting for today's masjid times to compare. Full notes in `docs/sessions/2026-10-30-adhan-setup.md`. Prompt: `docs/prompts/pi5/2026-10-30-adhan-setup.md` (commit `2729082`).
-
-Resume steps, in order:
-1. Owner gives the five masjid times. Compare with the sensors (within 2 minutes or stop).
-2. Write `packages/adhan.yaml` on `feat/adhan` (toggle OFF), validate, reload, verify nothing played.
-3. Owner confirms, then merge to `main`. Live test needs a separate GREEN LIGHT.
-
-Scenes (M11): branch `feat/scenes` at `02588c7`, owner tests pending. Nuvio `nuvio-test` (M9): owner reviewing.
+1. **Geofence automation needs an owner decision (I18).** `automation.front_door_geofence_auto_lock_unlock` is loaded and unlocks the front door on zone entry. It is in an uncommitted `automations.yaml` change. Claude has not changed it.
+2. **Adhan (M12, I17):** package on `main` (`6316775`), toggle OFF, verified. Live test (play, volume, enabling the toggle) is held for a separate GREEN LIGHT with the baby awake. See `docs/sessions/2026-10-30-adhan-setup.md`.
+3. **Scenes (M11, I19):** on `feat/scenes` (`02588c7`), not merged. Owner tests pending (Welcome Home, Movie Night, Evening, Good Night with the lock). Then fast-forward merge to `main`.
+4. **Nuvio test (M9, I16):** owner reviewing `nuvio-test`. Rooms layout to polish.
 
 ## Networkpi
 Where it stands: bootstrap done 2026-10-24 (ufw, SSH keys only, watchdog, Samba share `ha-backups`, `claude` user). Claude Code 2.1.310 is installed and signed in as `claude`, repo cloned. Phase 0 and Phase A passed with no out-of-memory kills (available memory 486 to 699 MB, swap 0). Phase B (Remote Control, always-on) has its GREEN LIGHT (2026-10-24). The owner chose to wait until 2026-10-25. There is no record since, so it is unknown whether Phase B ran.

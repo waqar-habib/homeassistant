@@ -32,3 +32,22 @@ Masjid comparison (step 4) is not done. The owner has not given today's masjid t
 1. Owner gives today's masjid times (five prayers). Claude compares against the table above. If any prayer is more than 2 minutes off, stop and report; do not change offsets.
 2. Then continue at prompt step 6 (branch `feat/adhan`, `packages/adhan.yaml` with the real sensor IDs above, toggle created OFF), step 7 (`ha core check`, reload input_boolean, script and automation, check the toggle is OFF, nothing played), and step 8.
 3. Owner confirms steps 4 and 7 before the merge to `main`. The live test needs its own GREEN LIGHT.
+
+## Completed after owner GREEN LIGHT (all create, read and update; live tests held)
+- Owner verified all five prayer times and integration settings (ISNA, Shafi, standard midnight).
+- Branch `feat/adhan`, commit `6316775` `feat(adhan): add prayer-time Adhan package, switched off`, fast-forwarded to `main` and pushed.
+- `packages/adhan.yaml`: `input_boolean.adhan_enabled` (created OFF, `initial: false`), `script.adhan_play`, `script.adhan_play_one`, `automation.adhan_prayer_times` (five time triggers on the real sensors, guarded by the toggle).
+- `ha core check`: clean before reload.
+- Reloaded `input_boolean`, `script`, `automation` through ha-mcp. No restart.
+- Verify: `input_boolean.adhan_enabled` OFF. Scripts exist (off, never triggered). `automation.adhan_prayer_times` on, never triggered. HomePods and `notify.waqars_iphone` unchanged since before the reload.
+- Not done (held by owner): no play, no volume set, no script call, no toggle change, no live test. The toggle stays OFF.
+
+## Problems
+- **Geofence automation is live and unlocks the door.** `automation.front_door_geofence_auto_lock_unlock` is loaded. Its config is in an uncommitted `automations.yaml` change, which Claude did not make. Reloading automations did not change it (loaded config matches the file), and it was not triggered. It needs an owner decision (I18).
+- The package's automation config can't be read with `ha_config_get_automation` (that tool only reads UI-stored automations). The trigger sensors and the load were verified by the entity state and by `ha core check`.
+- The commit ID in the prompt header (`2029082`) was wrong; the prompt file is `2729082`.
+
+## Resume point
+1. Owner decides on the geofence automation (I18).
+2. Live Adhan test (I17) waits for a separate GREEN LIGHT, with the baby awake and the owner in the room. Outline in the prompt file's "Later: live test" section.
+3. Scenes (M11): owner tests, then merge `feat/scenes` (I19).

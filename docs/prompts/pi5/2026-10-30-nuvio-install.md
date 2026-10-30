@@ -51,6 +51,18 @@ If any step fails or surprises you, stop and report; do not improvise.
    - git pull; confirm HEAD includes this prompt file.
    - ha core info and ha core check. Core must be running and the check must report no errors.
      (HA OS was just updated; if the check fails, stop.)
+   - ha-mcp check (the 2026-10-29 run failed here, see docs/sessions/2026-10-30-nuvio-install.md):
+     a. Run: claude mcp list. Expect "ha-mcp: connected". Never print the MCP URL; it contains
+        a secret path.
+     b. If connected: call one read-only ha-mcp tool (for example, get the HA config or
+        entity count) to prove it works, then continue.
+     c. If not connected: run claude mcp get ha-mcp and compare ONLY the host and port with
+        192.168.1.36:9583 (the only client that ever connected came in via that address).
+        Report the result without the URL path. Do not re-register ha-mcp yourself. Stop and
+        tell the owner. The owner re-registers with the URL from the ha-mcp add-on logs:
+        claude mcp remove ha-mcp, then claude mcp add --transport http ha-mcp "<URL>".
+        Then the session must be restarted.
+     d. Do not use the ha CLI or a direct HTTP call as a substitute for ha-mcp for steps 4 and 5.
    - Via ha-mcp, confirm HACS is loaded.
 
 2. Close I14 (Glass Cards), read-only:
@@ -61,7 +73,7 @@ If any step fails or surprises you, stop and report; do not improvise.
 
 3. Back up first:
    - Run ha backups list and confirm a backup named "ha-pre-nuvio-backup_10-29" exists
-     (the owner created it manually). Record its slug. Do not create another.
+     (the owner created it manually; slug was 023157b8 on 2026-10-29). Record its slug. Do not create another.
    - If it is missing, stop and ask the owner. Do not proceed without a backup.
    - Confirm it exists before continuing.
 

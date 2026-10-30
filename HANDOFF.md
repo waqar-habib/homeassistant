@@ -1,16 +1,19 @@
 # HANDOFF
 
-Last updated: 2026-10-30 (session closed, to resume in CLI). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-10-29 (Nuvio prompt partial stop, resume in CLI). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-Dashboard work. Glass Cards installed through HACS on the Pi 5 by the owner (2026-10-30; UI change, not yet verified from the repo side). Owner viewed the demo on the iOS Companion app. Full notes in `docs/sessions/2026-10-30-dashboard-glass-nuvio.md`.
+Dashboard work. Nuvio install prompt (`docs/prompts/pi5/2026-10-30-nuvio-install.md`, commit `94844cb`) stopped at step 4 because ha-mcp was unavailable in the session (tools failed to connect; endpoint returned 403 later). Nothing installed or changed on the Pi. Full notes in `docs/sessions/2026-10-30-nuvio-install.md`.
+
+Pre-checks done: HA 2026.10.4 running, `ha core check` clean, backup `ha-pre-nuvio-backup_10-29` present (slug `023157b8`). No `pre-glass-cards` backup exists (I14).
 
 Resume steps, in order:
-1. Confirm Glass Cards on the Pi 5: resource loaded (Settings → Dashboards → Resources) and a `pre-glass-cards` backup exists. Record in I14.
-2. Owner supplies Nuvio's GitHub URL (I13). Read its README and check install steps first.
-3. Install Nuvio via HACS (Tier 2: `pre-nuvio` backup, `ha core check`). Own test dashboard only; Nuvio dashboard unchanged.
-4. Draft the throwaway test dashboard on our real entities (`docs/entities.md`). Gaps to cover: calendar (source undecided), next prayer (custom card or template sensor).
-5. Decide the tablet after the test (I5, tablet model still open).
+1. Restart the session so ha-mcp reconnects. Confirm its tools load.
+2. Re-run the Nuvio prompt from step 1. Do not create another backup; use `ha-pre-nuvio-backup_10-29`.
+3. Step 2: confirm the Glass Cards resource and HACS version. Record in I14.
+4. Step 4: install Nuvio v2.30.1 through HACS, auto-update off.
+5. Step 5: create the `nuvio-test` dashboard. Step 6: owner tests on the app and browser.
+6. Decide the tablet after the test (I5, tablet model still open).
 
 ## Networkpi
 Phase B (Remote Control, always-on) has its GREEN LIGHT but was due 2026-10-25. No record since 2026-10-24. Owner to report whether it ran.

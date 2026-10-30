@@ -1,0 +1,32 @@
+# Session 2026-10-30: Nuvio install prompt, partial stop at step 4
+
+Ran `docs/prompts/pi5/2026-10-30-nuvio-install.md` (commit `94844cb`, Tier 2). Stopped after the pre-checks and backup check. Nuvio is not installed and the test dashboard does not exist yet.
+
+## Completed
+- `git pull` to `94844cb`. Prompt file present at HEAD.
+- Pre-checks (Tier 0, `ha` CLI):
+  - `ha core info`: HA 2026.10.4 running, `update_available: false`, watchdog on. The prompt expected 2026.10.2; the Pi is one minor version ahead.
+  - `ha core check`: "Command completed successfully" (no errors).
+- Step 2, Glass Cards (read-only): `pre-glass-cards` backup is **not** in `ha backups list`. Glass Cards resource and HACS version not checked (needs ha-mcp or the UI).
+- Step 3, backup: `ha-pre-nuvio-backup_10-29` exists, slug `023157b8`, created 2026-10-30T04:36Z (2026-10-29 23:36 local). Not recreated.
+- Nuvio not present: no `nuvio` folder in `/config/www/community` (only `glass-cards`).
+
+## Blocked
+- **ha-mcp unavailable in this session.** Its tools failed to connect at session start (ECONNREFUSED). A later direct request to `http://192.168.1.36:9583/` returned HTTP 403, so the add-on is up, but this session has no ha-mcp tools. Step 4 (HACS custom repository and install) and step 5 (create the `nuvio-test` dashboard, via ha-mcp or HA API only) cannot be done from here.
+- The `ha` CLI only reaches the Supervisor, not dashboards or HACS. Not used as a workaround.
+
+## Decisions
+- Stopped instead of handing HACS steps to the owner. The prompt's fallback (UI steps) applies only when HACS cannot be driven; the blocker here is the session's ha-mcp connection. Retry ha-mcp first (restart the session with the add-on running).
+- No changes to any dashboard, automation, or `.storage/`.
+
+## Problems
+- I14 is still open: `pre-glass-cards` backup missing. Glass Cards was installed without the backup the resume plan asked for.
+- Prompt date (2026-10-30) is one day ahead of the Pi clock (2026-10-29). The owner's backup is dated 10-29, so it is not affected.
+
+## Resume point
+1. Restart this session so ha-mcp reconnects. Check that ha-mcp tools load.
+2. Re-run the prompt from step 1 (pre-checks are cheap). Skip the backup creation (step 3): `ha-pre-nuvio-backup_10-29` (slug `023157b8`) is the backup.
+3. Step 2: confirm Glass Cards resource and HACS version. Record in I14.
+4. Step 4: install Nuvio v2.30.1 through HACS. Auto-update off.
+5. Step 5: create `nuvio-test` dashboard, then step 6 verification with the owner.
+6. Step 7 records (I13, M9, session note, handoff) after the test.

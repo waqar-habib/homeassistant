@@ -42,7 +42,7 @@
 | D37 | Owner replies after the Pi 5 lane, 2026-10-30: (1) I18 disabled by the owner; (2) Nest areas: `climate.downstairs` in the Living Room/Kitchen area next to Master (assigned Living Room), `climate.upstairs` in the Game Room area in the hallway to the Study; (3) Laundry area stays and holds the Litter Robot 4 ("Milo's Poop Can"); an LG ThinQ washer-dryer will be added there; (4) General area stays for devices and integrations with no room (weather etc.), Claude may adjust; (5) prayer times on a separate "Prayer times" dashboard; (6) rooms layout is done by the owner in Nuvio edit mode; (7) Remote Control on the Pi 5 skipped (networkpi covers it); (8) GREEN LIGHT to exclude the two Hatch lights from the HomeKit Bridge | Recorded as given. Dashboard `habib-home` replaces `nuvio-test` after the owner confirms on the iPhone |
 
 ## Open (blocking)
-- Tablet model + OS
+- Tablet model + OS. Narrowed 2026-11-02: the owner's iPad 4 (iOS 10.3.4) is ruled out for Nuvio. Leaning to an Android tablet with Fully Kiosk (about $90 to $130 with mount). Not decided
 
 ### Open: networkpi / remote-access pipeline (updated 2026-10-23)
 - Domain: **thehabibfam.cc**, bought through Cloudflare Registrar 2026-10-23 (D20, D22). Closed. Next: Cloudflare Tunnel with `ha.thehabibfam.cc` (Tier 3, needs GREEN LIGHT)

@@ -36,3 +36,8 @@ Deadline: the Nabu Casa trial bills about **2026-11-23** (D26). Finish the tunne
 - Do not open any router ports. The tunnel is outbound only (I1).
 - Rotate the token in Cloudflare if it is ever pasted anywhere.
 - Geofencing needs this tunnel to stay up (D32, D26).
+
+## Update 2026-11-03 (as run)
+- Repo used: `https://github.com/homeassistant-apps/repository`. Menus: Settings, Apps; Cloudflare Routes tab (not Public Hostname).
+- Service URL is `http://192.168.1.36:8123` (the `homeassistant` name was not used).
+- `trusted_proxies` is set in the HA UI (Settings, System, Network), not in a package. See D39.

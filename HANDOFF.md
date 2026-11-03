@@ -1,12 +1,12 @@
 # HANDOFF
 
-Last updated: 2026-11-03 (Mac, owner replies). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-11-03 (Mac, tunnel live). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
 Owner replies of 2026-11-03 are in D38. Session note: `docs/sessions/2026-11-03-owner-replies.md`.
 0. **I18 on hold (owner, 2026-11-03):** front-door geofence automation stays disabled. Revisit later.
 1. **Dashboards (D38):** delete `nuvio-test` and `prayer-times`. The prayer card goes into `habib-home`. Unknown whether Nuvio accepts a markdown card (I22), so the Pi 5 checks first and deletes `prayer-times` only after the card shows. Prompt: `docs/prompts/pi5/2026-11-03-dashboards-tunnel.md`.
-2. **Cloudflare Tunnel (in progress):** tunnel `ha-pi5` created, token copied. Next: add repo `https://github.com/homeassistant-apps/repository` (Settings, Apps, Install app), install Cloudflared, remote (token) mode, start, set hostname. Details in the session note. Go given. Owner does the Cloudflare and add-on steps (`docs/prompts/pi5/2026-10-30-tunnel-owner-checklist.md`), then says "Cloudflare steps done". Finish by 2026-11-16; Nabu Casa bills about 2026-11-23.
+2. **Cloudflare Tunnel (live, D39):** `https://ha.thehabibfam.cc` works with 2FA; app and Safari tested on cellular (owner). Trusted proxy is set in the HA UI. Left: Pi 5 removes ignored `packages/cloudflare.yaml` (branch `feat/cloudflare-tunnel`), then HA 2FA is already on. Nabu Casa stays until geofencing is tested; bills about 2026-11-23. Session note: `docs/sessions/2026-11-03-tunnel-live.md`.
 3. **Scenes (M11, I19):** need more work and planning. Not tested. `feat/scenes` stays unmerged.
 4. **Adhan (M12, I17):** live test affirmed, pending. Owner picks the time. Claude does not run it.
 5. **Hatch (I23):** excluded from the HomeKit Bridge by the owner (not re-verified).
@@ -41,7 +41,7 @@ Owner to report: did Phase B run, and is networkpi's throttle status still `0x0`
 - Weekly encrypted backup copy to cloud storage (I9).
 
 ## Device state
-- **Pi 5** (192.168.1.36): HA OS and core updated (core 2026.10.4 on 2026-10-30). Claude Terminal and ha-mcp running (ha-mcp reconnected, I15). Glass Cards v1.10.11 and Nuvio v2.30.1 installed via HACS (auto-update off for Nuvio). Dashboard `nuvio-test` live. Scenes on `feat/scenes` (not merged). Adhan package on `main`, switched off (`6316775`). Geofencing not deployed (I18 live automation, see Resume item 0). Backups: `ha-pre-nuvio-backup_10-29` (slug 023157b8). Remote access: Nabu Casa trial; Cloudflare Tunnel not started.
+- **Pi 5** (192.168.1.36): HA OS and core updated (core 2026.10.4 on 2026-10-30). Claude Terminal and ha-mcp running (ha-mcp reconnected, I15). Glass Cards v1.10.11 and Nuvio v2.30.1 installed via HACS (auto-update off for Nuvio). Dashboard `nuvio-test` live. Scenes on `feat/scenes` (not merged). Adhan package on `main`, switched off (`6316775`). Geofencing not deployed (I18 live automation, see Resume item 0). Backups: `ha-pre-nuvio-backup_10-29` (slug 023157b8). Remote access: Cloudflare Tunnel live (D39); Nabu Casa trial still active.
 - **networkpi** (192.168.1.39, wired): see Networkpi above.
 - **Mac**: this session; caffeinate running for 8 hours from about 01:10 CDT.
 - **Router**: DHCP reservations done. Custom DNS unverified (I1).

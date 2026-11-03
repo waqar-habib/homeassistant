@@ -7,7 +7,7 @@
 | M2 | Phase 1 step 1.6: `docs/entities.md` entity inventory | Done | 2026-10-23 |
 | M3 | networkpi base: hardening, stable IP, Claude Code CLI with `/remote-control`, repo clone | In progress: hardening and stable IP done 2026-10-24; Claude Code 2.1.310 installed; Phase 0 and Phase A passed 2026-10-24 (signed in, repo cloned, loaded session with no OOM). Phase B (Remote Control, systemd) to do (I12) | |
 | M4 | HA backups to networkpi Samba share, automatic | To do | |
-| M5 | Cloudflare Tunnel live for HA, with 2FA and an external uptime monitor | To do | |
+| M5 | Cloudflare Tunnel live for HA, with 2FA and an external uptime monitor | In progress: tunnel `ha-pi5` live, `https://ha.thehabibfam.cc` works with 2FA, tested on cellular in Safari and in the HA app (owner, 2026-11-03). Uptime monitor still to do (M6). Nabu Casa not cancelled | 2026-11-03 |
 | M6 | Alerts: Uptime Kuma and ntfy for HA, networkpi, DNS, internet | To do | |
 | M7 | AdGuard Home live (depends on I1) | To do | |
 | M8 | Voice control feasibility tests F1-F4 | To do | |

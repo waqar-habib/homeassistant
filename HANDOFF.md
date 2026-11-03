@@ -4,7 +4,7 @@ Last updated: 2026-11-03 (Mac, owner replies). Read this first, then `docs/issue
 
 ## Resume here
 Owner replies of 2026-11-03 are in D38. Session note: `docs/sessions/2026-11-03-owner-replies.md`.
-0. **I18 decision still open.** Owner answered "Affirmative" to a three-way choice. Automation stays off. Ask: notify-only, rewrite under D32, or delete.
+0. **I18 on hold (owner, 2026-11-03):** front-door geofence automation stays disabled. Revisit later.
 1. **Dashboards (D38):** delete `nuvio-test` and `prayer-times`. The prayer card goes into `habib-home`. Unknown whether Nuvio accepts a markdown card (I22), so the Pi 5 checks first and deletes `prayer-times` only after the card shows. Prompt: `docs/prompts/pi5/2026-11-03-dashboards-tunnel.md`.
 2. **Cloudflare Tunnel:** go. Owner does the Cloudflare and add-on steps (`docs/prompts/pi5/2026-10-30-tunnel-owner-checklist.md`), then says "Cloudflare steps done". Finish by 2026-11-16; Nabu Casa bills about 2026-11-23.
 3. **Scenes (M11, I19):** need more work and planning. Not tested. `feat/scenes` stays unmerged.

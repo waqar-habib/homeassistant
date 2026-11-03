@@ -3,13 +3,15 @@
 Last updated: 2026-10-30 ~10:30 CDT (parallel Pi 5 lane run). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-0. **I18 is OFF** (owner disabled it in HA, 2026-10-30). REVISIT: keep as notify-only, rewrite under D32 and commit, or delete. Next: run `docs/prompts/pi5/2026-10-30-pi5-resume.md` (zone, areas, Hatch bridge exclusion, prayer dashboard). Owner replies are in D37.
-0a. **Resume run (2026-10-30), status:** Step A OK (backup `pre-zone-areas-bridge`, slug `e598fab6`; I18 off). Step B OK: `zone.near_home` created. Step C OK: areas assigned (`67e1045`; I21 resolved, three entities could not take an area). Step D **blocked**: the Hatch bridge exclusion was denied by the classifier (I23). Step E OK: `prayer-times` dashboard created; export on `feat/prayer-dashboard` (`dbbf0ba`, not merged). Step F skipped: LG ThinQ not added yet. Step G waiting on owner (checklist `docs/prompts/pi5/2026-10-30-tunnel-owner-checklist.md`). Step H skipped: no MKH person entity. Earlier lane: `docs/sessions/2026-10-30-parallel-pi5.md`.
-0b. **Open for the owner:** Hatch bridge exclusion (I23, needs a re-run or a manual step in the HomeKit Bridge options). Check `habib-home` and `prayer-times` on the iPhone; `nuvio-test` stays until `habib-home` is confirmed. Rooms layout in Nuvio edit mode (I22).
-1. **Geofence automation needs an owner decision (I18).** `automation.front_door_geofence_auto_lock_unlock` is loaded and unlocks the front door on zone entry. It is in an uncommitted `automations.yaml` change. Claude has not changed it.
-2. **Adhan (M12, I17):** package on `main` (`6316775`), toggle OFF, verified. Live test (play, volume, enabling the toggle) is held for a separate GREEN LIGHT with the baby awake. See `docs/sessions/2026-10-30-adhan-setup.md`.
-3. **Scenes (M11, I19):** on `feat/scenes` (`02588c7`), not merged. Owner tests pending (Welcome Home, Movie Night, Evening, Good Night with the lock). Then fast-forward merge to `main`.
-4. **Nuvio test (M9, I16):** owner reviewing `nuvio-test`. Rooms layout to polish.
+Owner replies of 2026-11-03 are in D38. Session note: `docs/sessions/2026-11-03-owner-replies.md`.
+0. **I18 decision still open.** Owner answered "Affirmative" to a three-way choice. Automation stays off. Ask: notify-only, rewrite under D32, or delete.
+1. **Dashboards (D38):** delete `nuvio-test` and `prayer-times`. The prayer card goes into `habib-home`. Unknown whether Nuvio accepts a markdown card (I22), so the Pi 5 checks first and deletes `prayer-times` only after the card shows. Prompt: `docs/prompts/pi5/2026-11-03-dashboards-tunnel.md`.
+2. **Cloudflare Tunnel:** go. Owner does the Cloudflare and add-on steps (`docs/prompts/pi5/2026-10-30-tunnel-owner-checklist.md`), then says "Cloudflare steps done". Finish by 2026-11-16; Nabu Casa bills about 2026-11-23.
+3. **Scenes (M11, I19):** need more work and planning. Not tested. `feat/scenes` stays unmerged.
+4. **Adhan (M12, I17):** live test affirmed, pending. Owner picks the time. Claude does not run it.
+5. **Hatch (I23):** excluded from the HomeKit Bridge by the owner (not re-verified).
+6. **Tablet (I5):** on hold, owner researching.
+7. **networkpi I12:** owner says no OOM kills, RAM test done. Closed on the owner's word.
 
 ## Networkpi
 Where it stands: bootstrap done 2026-10-24 (ufw, SSH keys only, watchdog, Samba share `ha-backups`, `claude` user). Claude Code 2.1.310 is installed and signed in as `claude`, repo cloned. Phase 0 and Phase A passed with no out-of-memory kills (available memory 486 to 699 MB, swap 0). Phase B (Remote Control, always-on) has its GREEN LIGHT (2026-10-24). The owner chose to wait until 2026-10-25. There is no record since, so it is unknown whether Phase B ran.

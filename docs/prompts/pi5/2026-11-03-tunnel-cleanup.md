@@ -3,6 +3,7 @@
 Target: pi5
 Date: 2026-11-03
 Tier: 3 (deletion)
+Status: SUPERSEDED. The Pi 5 session already removed the file (f1b38ba) and merged (cac9df1). Do not run.
 GREEN LIGHT: the owner instructed "Pi 5 cleanup" on 2026-11-03 after being told it removes `packages/cloudflare.yaml`. That covers deleting this one file only. Nothing else, no restart.
 
 ```

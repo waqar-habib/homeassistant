@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last updated: 2026-10-30 ~10:30 CDT (parallel Pi 5 lane run). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-11-03 (Mac, owner replies). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
 Owner replies of 2026-11-03 are in D38. Session note: `docs/sessions/2026-11-03-owner-replies.md`.

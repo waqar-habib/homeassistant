@@ -6,7 +6,7 @@ Last updated: 2026-11-03 (Mac, owner replies). Read this first, then `docs/issue
 Owner replies of 2026-11-03 are in D38. Session note: `docs/sessions/2026-11-03-owner-replies.md`.
 0. **I18 on hold (owner, 2026-11-03):** front-door geofence automation stays disabled. Revisit later.
 1. **Dashboards (D38):** delete `nuvio-test` and `prayer-times`. The prayer card goes into `habib-home`. Unknown whether Nuvio accepts a markdown card (I22), so the Pi 5 checks first and deletes `prayer-times` only after the card shows. Prompt: `docs/prompts/pi5/2026-11-03-dashboards-tunnel.md`.
-2. **Cloudflare Tunnel:** go. Owner does the Cloudflare and add-on steps (`docs/prompts/pi5/2026-10-30-tunnel-owner-checklist.md`), then says "Cloudflare steps done". Finish by 2026-11-16; Nabu Casa bills about 2026-11-23.
+2. **Cloudflare Tunnel (in progress):** tunnel `ha-pi5` created, token copied. Next: add repo `https://github.com/homeassistant-apps/repository` (Settings, Apps, Install app), install Cloudflared, remote (token) mode, start, set hostname. Details in the session note. Go given. Owner does the Cloudflare and add-on steps (`docs/prompts/pi5/2026-10-30-tunnel-owner-checklist.md`), then says "Cloudflare steps done". Finish by 2026-11-16; Nabu Casa bills about 2026-11-23.
 3. **Scenes (M11, I19):** need more work and planning. Not tested. `feat/scenes` stays unmerged.
 4. **Adhan (M12, I17):** live test affirmed, pending. Owner picks the time. Claude does not run it.
 5. **Hatch (I23):** excluded from the HomeKit Bridge by the owner (not re-verified).

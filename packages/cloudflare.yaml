@@ -1,0 +1,6 @@
+# Cloudflare Tunnel (ha.thehabibfam.cc). Proxy trust for the Cloudflared add-on.
+# Add-on IP 172.30.33.2 (ha apps info 396f0234_cloudflared), so the add-on network is 172.30.33.0/24.
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.30.33.0/24

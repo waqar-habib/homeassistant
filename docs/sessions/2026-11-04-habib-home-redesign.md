@@ -58,3 +58,19 @@ Sources: README, `docs/configuration.md`, `docs/components.md` (fetched from tag
 2. Then, in order: decide on v2 vs `habib-home`; if v2 is accepted, merge `feat/habib-home-redesign` to main; then the deferred deletions of `nuvio-test` and `prayer-times`, and the prayer card (I22).
 3. Verify Glass Cards element names before any Glass Cards styling (Path C follow-up).
 4. Transition parity table: `docs/transition-apple-home-to-ha.md`.
+
+## Nuvio-card instance (added late 2026-11-04, owner redirect)
+Owner: the goal is the Nuvio look, not stock HA elements. Do not overwrite `habib-home`; create a new Nuvio dashboard, test it, revise, then make it the default.
+
+- Created `habib-home-nuvio` ("Habib Home (Nuvio)", admin only, sidebar): static sections view with `custom:nuvio-hero-card`, `nuvio-grid-card`, `nuvio-room-compact-card`, `nuvio-toggle-card`, `nuvio-glance-card`. Card options taken from Nuvio docs v2.30.1 (`docs/components.md`). `habib-home` hash stayed `2896b3da062755d1` throughout.
+- **Rev 1** (hash `ecb2d6dfe3a2bfb3`, branch `feat/habib-home-nuvio` `2b53cdb`). Owner screenshot on the iPhone showed: light toggles with no names and clipped switches (three columns too narrow); the fourth Living Room light stretched tall because the HomePod glance card shared its grid row; the HomePod glance card repeated its name and truncated it ("Living Roo..."); Nuvio header and tabs absent (page header reads "Home").
+- **Rev 2** (hash `08ade5fb33152df1`, branch `ea87ae6`, pushed, not merged): grids use 2 columns; HomePod and Front Door glance cards are separate full-width cards with no duplicate title; Favorites holds the two thermostat cards, with the Front Door glance card below. Not rendered or seen by anyone yet: screenshots are disabled on this setup.
+- Likely still wrong (unverified): Nuvio chrome and summary chips missing; thermostat cards show temperature only; toggle card name display; whether glance on a lock opens more-info.
+- Version: installed Nuvio is **2.31.0** (`www/community/nuvio/nuvio-version.json`); resource tag moved from `...2301` to `...2310`. Docs read were v2.30.1. Not changed by Claude. Owner to check whether HACS auto-update was turned on.
+- `habib-home-v2` (stock cards) left in place. Deleting it needs owner OK.
+
+## Resume point (supersedes the one above)
+1. Owner reloads `habib-home-nuvio` (hard refresh or Companion app: Settings, Reset frontend cache) and reports what is still wrong, per device.
+2. Test the Front Door tile: it must not lock or unlock on tap.
+3. Decide how to get the Nuvio chrome: Nuvio edit mode on a `custom:nuvio` strategy dashboard, per-view strategy, or take control and rebuild. Read Nuvio 2.31.0 docs first.
+4. Then: delete `habib-home-v2` (owner OK), default dashboard switch, deferred deletions of `nuvio-test` and `prayer-times`, prayer card (I22).

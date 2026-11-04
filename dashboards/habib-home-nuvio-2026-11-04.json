@@ -3,8 +3,8 @@
   "icon": "mdi:home-outline",
   "require_admin": true,
   "show_in_sidebar": true,
-  "note": "Nuvio cards (custom:nuvio-*) in a static sections view. Built against Nuvio docs v2.30.1; installed Nuvio is 2.31.0. Not yet tested on devices.",
-  "config_hash_at_export": "ecb2d6dfe3a2bfb3",
+  "note": "Nuvio cards (custom:nuvio-*), static sections view. Rev 2 (2026-11-04 late): 2 columns, HomePod and lock as separate full-width cards. Built against Nuvio docs v2.30.1; installed Nuvio is 2.31.0. Layout not verified by rendering; owner reported rev 1 had missing names, clipped switches and a stretched tile.",
+  "config_hash_at_export": "08ade5fb33152df1",
   "config": {
     "views": [
       {
@@ -14,37 +14,269 @@
         "type": "sections",
         "max_columns": 3,
         "sections": [
-          { "type": "grid", "cards": [ { "type": "custom:nuvio-hero-card", "title": "Waqar, Maham & Noor's Home", "subtitle": "", "grid_options": { "columns": 12 } } ] },
-          { "type": "grid", "cards": [ { "type": "custom:nuvio-grid-card", "title": "Favorites", "columns": 3, "grid_options": { "columns": 12 }, "cards": [
-            { "type": "custom:nuvio-room-compact-card", "name": "Living Room", "entity": "climate.downstairs" },
-            { "type": "custom:nuvio-room-compact-card", "name": "Game Room", "entity": "climate.upstairs" },
-            { "type": "custom:nuvio-glance-card", "title": "Front Door", "entities": ["lock.living_room_front_door"], "show_name": true, "show_state": true } ] } ] },
-          { "type": "grid", "cards": [ { "type": "custom:nuvio-grid-card", "title": "Master", "columns": 3, "grid_options": { "columns": 12 }, "cards": [
-            { "type": "custom:nuvio-toggle-card", "entity": "light.dresser", "name": "Dresser" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.mahams_lamp", "name": "Maham's Lamp" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.waqars_lamp", "name": "Waqar's Lamp" },
-            { "type": "custom:nuvio-glance-card", "title": "Bedroom HomePod", "entities": ["media_player.master_bedroom_homepod"], "show_name": true, "show_state": true } ] } ] },
-          { "type": "grid", "cards": [ { "type": "custom:nuvio-grid-card", "title": "Nursery", "columns": 3, "grid_options": { "columns": 12 }, "cards": [
-            { "type": "custom:nuvio-toggle-card", "entity": "light.bookshelf", "name": "Bookshelf" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.changing_table", "name": "Changing Table" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.nursery_floor_lamp", "name": "Nursery Floor Lamp" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.nursery_hatch_light", "name": "Hatch Light" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.nursery_hatch_clock", "name": "Hatch Clock" } ] } ] },
-          { "type": "grid", "cards": [ { "type": "custom:nuvio-grid-card", "title": "Living Room", "columns": 3, "grid_options": { "columns": 12 }, "cards": [
-            { "type": "custom:nuvio-toggle-card", "entity": "light.buffet", "name": "Buffet" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.console_lamp", "name": "Console Lamp" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.floor_lamp", "name": "Floor Lamp" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.side_table", "name": "Side Table" },
-            { "type": "custom:nuvio-glance-card", "title": "Living Room HomePod", "entities": ["media_player.living_room_living_room_homepod"], "show_name": true, "show_state": true } ] } ] },
-          { "type": "grid", "cards": [ { "type": "custom:nuvio-grid-card", "title": "Game Room", "columns": 3, "grid_options": { "columns": 12 }, "cards": [
-            { "type": "custom:nuvio-toggle-card", "entity": "light.game_room", "name": "Game Room" } ] } ] },
-          { "type": "grid", "cards": [ { "type": "custom:nuvio-grid-card", "title": "Upstairs Guest", "columns": 3, "grid_options": { "columns": 12 }, "cards": [
-            { "type": "custom:nuvio-toggle-card", "entity": "light.upstairs_guest", "name": "Upstairs Guest" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.upstairs_guest_guest_nightstand", "name": "Guest Nightstand" } ] } ] },
-          { "type": "grid", "cards": [ { "type": "custom:nuvio-grid-card", "title": "Study", "columns": 3, "grid_options": { "columns": 12 }, "cards": [
-            { "type": "custom:nuvio-toggle-card", "entity": "light.study_lamp", "name": "Nightstand" },
-            { "type": "custom:nuvio-toggle-card", "entity": "light.study_study_floor_lamp", "name": "Study Floor Lamp" } ] } ] },
-          { "type": "grid", "cards": [ { "type": "custom:nuvio-glance-card", "title": "Security", "entities": ["lock.living_room_front_door"], "show_name": true, "show_state": true, "grid_options": { "columns": 12 } } ] }
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:nuvio-hero-card",
+                "title": "Waqar, Maham & Noor's Home",
+                "subtitle": "",
+                "grid_options": {
+                  "columns": 12
+                }
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:nuvio-grid-card",
+                "title": "Favorites",
+                "columns": 2,
+                "grid_options": {
+                  "columns": 12
+                },
+                "cards": [
+                  {
+                    "type": "custom:nuvio-room-compact-card",
+                    "name": "Living Room",
+                    "entity": "climate.downstairs"
+                  },
+                  {
+                    "type": "custom:nuvio-room-compact-card",
+                    "name": "Game Room",
+                    "entity": "climate.upstairs"
+                  }
+                ]
+              },
+              {
+                "type": "custom:nuvio-glance-card",
+                "entities": [
+                  "lock.living_room_front_door"
+                ],
+                "show_name": true,
+                "show_state": true,
+                "grid_options": {
+                  "columns": 12
+                }
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:nuvio-grid-card",
+                "title": "Master",
+                "columns": 2,
+                "grid_options": {
+                  "columns": 12
+                },
+                "cards": [
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.dresser",
+                    "name": "Dresser"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.mahams_lamp",
+                    "name": "Maham's Lamp"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.waqars_lamp",
+                    "name": "Waqar's Lamp"
+                  }
+                ]
+              },
+              {
+                "type": "custom:nuvio-glance-card",
+                "entities": [
+                  "media_player.master_bedroom_homepod"
+                ],
+                "show_name": true,
+                "show_state": true,
+                "grid_options": {
+                  "columns": 12
+                }
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:nuvio-grid-card",
+                "title": "Nursery",
+                "columns": 2,
+                "grid_options": {
+                  "columns": 12
+                },
+                "cards": [
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.bookshelf",
+                    "name": "Bookshelf"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.changing_table",
+                    "name": "Changing Table"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.nursery_floor_lamp",
+                    "name": "Nursery Floor Lamp"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.nursery_hatch_light",
+                    "name": "Hatch Light"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.nursery_hatch_clock",
+                    "name": "Hatch Clock"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:nuvio-grid-card",
+                "title": "Living Room",
+                "columns": 2,
+                "grid_options": {
+                  "columns": 12
+                },
+                "cards": [
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.buffet",
+                    "name": "Buffet"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.console_lamp",
+                    "name": "Console Lamp"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.floor_lamp",
+                    "name": "Floor Lamp"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.side_table",
+                    "name": "Side Table"
+                  }
+                ]
+              },
+              {
+                "type": "custom:nuvio-glance-card",
+                "entities": [
+                  "media_player.living_room_living_room_homepod"
+                ],
+                "show_name": true,
+                "show_state": true,
+                "grid_options": {
+                  "columns": 12
+                }
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:nuvio-grid-card",
+                "title": "Game Room",
+                "columns": 2,
+                "grid_options": {
+                  "columns": 12
+                },
+                "cards": [
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.game_room",
+                    "name": "Game Room"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:nuvio-grid-card",
+                "title": "Upstairs Guest",
+                "columns": 2,
+                "grid_options": {
+                  "columns": 12
+                },
+                "cards": [
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.upstairs_guest",
+                    "name": "Upstairs Guest"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.upstairs_guest_guest_nightstand",
+                    "name": "Guest Nightstand"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:nuvio-grid-card",
+                "title": "Study",
+                "columns": 2,
+                "grid_options": {
+                  "columns": 12
+                },
+                "cards": [
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.study_lamp",
+                    "name": "Nightstand"
+                  },
+                  {
+                    "type": "custom:nuvio-toggle-card",
+                    "entity": "light.study_study_floor_lamp",
+                    "name": "Study Floor Lamp"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:nuvio-glance-card",
+                "title": "Security",
+                "entities": [
+                  "lock.living_room_front_door"
+                ],
+                "show_name": true,
+                "show_state": true,
+                "grid_options": {
+                  "columns": 12
+                }
+              }
+            ]
+          }
         ]
       }
     ]

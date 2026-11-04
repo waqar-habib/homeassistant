@@ -1,9 +1,9 @@
 # HANDOFF
 
-Last updated: 2026-11-04 (cloud, I18 resolved, habib-home redesign running on Pi 5). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-11-04 (Pi 5, habib-home redesign run done, Path C). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-Morning (2026-11-04): redesign run on Pi 5 (`docs/prompts/pi5/2026-11-04-habib-home-redesign.md`, commit 1f70983). Read its session note or report first. Session note: `docs/sessions/2026-11-04-cloud-i18-and-dashboard-plan.md`.
+Morning (2026-11-04): new dashboard `habib-home-v2` is built on the Pi 5 (native cards, admin only, sidebar). `habib-home` (Nuvio) is untouched and still the main dashboard. Owner runs the morning checklist in `docs/sessions/2026-11-04-habib-home-redesign.md` (iPhone, iPad, Mac) and reports per device. Branch `feat/habib-home-redesign` is pushed, not merged. Parity table: `docs/transition-apple-home-to-ha.md`. Cloud planning note: `docs/sessions/2026-11-04-cloud-i18-and-dashboard-plan.md`.
 Owner replies of 2026-11-03 are in D38. Session note: `docs/sessions/2026-11-03-owner-replies.md`.
 0. **I18 on hold (owner, 2026-11-03):** front-door geofence automation stays disabled. Revisit later.
 1. **Dashboards (D38):** delete `nuvio-test` and `prayer-times`. The prayer card goes into `habib-home`. Unknown whether Nuvio accepts a markdown card (I22), so the Pi 5 checks first and deletes `prayer-times` only after the card shows. Prompt: `docs/prompts/pi5/2026-11-03-dashboards-tunnel.md`.

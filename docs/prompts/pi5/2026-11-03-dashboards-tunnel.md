@@ -2,6 +2,7 @@
 
 Target: pi5
 Date: 2026-11-03
+Status: PARTLY SUPERSEDED 2026-11-04 by `2026-11-04-habib-home-redesign.md`. The prayer card and both deletions are deferred; tunnel step G is moot (tunnel live, D39). Do not run.
 Tier: 3 (deletions, tunnel, HA restart)
 GREEN LIGHT: yes, 2026-11-03 (D38) for deleting `nuvio-test` and `prayer-times` and for the tunnel as written in `2026-10-24-cloudflare-tunnel.md`. The HA restart still needs a live "restart OK". Nothing else is covered.
 

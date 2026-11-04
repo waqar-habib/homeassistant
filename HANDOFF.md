@@ -10,7 +10,7 @@ Owner replies of 2026-11-03 are in D38. Session note: `docs/sessions/2026-11-03-
 3. **Scenes (M11, I19):** need more work and planning. Not tested. `feat/scenes` stays unmerged.
 4. **Adhan (M12, I17):** live test affirmed, pending. Owner picks the time. Claude does not run it.
 5. **Hatch (I23):** excluded from the HomeKit Bridge by the owner (not re-verified).
-6. **Tablet (I5):** on hold, owner researching.
+6. **Tablet (I5):** backlog (D41), owner budgeting and researching.
 7. **networkpi I12:** owner says no OOM kills, RAM test done. Closed on the owner's word.
 
 ## Networkpi

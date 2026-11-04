@@ -69,3 +69,4 @@
 - Tablet or kiosk display (I5): owner is budgeting for the device; research continues. Revisit when a device is chosen (D41).
 - Prayer times card in the Nuvio dashboard (I22): scope after the redesign (D41).
 - Simpler household dashboard for MKH: after MKH is onboarded (D41).
+- D41 assumptions confirmed by owner, 2026-11-04: (a) Apple "Bedroom" is HA area "Master"; (b) "remove Scenes" means the stock Nuvio card only; (c) Laundry is shown as a room section; General is hidden on the Home view; (d) `nuvio-test` and `prayer-times` deletions stay deferred until the redesign is accepted.

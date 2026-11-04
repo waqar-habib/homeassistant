@@ -1,0 +1,115 @@
+{
+  "title": "Habib Home v2",
+  "icon": "mdi:home-variant",
+  "require_admin": true,
+  "show_in_sidebar": true,
+  "config_hash_at_export": "6eafda8676bd3dc2",
+  "config": {
+    "views": [
+      {
+        "title": "Home",
+        "path": "home",
+        "icon": "mdi:home",
+        "type": "sections",
+        "max_columns": 4,
+        "sections": [
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "heading",
+                "heading": "Waqar, Maham & Noor's Home",
+                "heading_style": "title",
+                "grid_options": { "columns": 12 }
+              },
+              {
+                "type": "markdown",
+                "grid_options": { "columns": 12 },
+                "entity_id": [
+                  "climate.downstairs",
+                  "climate.upstairs",
+                  "light.buffet",
+                  "lock.living_room_front_door",
+                  "media_player.living_room_living_room_homepod",
+                  "media_player.master_bedroom_homepod"
+                ],
+                "content": "**Climate** {% set c = [state_attr('climate.downstairs','current_temperature') | float(0), state_attr('climate.upstairs','current_temperature') | float(0)] %}{{ c | min | round(0) | int }}–{{ c | max | round(0) | int }}°  ·  **Lights** {{ states.light | selectattr('state','eq','on') | list | count }} on  ·  **Security** {% if is_state('lock.living_room_front_door','locked') %}Locked{% else %}{{ states('lock.living_room_front_door') | capitalize }}{% endif %}  ·  **Speakers** {% set n = states.media_player | selectattr('state','eq','playing') | list | count %}{% if n == 0 %}None Playing{% else %}{{ n }} Playing{% endif %}"
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "heading", "heading": "Favorites", "heading_style": "subtitle", "grid_options": { "columns": 12 } },
+              { "type": "tile", "entity": "climate.downstairs", "name": "Living Room", "tap_action": { "action": "more-info" }, "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "climate.upstairs", "name": "Game Room", "tap_action": { "action": "more-info" }, "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "lock.living_room_front_door", "name": "Front Door", "tap_action": { "action": "more-info" }, "grid_options": { "columns": 6 } }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "heading", "heading": "Master", "heading_style": "subtitle", "grid_options": { "columns": 12 } },
+              { "type": "tile", "entity": "light.dresser", "name": "Dresser", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.mahams_lamp", "name": "Maham's Lamp", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.waqars_lamp", "name": "Waqar's Lamp", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "media_player.master_bedroom_homepod", "name": "Bedroom HomePod", "tap_action": { "action": "more-info" }, "grid_options": { "columns": 12 } }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "heading", "heading": "Nursery", "heading_style": "subtitle", "grid_options": { "columns": 12 } },
+              { "type": "tile", "entity": "light.bookshelf", "name": "Bookshelf", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.changing_table", "name": "Changing Table", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.nursery_floor_lamp", "name": "Nursery Floor Lamp", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.nursery_hatch_light", "name": "Hatch Light", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.nursery_hatch_clock", "name": "Hatch Clock", "grid_options": { "columns": 6 } }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "heading", "heading": "Living Room", "heading_style": "subtitle", "grid_options": { "columns": 12 } },
+              { "type": "tile", "entity": "light.buffet", "name": "Buffet", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.console_lamp", "name": "Console Lamp", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.floor_lamp", "name": "Floor Lamp", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.side_table", "name": "Side Table", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "media_player.living_room_living_room_homepod", "name": "Living Room HomePod", "tap_action": { "action": "more-info" }, "grid_options": { "columns": 12 } }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "heading", "heading": "Game Room", "heading_style": "subtitle", "grid_options": { "columns": 12 } },
+              { "type": "tile", "entity": "light.game_room", "name": "Game Room", "grid_options": { "columns": 6 } }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "heading", "heading": "Upstairs Guest", "heading_style": "subtitle", "grid_options": { "columns": 12 } },
+              { "type": "tile", "entity": "light.upstairs_guest", "name": "Upstairs Guest", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.upstairs_guest_guest_nightstand", "name": "Guest Nightstand", "grid_options": { "columns": 6 } }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "heading", "heading": "Study", "heading_style": "subtitle", "grid_options": { "columns": 12 } },
+              { "type": "tile", "entity": "light.study_lamp", "name": "Nightstand", "grid_options": { "columns": 6 } },
+              { "type": "tile", "entity": "light.study_study_floor_lamp", "name": "Study Floor Lamp", "grid_options": { "columns": 6 } }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "heading", "heading": "Security", "heading_style": "subtitle", "grid_options": { "columns": 12 } },
+              { "type": "tile", "entity": "lock.living_room_front_door", "name": "Front Door", "tap_action": { "action": "more-info" }, "grid_options": { "columns": 6 } }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

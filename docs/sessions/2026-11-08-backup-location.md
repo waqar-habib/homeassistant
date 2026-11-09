@@ -19,3 +19,11 @@ Steps 4 to 8 (mount check, schedule change, test backup, next-morning check, fin
 ## Resume point
 After owner confirms the storage is added: check `ha mounts list` (or ha-mcp), then step 4.
 Side note: during this session the Claude Terminal and ha-mcp add-ons updated (2.5.3 and 9.1.1). Not triggered by this work.
+
+## Update: steps 3 to 6 (same session)
+- Step 3: owner added the storage in the HA UI. Mount name `networkpiBackups` (server 192.168.1.39, share `ha-backups`, CIFS, usage backup). Owner entered the habackup password in the UI only.
+- Step 4: confirmed active and not read-only with `ha mounts info`. It is now the default backup mount.
+- Step 5 (owner-set in UI, per owner's discretion): daily at 03:00, keep 7, locations local + `networkpiBackups` + Nabu Casa (kept until the planned phase-out, per owner). Encryption left on. Confirmed: next automatic backup 2026-11-09 03:00 (-06:00).
+- Step 6: test backup `test-networkpi-location` (slug `2c9d3f0d`) landed on `hassio.networkpiBackups`, 304,855,040 bytes. Not on local storage. Waiting on owner to check networkpi.
+- Rollback names: mount `networkpiBackups`; test backup `2c9d3f0d` on the share; safety backup `744a21ce` local.
+- Resume at step 6 check on networkpi (root or `daily/`), then step 7 next morning.

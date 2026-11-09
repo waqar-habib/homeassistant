@@ -1,7 +1,6 @@
 # D42/D43/D44 (owner, 2026-11-09). ALL automations ship DISABLED (initial_state: false).
 # Do not enable any of them until the Apple Home transition is complete and MKH is onboarded (D44).
-# Entity and area IDs are NOT guessed. Every <<FILL>> must be replaced from the registry
-# (ha_search / area_entities) by the Pi 5 session, then checked with `ha core check`.
+# Entity IDs filled from the HA registry on 2026-11-09 (Pi 5). Hatch lights excluded (I23).
 # Presence uses person.* states (zones feed person entities); no device IDs are hard-coded.
 
 automation:
@@ -36,16 +35,14 @@ automation:
       - service: light.turn_on
         target:
           entity_id:
-            # D43 Away list. Map each Apple name to ONE HA light, then fill in:
-            # Dresser (Master), Floor Lamp (Nursery), Console Lamp, Side Table (Living Room),
-            # Game Room, Upstairs Guest, Nightstand (Study). Hatch excluded (I23).
-            - <<FILL light.dresser_master>>
-            - <<FILL light.floor_lamp_nursery>>
-            - <<FILL light.console_lamp_living_room>>
-            - <<FILL light.side_table_living_room>>
-            - <<FILL light.game_room>>
-            - <<FILL light.upstairs_guest>>
-            - <<FILL light.nightstand_study>>
+            # D43 Away list (Apple name -> HA light)
+            - light.dresser           # Dresser (Master)
+            - light.nursery_floor_lamp # Floor Lamp (Nursery)
+            - light.console_lamp      # Console Lamp (Living Room)
+            - light.side_table        # Side Table (Living Room)
+            - light.game_room         # Game Room
+            - light.upstairs_guest    # Upstairs Guest
+            - light.study_lamp        # Nightstand (Study)
 
   - id: d42_away_off_after_2h
     alias: "Away: lights off 2 hours later if still nobody home"
@@ -54,7 +51,7 @@ automation:
     mode: restart
     trigger:
       - platform: state
-        entity_id: <<FILL one Away light from the list above>>
+        entity_id: light.dresser
         to: "on"
     condition:
       - condition: template
@@ -66,7 +63,13 @@ automation:
       - service: light.turn_off
         target:
           entity_id:
-            - <<FILL same seven lights as d42_away_on_sunset>>
+            - light.dresser
+            - light.nursery_floor_lamp
+            - light.console_lamp
+            - light.side_table
+            - light.game_room
+            - light.upstairs_guest
+            - light.study_lamp
 
   - id: d42_notify_lights_and_front_door
     alias: "Notify: front door and light changes while away"
@@ -77,7 +80,22 @@ automation:
       - platform: state
         entity_id: lock.living_room_front_door
       - platform: state
-        entity_id: <<FILL lights to watch, e.g. all light.* via a list>>
+        entity_id:
+          - light.study_study_floor_lamp
+          - light.upstairs_guest_guest_nightstand
+          - light.dresser
+          - light.nursery_floor_lamp
+          - light.changing_table
+          - light.waqars_lamp
+          - light.mahams_lamp
+          - light.bookshelf
+          - light.buffet
+          - light.floor_lamp
+          - light.side_table
+          - light.console_lamp
+          - light.study_lamp
+          - light.game_room
+          - light.upstairs_guest
         to: ["on", "off"]
     condition:
       - condition: template

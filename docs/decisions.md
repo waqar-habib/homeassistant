@@ -82,4 +82,6 @@
   (i) Automations (approved under D35 CRUD): "Away" turns on select lights at sunset and turns them off 2 hours later, only when nobody is home. "Evening" turns on all lights except the Nursery at sunset, only when someone is home.
   (j) Notifications: front door only, plus a notice when lights turn on or off, especially while away.
   Dependencies not yet verified: a presence source for "nobody is home" (I18 geofence deleted; D32 is on hold). Which "select lights" for Away is still to be named by the owner.
+- D43 owner, 2026-11-09: presence is set up as HA zones (anyone home / nobody home). MKH is not yet added to the zones. Away light list = the 7 Apple Home accessories in the owner's "Away" scene (screenshot, 12:38): Dresser (Bedroom, = HA Master per D41a), Floor Lamp (Nursery), Console Lamp and Side Table (Living Room), Game Room (Game Room), Upstairs Guest (Upstairs Guest), Nightstand (Study). Hatch lights are excluded (I23). HA entity IDs are NOT yet mapped: the Pi 5 must read them from the registry, and confirm that each Apple name maps to one HA light.
+  Risk: until MKH is in the zones, "nobody home" can be true while MKH is home. The Away-off automation must not be enabled before MKH is added, or the owner accepts that risk in writing.
 

@@ -74,3 +74,11 @@ Owner: the goal is the Nuvio look, not stock HA elements. Do not overwrite `habi
 2. Test the Front Door tile: it must not lock or unlock on tap.
 3. Decide how to get the Nuvio chrome: Nuvio edit mode on a `custom:nuvio` strategy dashboard, per-view strategy, or take control and rebuild. Read Nuvio 2.31.0 docs first.
 4. Then: delete `habib-home-v2` (owner OK), default dashboard switch, deferred deletions of `nuvio-test` and `prayer-times`, prayer card (I22).
+
+## Update 2026-11-08 (Mac session, read-only research for resume item 3)
+Sources: Nuvio `docs/configuration.md` at tag v2.31.0 and the v2.31.0 release notes (`kczepiec/nuvio`). The Pi 5 was not touched.
+- **Chrome is configured in the Nuvio Settings UI, not in YAML or the card options:** header under Settings > Appearance > Header; views and navigation under Settings > Dashboard > Views and navigation; summary chips are the tab Badge toggles under Settings > Views. Clock via `{time}` or `{date}` in a view title or subtitle. Edit mode is a draft until **Done**; the API for saving it is not documented.
+- **Not documented:** whether the chrome applies to a static, hand-written dashboard like `habib-home-nuvio`. The docs say only that **Take control** turns a strategy dashboard into plain YAML and the `custom:nuvio-*` cards keep working. So the chrome most likely belongs to the `custom:nuvio` strategy, which means rev 2 as built (static views) probably cannot show it. Unverified.
+- **2.31.0** (released 2026-10-31): adds a `{state:entity}` placeholder for the header title and subtitle. No breaking changes listed. Docs and release process otherwise.
+- **Idea for I22 (prayer times):** the header subtitle can show an entity state, so the next prayer could sit in the Nuvio header with no separate card. Entity ID must come from `docs/entities.md` or ha-mcp, not guessed. Not tested.
+- **Next:** owner looks at rev 2 on the phone. Then pick: (a) keep the `custom:nuvio` strategy on `habib-home` and do the layout in Nuvio edit mode (owner-driven, UI only), or (b) keep static `habib-home-nuvio` without chrome. Claude cannot do (a) through the API.

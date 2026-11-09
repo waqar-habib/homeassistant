@@ -59,6 +59,10 @@ Best / base / worst: best: stages 1 to 4 in about 3 weeks with no breaks. Base: 
 1. **Router (I1):** My Spectrum shows two DNS fields, both "Spectrum DNS" now. So router-wide is possible: stage 4 can hand out two servers. Not tested yet; the fields are assumed to be IPv4 and to apply to DHCP clients (verify at stage 4).
 2. **IPv6 is on** (public IPv6 address in the UI). This raises hypothesis 3 from "possible" to "likely contributor" and adds a leak path, see below.
 
+3. **IPv6 DNS cannot be changed (owner, 2026-11-08).** The IPv6 field in My Spectrum is a static, read-only address: no toggle, no DNS setting. The router-side IPv6 leak path cannot be closed from the app.
+   - Stages 2 and 3 are not affected: a manually set DNS on the device replaces what DHCP and router advertisements offer for that network. Verify on the Mac with `scutil --dns` (list the nameservers; only 192.168.1.39 should appear for the Wi-Fi/Ethernet service) and by checking the AdGuard log shows the Mac's lookups.
+   - Stage 4 (router-wide) is affected: a device taking automatic settings may keep an ISP IPv6 resolver and skip the filter. Decide at stage 4 using what stages 2 and 3 show. Options then: accept partial filtering; keep devices that matter on manual DNS; disable IPv6 per device where possible (macOS: set IPv6 to Link-local only on the service; iOS has no simple toggle); or a router you control later. Not a blocker for stages 1 to 3.
+
 ### Consequences
 | Item | Detail | Handling |
 |---|---|---|

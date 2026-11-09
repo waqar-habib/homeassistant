@@ -1,4 +1,4 @@
-# AdGuard Home plan (D8, I1, M7) — DRAFT v0.1
+# AdGuard Home plan (D8, I1, M7) — DRAFT v0.2
 
 Status: plan only. Nothing installed. Install is Tier 3 (DNS, firewall, new service on networkpi) and needs a GREEN LIGHT per stage.
 
@@ -46,8 +46,20 @@ Hypothesis 1 is the likely one. None is confirmed; the old Pi-hole logs are gone
 
 Best / base / worst: best: stages 1 to 4 in about 3 weeks with no breaks. Base: one or two allowlist additions per week early on. Worst: airline or another critical site breaks, or the router blocks custom DNS; stay at stage 3 (per-device) and keep the rest.
 
+## 4a. Owner answers, 2026-11-08 (v0.2)
+1. **Router (I1):** My Spectrum shows two DNS fields, both "Spectrum DNS" now. So router-wide is possible: stage 4 can hand out two servers. Not tested yet; the fields are assumed to be IPv4 and to apply to DHCP clients (verify at stage 4).
+2. **IPv6 is on** (public IPv6 address in the UI). This raises hypothesis 3 from "possible" to "likely contributor" and adds a leak path, see below.
+
+### Consequences
+| Item | Detail | Handling |
+|---|---|---|
+| IPv6 DNS leak | The router can advertise its own IPv6 DNS (RDNSS / DHCPv6). Clients that prefer it skip AdGuard entirely, so ads still show and the filter looks flaky | At stage 2 check which resolver the Mac actually uses (`scutil --dns`). If the app lets you set or disable the IPv6 DNS, do so. If not, the choice is: accept leakage, or disable IPv6 on the LAN side (Tier 3, may break some services) |
+| AAAA answers | AdGuard must answer AAAA for allowed hosts and block it for blocked ones, consistently. Airline failure fits a half-blocked dual-stack | Keep "block AAAA" OFF; test airline flows with IPv6 on and off in stage 2 |
+| Second DNS server | Clients with two servers do not strictly use the first; some alternate or pick the fastest, so queries leak past the filter and the log shows only part of the traffic | Option A (simple): secondary = public resolver, fail-open, accept leakage. Option B (better filtering, more work, Tier 3): secondary = a second AdGuard on the Pi 5 (HA add-on) with synced rules; failover keeps filtering. Pi 5 itself stays on public DNS. Decide at stage 4 |
+| Best-case stage 4 setting | Primary 192.168.1.39, secondary per A or B | Rollback: set both fields back to Spectrum DNS (one change, the router app) |
+
 ## 5. Needed from the owner
-1. **I1:** open My Spectrum, Advanced settings, look for DNS or LAN settings for the SBE1V1R. Report whether DNS servers can be changed and whether two can be set.
-2. Does the household use IPv6 on the router? (Check if listed in the app.)
+1. ~~I1: can DNS be changed, can two be set?~~ Answered: two fields, yes.
+2. ~~IPv6~~ Answered: on. Still open: does the app let you set or disable IPv6 DNS? (look next to the same DNS fields)
 3. Which banks and services must always work (for the allowlist)?
 4. Approval of this plan as v0.1 (revise, then v1.0 on "GREEN LIGHT").

@@ -70,3 +70,16 @@
 - Prayer times card in the Nuvio dashboard (I22): scope after the redesign (D41).
 - Simpler household dashboard for MKH: after MKH is onboarded (D41).
 - D41 assumptions confirmed by owner, 2026-11-04: (a) Apple "Bedroom" is HA area "Master"; (b) "remove Scenes" means the stock Nuvio card only; (c) Laundry is shown as a room section; General is hidden on the Home view; (d) `nuvio-test` and `prayer-times` deletions stay deferred until the redesign is accepted.
+- D42 owner answers, 2026-11-09 (dashboard and Pi 5 items):
+  (a) Tablet: 10" landscape, wall-mounted. Model TBD (I5).
+  (b) Front door (`lock.living_room_front_door` only, NOT the 804 lock): lock plus confirmed unlock.
+  (c) Scenes to create: "turn on lights", "turn off lights", "Away" (empty for now).
+  (d) Dashboard: full redesign; Claude may remove the current view at its discretion.
+  (e) Scope for now: owner's view only (MKH and guests later). Cameras later.
+  (f) Idle screen after 5 minutes.
+  (g) Keep the prayer sensors. Keep Nabu Casa until next week (decision about 2026-11-20).
+  (h) GREEN LIGHT: HANDOFF.md fix (Tier 1). GREEN LIGHT: delete the `homedeck` custom component (owner does not want it).
+  (i) Automations (approved under D35 CRUD): "Away" turns on select lights at sunset and turns them off 2 hours later, only when nobody is home. "Evening" turns on all lights except the Nursery at sunset, only when someone is home.
+  (j) Notifications: front door only, plus a notice when lights turn on or off, especially while away.
+  Dependencies not yet verified: a presence source for "nobody is home" (I18 geofence deleted; D32 is on hold). Which "select lights" for Away is still to be named by the owner.
+

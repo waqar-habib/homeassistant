@@ -85,6 +85,6 @@ Key entities:
 - Custom component `ha_hatch` (2026-10-30). Matches I23.
 
 ## Open
-1. Confirm deletions of habib-home-v2, habib-home-nuvio, nuvio-test, prayer-times.
+1. RESOLVED (owner): habib-home-v2, habib-home-nuvio, nuvio-test and prayer-times were deleted on purpose (not up to standard). habib-home is kept as a sandbox to be replaced later.
 2. Per-entity area and HomeKit exposure lookup for the dashboard inventory.
 3. Confirm the 03:00 scheduled backup (step 7 of the backup-location prompt): `ha backups list` and `sudo ls -la /srv/ha-backups` on networkpi.

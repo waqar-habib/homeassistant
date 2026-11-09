@@ -5,6 +5,7 @@
 # Never touches the source files. Prunes only weekly-*.tar inside the weekly folder.
 # Needs read access to the share (owner habackup, mode 750) and write access to weekly/.
 set -euo pipefail
+cd /   # the caller's cwd may be unreadable by habackup; find would fail and set -e would exit silently
 
 SRC="${SRC:-/srv/ha-backups}"
 DEST="${DEST:-/srv/ha-backups/weekly}"

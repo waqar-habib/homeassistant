@@ -1,0 +1,90 @@
+# D42/D43/D44 (owner, 2026-11-09). ALL automations ship DISABLED (initial_state: false).
+# Do not enable any of them until the Apple Home transition is complete and MKH is onboarded (D44).
+# Entity and area IDs are NOT guessed. Every <<FILL>> must be replaced from the registry
+# (ha_search / area_entities) by the Pi 5 session, then checked with `ha core check`.
+# Presence uses person.* states (zones feed person entities); no device IDs are hard-coded.
+
+automation:
+  - id: d42_evening_on_sunset
+    alias: "Evening: lights on at sunset when someone is home"
+    description: "D42(i). All lights except Nursery, only if at least one person is home."
+    initial_state: false
+    mode: single
+    trigger:
+      - platform: sun
+        event: sunset
+    condition:
+      - condition: template
+        value_template: "{{ states.person | selectattr('state', 'eq', 'home') | list | count > 0 }}"
+    action:
+      - service: light.turn_on
+        target:
+          entity_id: "{{ states.light | map(attribute='entity_id') | reject('in', area_entities('Nursery') | select('match', '^light\\.') | list) | list }}"
+
+  - id: d42_away_on_sunset
+    alias: "Away: select lights on at sunset when nobody is home"
+    description: "D42(i), D43 light list. DISABLED until D44 conditions are met."
+    initial_state: false
+    mode: single
+    trigger:
+      - platform: sun
+        event: sunset
+    condition:
+      - condition: template
+        value_template: "{{ states.person | selectattr('state', 'eq', 'home') | list | count == 0 }}"
+    action:
+      - service: light.turn_on
+        target:
+          entity_id:
+            # D43 Away list. Map each Apple name to ONE HA light, then fill in:
+            # Dresser (Master), Floor Lamp (Nursery), Console Lamp, Side Table (Living Room),
+            # Game Room, Upstairs Guest, Nightstand (Study). Hatch excluded (I23).
+            - <<FILL light.dresser_master>>
+            - <<FILL light.floor_lamp_nursery>>
+            - <<FILL light.console_lamp_living_room>>
+            - <<FILL light.side_table_living_room>>
+            - <<FILL light.game_room>>
+            - <<FILL light.upstairs_guest>>
+            - <<FILL light.nightstand_study>>
+
+  - id: d42_away_off_after_2h
+    alias: "Away: lights off 2 hours later if still nobody home"
+    description: "D42(i). Same D43 list. DISABLED until D44 conditions are met."
+    initial_state: false
+    mode: restart
+    trigger:
+      - platform: state
+        entity_id: <<FILL one Away light from the list above>>
+        to: "on"
+    condition:
+      - condition: template
+        value_template: "{{ states.person | selectattr('state', 'eq', 'home') | list | count == 0 }}"
+    action:
+      - delay: "02:00:00"
+      - condition: template
+        value_template: "{{ states.person | selectattr('state', 'eq', 'home') | list | count == 0 }}"
+      - service: light.turn_off
+        target:
+          entity_id:
+            - <<FILL same seven lights as d42_away_on_sunset>>
+
+  - id: d42_notify_lights_and_front_door
+    alias: "Notify: front door and light changes while away"
+    description: "D42(j). Notifies the owner's iPhone. One message per light group per 5 min."
+    initial_state: false
+    mode: queued
+    trigger:
+      - platform: state
+        entity_id: lock.living_room_front_door
+      - platform: state
+        entity_id: <<FILL lights to watch, e.g. all light.* via a list>>
+        to: ["on", "off"]
+    condition:
+      - condition: template
+        # Front door: always. Lights: only while nobody is home (D42 j).
+        value_template: "{{ trigger.entity_id.startswith('lock.') or states.person | selectattr('state', 'eq', 'home') | list | count == 0 }}"
+    action:
+      - service: notify.waqars_iphone
+        data:
+          title: "Habib Home"
+          message: "{{ trigger.to_state.name }} is {{ trigger.to_state.state }}"

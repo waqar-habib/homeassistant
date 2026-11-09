@@ -108,3 +108,27 @@ Findings:
 - The Schlage device's default name contains a street address, and its entity options hold a lock default PIN. Neither value is copied here. Treat the PIN as a credential: it should not be in HA's registry beyond what the lock needs. Owner decision.
 - HomeKit bridge entries: "HASS Bridge:21064" (loaded) and "Front Door" accessory bridge (loaded). Entity lists sit in the options flow. Not readable through the API (needs the ha_mcp_tools component or opening the options flow). Owner check needed: Settings, Devices & services, HomeKit Bridge, Configure, list the included entities.
 - Prayer sensors are not in an area. They come from an integration, not from a physical device.
+
+## Item 2 final: full area inventory (2026-11-09, read-only)
+Source: `area_name()` and `device_attr()` over all 176 states, via ha-mcp template evaluation. This replaces the partial lookup above and the `area_analysis` counts in section 5, which disagree with it.
+
+HomeKit (owner-confirmed 2026-11-09): the HomeKit Bridge exposes `lock.living_room_front_door` (via the "Front Door" accessory entry) and the "HASS Bridge" entry (Apple Home integration; a bridge config entry with no entity_id). The Front Door accessory and the HASS Bridge are the two HomeKit entries.
+
+| Area | Count | Entities (grouped) |
+|---|---|---|
+| Living Room | 32 | Front Door lock and 12 related sensors and selects; Nest thermostat (climate.downstairs, switch, temperature, identify); Zooz USB stick (2); Living Room HomePod (media_player and remote); 7 Islamic prayer sensors; lights buffet, floor lamp, side table, console lamp |
+| Master | 26 | Dresser, Waqar's Lamp, Maham's Lamp (8 each: lights, numbers, selects, switches, sensors); Bedroom HomePod (media_player and remote) |
+| Nursery | 25 | Baby Noor's Rest (Hatch: light x2, media_player, scenes Brahms Lullaby and Brown Noise, battery, charging, wifi); Nursery Floor Lamp (8); Changing Table (8); Bookshelf light |
+| Laundry | 17 | Milo's Poop Can (litter box, sensors, selects, switch, update) |
+| General | 23 | HA Core, Supervisor, OS, Matter Server, Z-Wave JS, Get HACS, Claude Terminal, MCP Server updates; backup sensors and event; sun sensors; Home weather; todo shopping list; Raspberry Pi power and firmware |
+| Game Room | 5 | Nest thermostat (climate.upstairs, switch, temperature, identify); light.game_room |
+| Study | 6 | Smart Plug (study floor lamp, switch, identify, firmware, power-on); light.study_lamp (Nightstand) |
+| Upstairs Guest | 6 | Smart Plug (guest nightstand, switch, identify, firmware, power-on); light.upstairs_guest |
+| **No area** | **36** | 804 Front Door lock (lock, keypad, battery, two switches, select); Living Room TV; Adhan automation, two scripts and `input_boolean.adhan_enabled`; zones (home, neighborhood, leander, sasural); person.waqar_habib; device tracker and notify for Waqar's iPhone; sun.sun; Cloudflared, Nuvio, Glass Cards and HomeDeck updates; Hatch Rest switch and update; conversation, stt and tts entities; remote UI binary sensor; backup size sensor; scenes Good Night, Leaving, Lock Up, Welcome Home, Evening |
+
+Totals: 176 entities = 32 + 26 + 25 + 17 + 23 + 5 + 6 + 6 + 36.
+
+Decisions for the owner:
+1. Assign an area to the 804 Front Door lock (see earlier finding about its device name and PIN).
+2. Five scenes (Good Night, Leaving, Lock Up, Welcome Home, Evening) have no area. Decide whether they belong in a room or stay global.
+3. The Adhan automation, scripts and helper have no area. Expected for system entities; no action needed unless you want them grouped.

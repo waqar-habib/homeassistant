@@ -1,4 +1,4 @@
-# AdGuard Home plan (D8, I1, M7) — DRAFT v0.4
+# AdGuard Home plan (D8, I1, M7) — DRAFT v0.5
 
 Status: plan only. Nothing installed. Install is Tier 3 (DNS, firewall, new service on networkpi) and needs a GREEN LIGHT per stage.
 
@@ -16,7 +16,7 @@ Status: plan only. Nothing installed. Install is Tier 3 (DNS, firewall, new serv
 Hypothesis 1 is the likely one. None is confirmed; the old Pi-hole logs are gone.
 
 ## 2. Safeguards built in from day one
-1. **Lists:** AdGuard DNS filter only at first. Add one list at a time, a week apart. No "ultimate" lists.
+1. **Lists:** AdGuard DNS filter only at first. Add one list at a time, a few days apart. No "ultimate" lists.
 2. **No hand-written allowlist (owner, 2026-11-08).** Banks, portals and major sites must never break, and the owner will not write that list. Instead the household's own traffic builds it, see 2a. The repo file `networkpi/adguard/allowlist.txt` holds only a small system seed (Apple and iCloud, Ring, Nest, Hatch, Cloudflare, HA, `delta.com`, `aa.com`) plus whatever the replay below flags.
 3. **Pre-travel test (the airline check):** before each stage, and after any list change, open the check-in flow for Delta and American (view only, stop before confirming), on the filtered network. The failure must not appear.
 4. **Instant bypass:** AdGuard's "disable protection for 5 minutes" button on the owner's phone. Use it as the first step when anything breaks, then read the log to find the domain, then allowlist it.
@@ -48,12 +48,12 @@ Per-client settings in AdGuard cannot choose different lists per device (filteri
 |---|---|---|---|
 | 0 | Prerequisites: I25 clean, backups running (I24), monitor installed (M6), router DNS question answered (I1) | All true | n/a |
 | 1 | Install AdGuard on networkpi, one list, no clients. ufw allows 53 and UI from the LAN | Service stable 24 h, memory above 200 MB, `dig @192.168.1.39` works | Stop and disable the unit, remove the ufw rules |
-| 2 | Mac only: set DNS manually, ZERO lists (log only) 1 to 3 days with the deliberate visits from 2a, airline view-only check in IPv6 on and off. Then replay (2a), then enable one list for 3 days | Airline flows fine, no unexplained blocks | Reset the Mac DNS to automatic |
-| 3 | Owner's iPhone on home Wi-Fi: manual DNS, log-only first, replay, then the list. Another week. Add the second list if wanted | Same, plus Apple Home and Ring fine | Reset the iPhone DNS |
-| 4 | Router-wide (only if I1 permits two DNS servers): AdGuard primary, public secondary | Household uses it for a week with no complaints | Router DNS back to automatic (one setting) |
+| 2 | Mac only: set DNS manually, ZERO lists (log only) 1 to 3 days with the deliberate visits from 2a, airline view-only check in IPv6 on and off. Then replay (2a), then enable one list for 1 to 2 days | Airline flows fine, no unexplained blocks | Reset the Mac DNS to automatic |
+| 3 | Owner's iPhone on home Wi-Fi: manual DNS, log-only first, replay, then the list. 1 to 3 days log-only, then 1 to 2 days with the list. A second list only if wanted, later | Same, plus Apple Home and Ring fine | Reset the iPhone DNS |
+| 4 | Router-wide (only if I1 permits two DNS servers): AdGuard primary, public secondary | Household uses it for 2 to 3 days with no complaints | Router DNS back to automatic (one setting) |
 | 5 | Pi 5 and HA stay on public DNS. Revisit only with a reason | n/a | n/a |
 
-Best / base / worst: best: stages 1 to 4 in about 3 weeks with no breaks. Base: one or two allowlist additions per week early on. Worst: airline or another critical site breaks, or the router blocks custom DNS; stay at stage 3 (per-device) and keep the rest.
+Best / base / worst: best: stages 1 to 4 in about 1.5 to 2 weeks of part-time work with no breaks. Base: one or two allowlist additions per week early on. Worst: airline or another critical site breaks, or the router blocks custom DNS; stay at stage 3 (per-device) and keep the rest.
 
 ## 4a. Owner answers, 2026-11-08 (v0.2)
 1. **Router (I1):** My Spectrum shows two DNS fields, both "Spectrum DNS" now. So router-wide is possible: stage 4 can hand out two servers. Not tested yet; the fields are assumed to be IPv4 and to apply to DHCP clients (verify at stage 4).

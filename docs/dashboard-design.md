@@ -1,6 +1,6 @@
-# Dashboard design: Habib Home (wireframes) — DRAFT v0.1
+# Dashboard design: Habib Home (wireframes) — v1.0 (GREEN LIGHT 2026-11-09)
 
-Status: design only. Nothing built. Build starts after the owner approves this file (v1.0 only on "GREEN LIGHT"). Entity IDs below marked `?` are placeholders until `docs/sessions/2026-11-09-entity-inventory.md` lands; never guess an ID (CLAUDE.md rule 9).
+Status: approved by the owner (GREEN LIGHT, 2026-11-09, D46). Build is on a NEW dashboard, never over `habib-home`. Entity IDs come from the registry (CLAUDE.md rule 9); `docs/sessions/2026-11-09-entity-inventory.md` is the source. Scenes updated per D42: the five old scenes were deleted.
 
 ## 1. Goal and constraints
 1. One Nuvio dashboard that works on iPhone (portrait, ~430 px), laptop (~1440 px) and a wall tablet in kiosk mode (landscape, ~1280x800, 10").
@@ -48,7 +48,7 @@ Legend: `[ ]` tap target, `▮` on, `▯` off, `>` expands.
 │ [🔒 Locked][🌡 72/71][👥 2][🕌 Asr 3:45][💡 5 on] →  chips scroll sideways
 ├──────────────────────────────┤
 │ Scenes                       │
-│ [Good Night][Leaving][Evening] →  pill buttons, scroll sideways
+│ [Turn on lights][Turn off lights][Away] →  pills
 ├──────────────────────────────┤
 │ Favorites                    │
 │ ┌──────────────────────────┐ │  1 column, full width (~390 px)
@@ -86,10 +86,10 @@ Expanded room (tap `>`): single lights as full-width rows, name on the left, a s
 │ 3:45 PM  Sun Nov 9     ☁ 60° Rain      🕌 Asr 3:45  Maghrib 5:17      │ status bar, 72 px
 ├───────────────┬──────────────────────────────────────┬─────────────────┤
 │ Front Door    │ Living Room   ▮ 3 of 4   Master  ▯ 0/3│ Scenes          │
-│ 🔒 Locked     │ [  toggle room  ] [ lights > ]       │ [Good Night]    │
-│ [Lock][Unlock]│ Nursery  ▯ 0/5   Game Room  ▯ 0/1    │ [Leaving]       │
-│ ───────────── │ Upstairs Guest ▯ 0/2   Study ▯ 0/2   │ [Evening]       │
-│ Downstairs 72°│                                      │ [Welcome Home]  │
+│ 🔒 Locked     │ [  toggle room  ] [ lights > ]       │ [Turn on lights]│
+│ [Lock][Unlock]│ Nursery  ▯ 0/5   Game Room  ▯ 0/1    │ [Turn off lights]│
+│ ───────────── │ Upstairs Guest ▯ 0/2   Study ▯ 0/2   │ [Away]          │
+│ Downstairs 72°│                                      │                 │
 │ Upstairs   71°│  rooms: 3 columns, cards ~290 px     │ ─────────────── │
 │ ───────────── │                                      │ HomePods        │
 │ 👥 2 home     │                                      │ ▶ Living Room   │
@@ -105,7 +105,7 @@ Touch targets at least 56 px. Idle after 5 minutes (value to confirm): ambient s
 │ Habib Home   Home  Rooms  Climate  Media  Family            ☁ 60°   ⚙  W      │
 ├────────────────────────────────────────────────────────────────────────────────┤
 │ [🔒 Locked][🌡 72/71][👥 2 home][🕌 Asr 3:45][💡 5 on]                          │
-│ Scenes: [Good Night][Leaving][Evening][Welcome Home]                            │
+│ Scenes: [Turn on lights][Turn off lights][Away]                                 │
 │ ┌ Favorites ──────┐ ┌ Living Room ┐ ┌ Master ─────┐ ┌ Nursery ─────┐             │
 │ │ Front Door  🔒  │ │ ▮ 3 of 4    │ │ ▯ 0 of 3    │ │ ▯ 0 of 5     │             │
 │ │ Downstairs 72°  │ │ lights >    │ │ lights >    │ │ lights >     │             │
@@ -121,7 +121,7 @@ Touch targets at least 56 px. Idle after 5 minutes (value to confirm): ambient s
 | UI element | Nuvio card | Notes |
 |---|---|---|
 | Status chips | `nuvio-glance-card` or tab Badge toggles (Settings, Views) | glance: `show_name`, `show_state`; verify chip tap actions |
-| Scenes row | `nuvio-actions-card` (`actions: [{ icon, name, service, data }]`) | 5 of 7 scenes unavailable today: fix or hide (I19) |
+| Scenes row | `nuvio-actions-card` (`actions: [{ icon, name, service, data }]`) | Three scenes (D42c): `Turn on lights`, `Turn off lights`, `Away` (empty for now). Created by the Pi 5; use real scene IDs from the registry. The two Hatch scenes stay off the dashboard |
 | Room card | `nuvio-room-compact-card` plus `nuvio-toggle-card` per light inside an expand | the exact expand pattern needs a render test |
 | Layout | `nuvio-grid-card` (`columns: 0`, `min_width: 260`), `nuvio-stack-card` (`wrap_below`) | |
 | Per-screen differences | `nuvio-conditional-card` with `screen: media_query` | tablet vs phone variants |
@@ -146,10 +146,19 @@ Touch targets at least 56 px. Idle after 5 minutes (value to confirm): ambient s
 - Overview first, one-click actions, chips on top, consistent cards: [smartbolig dashboard design](https://smartbolig.pages.dev/en/home-assistant/dashboard-design).
 - Note: "HomeDeck" found in searches is an Apple Home app for iPad and Apple TV, and may not be the `homedeck` custom component on the Pi 5 (unverified, see the entity inventory).
 
-## 9. Open questions for the owner
-1. Tablet: which model and screen size is planned (I5)? Design assumes 10" landscape 1280x800; wall or stand?
-2. Theme: dark only, or follow the system? Keep the hero photo on Home (it is the Nuvio look) or a plain header?
-3. Front door on the dashboard: lock-only tap, lock plus confirmed unlock, or status only? (Tier 3.)
-4. Which two to four scenes belong on Home? Five of seven are broken today.
-5. Cameras (Ring) on the dashboard now, or later?
-6. Who else uses it (MKH, guests) and on which device? Drives the non-admin kiosk view.
+## 9. Owner answers (D42 to D45, 2026-11-09)
+1. Tablet: 10" landscape, wall-mounted; model TBD (I5).
+2. Front door: `lock.living_room_front_door` only (NOT the 804 lock). Lock plus confirmed unlock.
+3. Scenes: Turn on lights, Turn off lights, Away (empty). The old five are gone.
+4. Look: full redesign; the current view may be removed at Claude's discretion. Hero photo optional.
+5. Owner's view only for now. Cameras and the MKH view later.
+6. Idle screen after 5 minutes (Nuvio Screensaver settings, owner sets in the UI).
+7. Prayer sensors kept (Next prayer chip reads them).
+8. All four D42 automations stay disabled (D45); the dashboard shows no automation controls.
+9. Notifications: front door, plus light on/off while away (disabled for now).
+
+## 10. Build approach (API-only, no Nuvio edit mode)
+- New dashboard `habib-home-new`, title "Habib Home (new)", admin only, sidebar. `habib-home` stays untouched until the owner approves a swap.
+- One sections view built with `custom:nuvio-*` cards. Navigation inside the page: `nuvio-tabs-card` with 5 tabs (Home, Rooms, Climate, Media, Family), because the Nuvio header, bottom bar and idle screen are Nuvio Settings (UI only) and cannot be set through the API. Those are an owner follow-up in Nuvio edit mode.
+- Grids: `columns: 0` (automatic) with `min_width` 260. No named control narrower than 220 px. No inline toggles on narrow cards.
+- Verification: the Mac renders the dashboard at 430, 1280x800 and 1440 (Chrome) before the owner views it; the Pi 5 cannot screenshot.

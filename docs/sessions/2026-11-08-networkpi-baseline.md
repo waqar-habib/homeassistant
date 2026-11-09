@@ -37,3 +37,15 @@ No stop condition tripped. Login user is `networkpi` (admin); `claude` is reache
 1. Owner runs the two dry runs (commands in the reply of this session; README has them) and reports output.
 2. 2026-11-09 after 03:00: Pi 5 step 7, then mark I24, M4, D19 done and delete the test file `2c9d3f0d.tar`.
 3. Owner decisions: weekly copy runner, memory floor, ntfy topic, healthchecks.io check. Install is Tier 3 (GREEN LIGHT).
+
+## Update (23:17 CST): dry runs and memory
+- `check.sh` dry run on networkpi: OK (HA 200, internet, DNS, disk 16%, memory 252 MB).
+- `weekly-copy.sh` first dry run exited silently: `habackup` could not read the caller's cwd (`/home/networkpi`), `find` failed under `set -e`. Fixed with `cd /` on the branch (`ffa5f69`). Second dry run correct: `copy 2c9d3f0d.tar (290 MB) -> weekly/weekly-2026-W45-2c9d3f0d.tar`, nothing pruned, nothing written.
+- Memory: available 250 MB (was 389), used 654 MB. `ps`: `smbd` client session 179 MB resident (22 min old, almost certainly the Pi 5 backup mount); Phase B `claude` processes ~440 MB, unchanged. Logged as I25.
+- Owner is on Pi Connect and will recheck `free -m` and `ps` at about 23:27 CST. If `smbd` has dropped, the memory was held only while connected.
+- Nothing on networkpi was changed except the temp folder `/home/claude/np-test` (owner removes it with `sudo rm -r /home/claude/np-test`) and `chmod a+x /home/claude` (needed so `habackup` could read the test file; owner may revert with `chmod o-x /home/claude`).
+
+## Resume point
+1. Read the 23:27 CST recheck, update I25.
+2. 2026-11-09 after 03:00: owner's three commands (ls, dmesg oom, free). Pi 5 step 7 closes I24, M4, D19. Delete test file `2c9d3f0d.tar` after that.
+3. If clean: owner decisions on weekly-copy runner, memory floor, ntfy topic, healthchecks check, then GREEN LIGHT to install.

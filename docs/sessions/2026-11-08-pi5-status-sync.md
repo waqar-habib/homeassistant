@@ -132,3 +132,10 @@ Decisions for the owner:
 1. Assign an area to the 804 Front Door lock (see earlier finding about its device name and PIN).
 2. Five scenes (Good Night, Leaving, Lock Up, Welcome Home, Evening) have no area. Decide whether they belong in a room or stay global.
 3. The Adhan automation, scripts and helper have no area. Expected for system entities; no action needed unless you want them grouped.
+
+## Changes made after owner GREEN LIGHT (2026-11-09)
+Owner decisions: remove the five no-area scenes, remove all Adhan automation and scripts, skip the pre-change backup (owner's call). The 804 Front Door lock stays unassigned, as it is for a different property.
+- Scenes removed from the entity registry (`ha_remove_entity`): `scene.good_night`, `scene.leaving`, `scene.lock_up`, `scene.welcome_home`, `scene.evening`. They were stale, restored entries, not in storage or YAML. The two Hatch scenes stay (integration-managed).
+- `packages/adhan.yaml` removed (git history keeps it). Held: automation `adhan_prayer_times`, scripts `adhan_play` and `adhan_play_one`, helper `input_boolean.adhan_enabled`. `ha core check` valid. `automation`, `script` and `input_boolean` reloaded. Stale entries for the automation and both scripts removed from the registry. The helper was already gone after the reload.
+- Not removed: the Islamic Prayer Times integration and its seven sensors (`sensor.living_room_adhan_*`), which are Adhan data sources, not automations. Owner to decide whether to remove them (they are an integration config entry, with D28 settings). Adhan audio in `/media` (not in git) not touched.
+- Remaining scenes: none in the scene list except the two Hatch scenes.

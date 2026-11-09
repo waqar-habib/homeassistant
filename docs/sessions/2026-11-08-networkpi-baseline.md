@@ -49,3 +49,9 @@ No stop condition tripped. Login user is `networkpi` (admin); `claude` is reache
 1. Read the 23:27 CST recheck, update I25.
 2. 2026-11-09 after 03:00: owner's three commands (ls, dmesg oom, free). Pi 5 step 7 closes I24, M4, D19. Delete test file `2c9d3f0d.tar` after that.
 3. If clean: owner decisions on weekly-copy runner, memory floor, ntfy topic, healthchecks check, then GREEN LIGHT to install.
+
+## Update (about 23:40 CST): recheck
+- `free -m`: available 260 MB, used 644 MB, swap 81 MB. `ps`: `smbd` client session still 179 MB resident after 38 min, idle. It does not release while the Pi 5 mount is connected. New baseline with the mount active: about 260 MB available.
+- Owner removed `/home/claude/np-test` (`sudo rm -r`). `chmod a+x /home/claude` is still in place (revert: `chmod o-x /home/claude`).
+- AdGuard plan drafted this session: `docs/adguard-plan.md` v0.3 (I26, I1 update). Router allows two DNS servers; IPv6 is on and not changeable in the router app (matters only for router-wide stage 4). Method is log first, replay, then one list; no hand-written allowlist.
+- Resume point unchanged: 03:00 check on 2026-11-09 (`sudo ls -la /srv/ha-backups`, `sudo dmesg -T | grep -i -E 'oom|killed process' | tail`, `free -m`).

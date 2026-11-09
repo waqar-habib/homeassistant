@@ -88,3 +88,23 @@ Key entities:
 1. RESOLVED (owner): habib-home-v2, habib-home-nuvio, nuvio-test and prayer-times were deleted on purpose (not up to standard). habib-home is kept as a sandbox to be replaced later.
 2. Per-entity area and HomeKit exposure lookup for the dashboard inventory.
 3. Confirm the 03:00 scheduled backup (step 7 of the backup-location prompt): `ha backups list` and `sudo ls -la /srv/ha-backups` on networkpi.
+
+## Item 2 lookup (2026-11-09, read-only)
+Area is set at the device, not the entity (entity `area_id` is null for every entity checked). Entities checked: 13 of 176. Lights: area counts from the overview (see table in section 5).
+
+| Entity | Device | Device area | HomeKit exposure |
+|---|---|---|---|
+| lock.living_room_front_door (Front Door, Z-Wave) | Front Door (Allegion) | living_room | Conversation only; HomeKit not shown by API |
+| lock.804_front_door (804 Front Door, Schlage) | 804 Front Door | **none** | Conversation off; HomeKit not shown by API |
+| climate.downstairs | Nest Thermostat (Matter) | living_room | Conversation on |
+| climate.upstairs | Nest Thermostat (Matter) | game_room | Conversation on |
+| media_player.living_room_living_room_homepod | Living Room HomePod (Apple TV) | living_room | Conversation on |
+| media_player.master_bedroom_homepod | Bedroom HomePod (Apple TV) | master | Conversation on |
+| sensor.living_room_adhan_fajr_prayer | islamic_prayer_times | not checked | Off (all) |
+| sensor.living_room_adhan_isha_prayer | islamic_prayer_times | not checked | Off (all) |
+
+Findings:
+- The Schlage lock device has no area. Assign one, or leave it unassigned on purpose.
+- The Schlage device's default name contains a street address, and its entity options hold a lock default PIN. Neither value is copied here. Treat the PIN as a credential: it should not be in HA's registry beyond what the lock needs. Owner decision.
+- HomeKit bridge entries: "HASS Bridge:21064" (loaded) and "Front Door" accessory bridge (loaded). Entity lists sit in the options flow. Not readable through the API (needs the ha_mcp_tools component or opening the options flow). Owner check needed: Settings, Devices & services, HomeKit Bridge, Configure, list the included entities.
+- Prayer sensors are not in an area. They come from an integration, not from a physical device.

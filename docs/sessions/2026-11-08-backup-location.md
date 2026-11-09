@@ -27,3 +27,9 @@ Side note: during this session the Claude Terminal and ha-mcp add-ons updated (2
 - Step 6: test backup `test-networkpi-location` (slug `2c9d3f0d`) landed on `hassio.networkpiBackups`, 304,855,040 bytes. Not on local storage. Waiting on owner to check networkpi.
 - Rollback names: mount `networkpiBackups`; test backup `2c9d3f0d` on the share; safety backup `744a21ce` local.
 - Resume at step 6 check on networkpi (root or `daily/`), then step 7 next morning.
+
+## Update: step 6 result (networkpi check, owner-reported)
+- Test file `2c9d3f0d.tar` is in the share ROOT, not `daily/`. Size 304,855,040 bytes, matching HA. Owner `habackup`, mode rw-r-----.
+- `daily/` and `weekly/` are empty. Nothing in them is needed for HA.
+- Decision: HA writes to the root. `networkpi/health.sh` reads the root (path from testparm), so no change needed. `weekly-copy.sh` is not in the repo yet; when it is written, read from the root.
+- Open: step 7 (next morning, 2026-11-09): confirm the 03:00 scheduled backup in `ha backups list` and on the share. Then update I24, M4, D19 to done.

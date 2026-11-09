@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last updated: 2026-11-04 late (Pi 5, habib-home redesign: Nuvio-card dashboard rev 2). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-11-08 (networkpi baseline). Previous: 2026-11-04 late (Pi 5, habib-home redesign: Nuvio-card dashboard rev 2). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
 Dashboards (2026-11-04, Pi 5): the owner wants the redesign in the Nuvio look, not stock HA cards. Three dashboards exist: `habib-home` (Nuvio strategy, untouched, still main), `habib-home-v2` (stock HA cards, owner rejected the look, keep or delete: needs owner OK), and **`habib-home-nuvio`** (Nuvio `custom:nuvio-*` cards, static views, admin only). Owner saw rev 1 of `habib-home-nuvio` on the iPhone: toggles had no names and clipped switches, a stretched tile, a duplicated truncated HomePod title. Rev 2 (live, hash `08ade5fb33152df1`, branch `feat/habib-home-nuvio` `ea87ae6`, not merged) uses two columns and separate full-width HomePod and lock cards. Rev 2 has **not** been seen or rendered by anyone. Next: owner reloads and looks at rev 2; owner decides on Nuvio chrome (header, tabs, summary chips) and on default dashboard. Open checks: the lock glance tile must open more-info and not lock or unlock; installed Nuvio is 2.31.0, but the docs used were 2.30.1 (auto-update was meant to be off). Details: `docs/sessions/2026-11-04-habib-home-redesign.md` (section "Nuvio-card instance"). Parity table: `docs/transition-apple-home-to-ha.md`. Cloud planning note: `docs/sessions/2026-11-04-cloud-i18-and-dashboard-plan.md`.
@@ -15,18 +15,9 @@ Owner replies of 2026-11-03 are in D38. Session note: `docs/sessions/2026-11-03-
 7. **networkpi I12:** owner says no OOM kills, RAM test done. Closed on the owner's word.
 
 ## Networkpi
-Where it stands: bootstrap done 2026-10-24 (ufw, SSH keys only, watchdog, Samba share `ha-backups`, `claude` user). Claude Code 2.1.310 is installed and signed in as `claude`, repo cloned. Phase 0 and Phase A passed with no out-of-memory kills (available memory 486 to 699 MB, swap 0). Phase B (Remote Control, always-on) has its GREEN LIGHT (2026-10-24). The owner chose to wait until 2026-10-25. There is no record since, so it is unknown whether Phase B ran.
+Baseline 2026-11-08 (owner via Pi Connect): healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB available, disk 15%, no OOM. Phase B (Remote Control, `claude-remote.service`) has run since 2026-10-30 10:43 CDT, so I12 is closed. ufw: SSH from the LAN, Samba from the Pi 5 only. Login as `networkpi` (admin), then `sudo -iu claude` for the repo and service.
 
-Unit file: `networkpi/claude-remote.service` on branch `feat/networkpi-claude-remote` (`2110302`). It starts `claude remote-control --name networkpi` in a tmux session `claude-rc` with a restart loop (30 s). Not merged, not enabled.
-
-Steps when the owner gives the word:
-1. `~/.local/bin/claude doctor` as `claude`. Remote Control should show as available.
-2. Review the unit and merge it to `main` if good.
-3. Enable: copy to `~/.config/systemd/user/`, `systemctl --user daemon-reload`, `systemctl --user enable --now claude-remote.service`. Check `tmux -L default attach -t claude-rc` and a Remote Control session from claude.ai/code or the phone.
-
-I12 (RAM: 905 MB against Claude's 4 GB minimum) stays open until Phase B has run stably for a day. Fallback: keep Claude on the Pi 5 and the Mac; networkpi stays the backup, monitoring and DNS host. GitHub token (repo-only, Contents read and write) expires 2027-04-24.
-
-Owner to report: did Phase B run, and is networkpi's throttle status still `0x0` (I11)?
+**Gap (I24):** the `ha-backups` share is empty. HA does not back up to it yet (M4). Next: Pi 5 backup location (daily, keep 7), Tier 3, needs GREEN LIGHT. Then Step 2 drafts (`feat/networkpi-monitor`), then monitoring (D24). Details: `docs/sessions/2026-11-08-networkpi-baseline.md`. GitHub token (repo-only) expires 2027-04-24.
 
 ## Open items
 1. Domain: `thehabibfam.cc` bought. Next: tunnel hostname `ha.thehabibfam.cc` (Tier 3, GREEN LIGHT needed). Prompt exists: `docs/prompts/pi5/2026-10-24-cloudflare-tunnel.md`, no GREEN LIGHT.
@@ -44,7 +35,7 @@ Owner to report: did Phase B run, and is networkpi's throttle status still `0x0`
 ## Device state
 - **Pi 5** (192.168.1.36): HA OS and core updated (core 2026.10.4 on 2026-10-30). Claude Terminal and ha-mcp running (ha-mcp reconnected, I15). Glass Cards v1.10.11 and Nuvio v2.30.1 installed via HACS (auto-update off for Nuvio). Dashboard `nuvio-test` live. Scenes on `feat/scenes` (not merged). Adhan package on `main`, switched off (`6316775`). Geofencing not deployed (I18 live automation, see Resume item 0). Backups: `ha-pre-nuvio-backup_10-29` (slug 023157b8). Remote access: Cloudflare Tunnel live (D39); Nabu Casa trial still active.
 - **networkpi** (192.168.1.39, wired): see Networkpi above.
-- **Mac**: this session; caffeinate running for 8 hours from about 01:10 CDT.
+- **Mac**: caffeinate running (started 2026-11-08); the Mac was off the home network this session.
 - **Router**: DHCP reservations done. Custom DNS unverified (I1).
 
 ## Build order after the open items

@@ -27,3 +27,13 @@ No stop condition tripped. Login user is `networkpi` (admin); `claude` is reache
 1. Owner decides on the Pi 5 backup location change (M4, I24).
 2. Step 2 drafts (`feat/networkpi-monitor`: monitor `check.sh`, README, `weekly-copy.sh`) not started. Draft only, do not install.
 3. Watch memory (389 MB available with Phase B running).
+
+## Update (Mac session, later same day)
+- Backup location run happened on the Pi 5 (see `2026-11-08-backup-location.md`); test backup 305 MB landed in the share root. HA backups are ~305 MB, so 7 + 4 is about 3.4 GB against 24 GB free.
+- Drafted `networkpi/monitor/check.sh`, `networkpi/monitor/README.md`, `networkpi/backup/weekly-copy.sh` on `feat/networkpi-monitor` (`9024b0e`, pushed, not merged, not installed). Only `bash -n` was run; the scripts use GNU tools, so no Mac test.
+- Owner moved to iPhone only; dry runs on networkpi via Pi Connect are the next test.
+
+## Resume point
+1. Owner runs the two dry runs (commands in the reply of this session; README has them) and reports output.
+2. 2026-11-09 after 03:00: Pi 5 step 7, then mark I24, M4, D19 done and delete the test file `2c9d3f0d.tar`.
+3. Owner decisions: weekly copy runner, memory floor, ntfy topic, healthchecks.io check. Install is Tier 3 (GREEN LIGHT).

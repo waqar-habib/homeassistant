@@ -1,0 +1,69 @@
+- id: turn_on_lights
+  name: Turn on lights
+  entities:
+    light.study_study_floor_lamp:
+      state: 'on'
+    light.upstairs_guest_guest_nightstand:
+      state: 'on'
+    light.dresser:
+      state: 'on'
+    light.nursery_floor_lamp:
+      state: 'on'
+    light.changing_table:
+      state: 'on'
+    light.waqars_lamp:
+      state: 'on'
+    light.mahams_lamp:
+      state: 'on'
+    light.bookshelf:
+      state: 'on'
+    light.buffet:
+      state: 'on'
+    light.floor_lamp:
+      state: 'on'
+    light.side_table:
+      state: 'on'
+    light.console_lamp:
+      state: 'on'
+    light.study_lamp:
+      state: 'on'
+    light.game_room:
+      state: 'on'
+    light.upstairs_guest:
+      state: 'on'
+- id: turn_off_lights
+  name: Turn off lights
+  entities:
+    light.study_study_floor_lamp:
+      state: 'off'
+    light.upstairs_guest_guest_nightstand:
+      state: 'off'
+    light.dresser:
+      state: 'off'
+    light.nursery_floor_lamp:
+      state: 'off'
+    light.changing_table:
+      state: 'off'
+    light.waqars_lamp:
+      state: 'off'
+    light.mahams_lamp:
+      state: 'off'
+    light.bookshelf:
+      state: 'off'
+    light.buffet:
+      state: 'off'
+    light.floor_lamp:
+      state: 'off'
+    light.side_table:
+      state: 'off'
+    light.console_lamp:
+      state: 'off'
+    light.study_lamp:
+      state: 'off'
+    light.game_room:
+      state: 'off'
+    light.upstairs_guest:
+      state: 'off'
+- id: away
+  name: Away
+  entities: {}

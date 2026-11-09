@@ -6,10 +6,10 @@
 | M1 | Remote-access and networkpi decisions recorded (D6-D21), session protocol and autonomy tiers adopted | Done | 2026-10-23 |
 | M2 | Phase 1 step 1.6: `docs/entities.md` entity inventory | Done | 2026-10-23 |
 | M3 | networkpi base: hardening, stable IP, Claude Code CLI with `/remote-control`, repo clone | In progress: hardening and stable IP done 2026-10-24; Claude Code 2.1.310 installed; Phase 0 and Phase A passed 2026-10-24 (signed in, repo cloned, loaded session with no OOM). Phase B (Remote Control, systemd) to do (I12) | |
-| M4 | HA backups to networkpi Samba share, automatic | To do | |
+| M4 | HA backups to networkpi Samba share, automatic | In progress: mount `networkpiBackups` live on the Pi 5, daily 03:00 keep 7, test backup (305 MB) landed in the share root 2026-11-08. Pending: confirm the 03:00 run on 2026-11-09 (I24); weekly copy drafted | |
 | M5 | Cloudflare Tunnel live for HA, with 2FA and an external uptime monitor | In progress: tunnel `ha-pi5` live, `https://ha.thehabibfam.cc` works with 2FA, tested on cellular in Safari and in the HA app (owner, 2026-11-03). Uptime monitor still to do (M6). Nabu Casa not cancelled | 2026-11-03 |
-| M6 | Alerts: Uptime Kuma and ntfy for HA, networkpi, DNS, internet | To do | |
-| M7 | AdGuard Home live (depends on I1) | To do | |
+| M6 | Alerts: Uptime Kuma and ntfy for HA, networkpi, DNS, internet | In progress: `check.sh` and `weekly-copy.sh` drafted and dry-run tested on networkpi 2026-11-08 (branch `feat/networkpi-monitor`, not merged or installed). Needs ntfy topic, healthchecks.io check, runner decision, then GREEN LIGHT | |
+| M7 | AdGuard Home live (depends on I1) | Plan v0.5 drafted (`docs/adguard-plan.md`): log first, replay, one list, staged rollout. I1 answered (two DNS fields). Install waits on I25, I24 and M6 | |
 | M8 | Voice control feasibility tests F1-F4 | To do | |
 | M9 | Dashboard (Nuvio) with owner, MKH and guest views | In progress: Nuvio v2.30.1 installed on `nuvio-test` (2026-10-30), owner viewed on Mac and iOS and likes it. Glass Cards v1.10.11 also installed (I14). Views present: Home, Rooms, Media, Family, Map. Gaps vs D2: next prayer, calendar, scenes, Adhan toggle. Rooms layout to polish (M14, I16). Nuvio vs Glass Cards decision pending. 2026-11-04: `habib-home-v2` built (native cards, Path C; Nuvio cannot yet do the spec); owner test pending | 2026-11-04 |
 | M10 | Ring in HA and a local garage controller (ratgdo or Meross) | To do | |

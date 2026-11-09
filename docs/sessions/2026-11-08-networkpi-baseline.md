@@ -55,3 +55,23 @@ No stop condition tripped. Login user is `networkpi` (admin); `claude` is reache
 - Owner removed `/home/claude/np-test` (`sudo rm -r`). `chmod a+x /home/claude` is still in place (revert: `chmod o-x /home/claude`).
 - AdGuard plan drafted this session: `docs/adguard-plan.md` v0.3 (I26, I1 update). Router allows two DNS servers; IPv6 is on and not changeable in the router app (matters only for router-wide stage 4). Method is log first, replay, then one list; no hand-written allowlist.
 - Resume point unchanged: 03:00 check on 2026-11-09 (`sudo ls -la /srv/ha-backups`, `sudo dmesg -T | grep -i -E 'oom|killed process' | tail`, `free -m`).
+
+## Session end summary (networkpi lane, 2026-11-08, Mac then iPhone/Pi Connect)
+Done:
+1. Baseline: healthy; I11 resolved (`0x0`), I12 closed (Phase B stable 9 days).
+2. Found HA was not backing up to the share (I24); Pi 5 session mounted `networkpiBackups`, daily 03:00 keep 7, test backup landed in the share root.
+3. Drafted `check.sh`, `weekly-copy.sh`, README on `feat/networkpi-monitor` (`9024b0e`, fix `ffa5f69`); dry runs passed on networkpi. Not merged, not installed.
+4. Opened I25 (memory: `smbd` 179 MB held while the mount is connected, baseline 260 MB available) and I26 (airline check-in failure under the old Pi-hole).
+5. Wrote the AdGuard plan to v0.5 (shorter windows, log-first method, IPv6 caveat for stage 4).
+
+Decisions: weekly copy reads the share root; HA backups are ~305 MB; no hand-written allowlist (log, replay, then block); Nabu Casa kept as a third backup location until phase-out (owner).
+
+Problems: `weekly-copy.sh` first run exited silently (cwd), fixed. I25 open.
+
+Still on networkpi (owner may revert): `chmod a+x /home/claude` (revert `chmod o-x /home/claude`). Test folder removed.
+
+Exact resume point:
+1. 2026-11-09 after 03:00, owner on Pi Connect: `sudo ls -la /srv/ha-backups`, `sudo dmesg -T | grep -i -E 'oom|killed process' | tail`, `free -m`. Report back. Pi 5 step 7 then closes I24, M4, D19; delete test file `2c9d3f0d.tar`.
+2. Owner decisions for monitoring: weekly-copy runner (recommended system timer as `habackup`), memory alert floor (200 MB vs the new 260 MB baseline), create ntfy topic and healthchecks.io check. Install needs GREEN LIGHT (Tier 3).
+3. AdGuard stage 0 gates: I25 clean, I24 done, monitor installed. Then stage 1 (GREEN LIGHT).
+Blockers: none that stop work; Phase B and the share share one 905 MB box.

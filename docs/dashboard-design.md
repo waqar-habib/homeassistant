@@ -1,6 +1,6 @@
 # Dashboard design: Habib Home (wireframes) — v1.0 (GREEN LIGHT 2026-11-09)
 
-Status: approved by the owner (GREEN LIGHT, 2026-11-09, D46). Build is on a NEW dashboard, never over `habib-home`. Entity IDs come from the registry (CLAUDE.md rule 9); `docs/sessions/2026-11-09-entity-inventory.md` is the source. Scenes updated per D42: the five old scenes were deleted.
+Status: approved by the owner (GREEN LIGHT, 2026-11-09, D46). Build is on a NEW dashboard, never over `habib-home`. Entity IDs come from the registry (CLAUDE.md rule 9); `docs/sessions/2026-11-08-pi5-status-sync.md` (area inventory) is the source. Scenes updated per D42: the five old scenes were deleted.
 
 ## 1. Goal and constraints
 1. One Nuvio dashboard that works on iPhone (portrait, ~430 px), laptop (~1440 px) and a wall tablet in kiosk mode (landscape, ~1280x800, 10").

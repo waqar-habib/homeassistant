@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last updated: 2026-11-08 (networkpi baseline). Previous: 2026-11-04 late (Pi 5, habib-home redesign: Nuvio-card dashboard rev 2). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-11-08 (backup location, partial stop at step 3). Previous: 2026-11-04 late (Pi 5, habib-home redesign: Nuvio-card dashboard rev 2). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
 Dashboards (2026-11-04, Pi 5): the owner wants the redesign in the Nuvio look, not stock HA cards. Three dashboards exist: `habib-home` (Nuvio strategy, untouched, still main), `habib-home-v2` (stock HA cards, owner rejected the look, keep or delete: needs owner OK), and **`habib-home-nuvio`** (Nuvio `custom:nuvio-*` cards, static views, admin only). Owner saw rev 1 of `habib-home-nuvio` on the iPhone: toggles had no names and clipped switches, a stretched tile, a duplicated truncated HomePod title. Rev 2 (live, hash `08ade5fb33152df1`, branch `feat/habib-home-nuvio` `ea87ae6`, not merged) uses two columns and separate full-width HomePod and lock cards. Rev 2 has **not** been seen or rendered by anyone. Next: owner reloads and looks at rev 2; owner decides on Nuvio chrome (header, tabs, summary chips) and on default dashboard. Open checks: the lock glance tile must open more-info and not lock or unlock; installed Nuvio is 2.31.0, but the docs used were 2.30.1 (auto-update was meant to be off). Details: `docs/sessions/2026-11-04-habib-home-redesign.md` (section "Nuvio-card instance"). Parity table: `docs/transition-apple-home-to-ha.md`. Cloud planning note: `docs/sessions/2026-11-04-cloud-i18-and-dashboard-plan.md`.
@@ -17,7 +17,7 @@ Owner replies of 2026-11-03 are in D38. Session note: `docs/sessions/2026-11-03-
 ## Networkpi
 Baseline 2026-11-08 (owner via Pi Connect): healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB available, disk 15%, no OOM. Phase B (Remote Control, `claude-remote.service`) has run since 2026-10-30 10:43 CDT, so I12 is closed. ufw: SSH from the LAN, Samba from the Pi 5 only. Login as `networkpi` (admin), then `sudo -iu claude` for the repo and service.
 
-**Gap (I24):** the `ha-backups` share is empty. HA does not back up to it yet (M4). Next: Pi 5 backup location (daily, keep 7), Tier 3, needs GREEN LIGHT. Then Step 2 drafts (`feat/networkpi-monitor`), then monitoring (D24). Details: `docs/sessions/2026-11-08-networkpi-baseline.md`. GitHub token (repo-only) expires 2027-04-24.
+**Gap (I24):** the `ha-backups` share is empty. HA does not back up to it yet (M4). Backup location in progress (GREEN LIGHT given 2026-11-08): `pre-backup-location` created (`744a21ce`). Resume at step 3: owner adds the SMB storage in the HA UI, then steps 4-8 in `docs/prompts/pi5/2026-11-08-backup-location.md`. Session note: `docs/sessions/2026-11-08-backup-location.md`. Then Step 2 drafts (`feat/networkpi-monitor`), then monitoring (D24). Details: `docs/sessions/2026-11-08-networkpi-baseline.md`. GitHub token (repo-only) expires 2027-04-24.
 
 ## Open items
 1. Domain: `thehabibfam.cc` bought. Next: tunnel hostname `ha.thehabibfam.cc` (Tier 3, GREEN LIGHT needed). Prompt exists: `docs/prompts/pi5/2026-10-24-cloudflare-tunnel.md`, no GREEN LIGHT.

@@ -3,7 +3,7 @@
 Target: pi5
 Date: 2026-11-08
 Tier: 3 (network storage mount, backup schedule, credential entry)
-GREEN LIGHT: NOT GIVEN. Do not run until the owner writes "GREEN LIGHT" for this file.
+GREEN LIGHT: GIVEN by owner in chat, 2026-11-08. Run stopped at step 3 (owner adds the storage in the HA UI).
 
 ## Why
 `/srv/ha-backups/daily` and `weekly` on networkpi are empty (baseline 2026-11-08). HA backups exist only on the Pi 5 SD card (I9). D19: 7 daily on the share, 4 weekly copies.

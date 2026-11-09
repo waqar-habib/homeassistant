@@ -1,0 +1,21 @@
+# Session 2026-11-08: backup location (I24, M4, D19), partial stop
+
+Prompt: `docs/prompts/pi5/2026-11-08-backup-location.md` (GREEN LIGHT given by owner in chat, 2026-11-08).
+
+## Done
+- Step 1 (partial): current backup config recorded from ha-mcp and CLI. Automatic backup runs daily around 05:18 with settings on; last completed 2026-11-08 05:18:59; next 2026-11-09 05:17. Current locations: `hassio.local` (local) and `cloud.cloud` (Nabu Casa). Schedule, retention and encryption UI values NOT read: a read of the Supervisor backup storage was blocked by the permission classifier. Owner to confirm from Settings, System, Backups, Configure.
+- Step 2: `pre-backup-location` created, slug `744a21ce`, local, about 305 MB, database and folders included. Confirmed via ha-mcp list.
+
+## Stopped at step 3
+Owner must add network storage in the HA UI (Settings, System, Storage, Add network storage): usage Backup, SMB, server 192.168.1.39, share `ha-backups`, habackup credentials typed by owner. Not done by Claude. No password in chat, command, file or log.
+
+## Open decisions for owner
+1. Keep the Nabu Casa (`cloud.cloud`) location? Prompt says "local plus network mount" which would drop it. Recommended: keep it until the tunnel test (D26), since it is a third copy and costs nothing to keep.
+2. Confirm the current schedule, retention and encryption state from the HA UI so the rollback record is complete.
+
+## Not done
+Steps 4 to 8 (mount check, schedule change, test backup, next-morning check, final I24/M4/D19 update).
+
+## Resume point
+After owner confirms the storage is added: check `ha mounts list` (or ha-mcp), then step 4.
+Side note: during this session the Claude Terminal and ha-mcp add-ons updated (2.5.3 and 9.1.1). Not triggered by this work.

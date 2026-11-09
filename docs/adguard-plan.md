@@ -1,4 +1,4 @@
-# AdGuard Home plan (D8, I1, M7) — DRAFT v0.2
+# AdGuard Home plan (D8, I1, M7) — DRAFT v0.3
 
 Status: plan only. Nothing installed. Install is Tier 3 (DNS, firewall, new service on networkpi) and needs a GREEN LIGHT per stage.
 
@@ -17,11 +17,20 @@ Hypothesis 1 is the likely one. None is confirmed; the old Pi-hole logs are gone
 
 ## 2. Safeguards built in from day one
 1. **Lists:** AdGuard DNS filter only at first. Add one list at a time, a week apart. No "ultimate" lists.
-2. **Allowlist file in the repo** (`networkpi/adguard/allowlist.txt`, drafted next), pre-seeded with first-party domains the household uses: Apple and iCloud, Ring, Google Nest, Hatch, Cloudflare, `delta.com`, `aa.com`, banks the owner names. First-party only; third-party scripts are found through the log, not guessed.
+2. **No hand-written allowlist (owner, 2026-11-08).** Banks, portals and major sites must never break, and the owner will not write that list. Instead the household's own traffic builds it, see 2a. The repo file `networkpi/adguard/allowlist.txt` holds only a small system seed (Apple and iCloud, Ring, Nest, Hatch, Cloudflare, HA, `delta.com`, `aa.com`) plus whatever the replay below flags.
 3. **Pre-travel test (the airline check):** before each stage, and after any list change, open the check-in flow for Delta and American (view only, stop before confirming), on the filtered network. The failure must not appear.
 4. **Instant bypass:** AdGuard's "disable protection for 5 minutes" button on the owner's phone. Use it as the first step when anything breaks, then read the log to find the domain, then allowlist it.
 5. **Per-client exemption:** a persistent client entry with filtering off, ready for any device that cannot cope.
 6. **Query log:** 24 hours, in memory or short retention, to limit SD writes. Statistics 7 days.
+
+## 2a. Log first, replay, then block (replaces the pre-written allowlist)
+Goal: avoid ads, never create a failed check-in at a critical time. So the filter starts empty and earns its lists.
+1. **Observe (no blocking).** AdGuard runs with ZERO filter lists on the Mac, then the iPhone, for 5 to 7 days of normal use (including a check-in or two, banking, portals). Only the query log fills. Nothing can break except by AdGuard being down or the IPv6 leak.
+2. **Replay.** I match the logged domains against the candidate list offline (the list file is plain text, no network access needed to AdGuard) and produce the report: "these N domains you actually used would be blocked". Domains tied to a critical site (the site itself, its login, payment, bot-protection or captcha hosts) go to the allowlist. The owner reviews only the short report, not a list of banks.
+3. **Enable one list.** Turn on the AdGuard DNS filter alone. Keep the 5-minute pause button. Expected: a few ads still show; that is the accepted trade.
+4. **Never enable:** telemetry or "tracker" lists, Apple or Microsoft telemetry blocking, "ultimate" aggregates, safe browsing for now (false positives). These cause most breakage per ad removed.
+5. **Check-in day runbook (documented, 10 seconds):** (a) do the check-in at the 24 h mark as soon as it opens, not at the airport; (b) if the page stalls or errors, turn Wi-Fi off and use cellular, which already worked; (c) afterwards, read the log for that minute and allowlist the blocked domain; (d) optional: set the iPhone's Wi-Fi DNS back to Automatic for travel days (stage 3 only; rollback is one setting).
+Per-client settings in AdGuard cannot choose different lists per device (filtering can only be on, off or global), so a "safe profile" for the phone is just filtering off for that client.
 
 ## 3. Design risks
 | Risk | Impact | Mitigation |
@@ -39,8 +48,8 @@ Hypothesis 1 is the likely one. None is confirmed; the old Pi-hole logs are gone
 |---|---|---|---|
 | 0 | Prerequisites: I25 clean, backups running (I24), monitor installed (M6), router DNS question answered (I1) | All true | n/a |
 | 1 | Install AdGuard on networkpi, one list, no clients. ufw allows 53 and UI from the LAN | Service stable 24 h, memory above 200 MB, `dig @192.168.1.39` works | Stop and disable the unit, remove the ufw rules |
-| 2 | Mac only: set DNS manually. Run the airline check and daily use for 3 days | Airline flows fine, no unexplained blocks | Reset the Mac DNS to automatic |
-| 3 | Owner's iPhone on home Wi-Fi: manual DNS. Another week. Add the second list if wanted | Same, plus Apple Home and Ring fine | Reset the iPhone DNS |
+| 2 | Mac only: set DNS manually, ZERO lists (log only) 5 to 7 days, airline view-only check in IPv6 on and off. Then replay (2a), then enable one list for 3 days | Airline flows fine, no unexplained blocks | Reset the Mac DNS to automatic |
+| 3 | Owner's iPhone on home Wi-Fi: manual DNS, log-only first, replay, then the list. Another week. Add the second list if wanted | Same, plus Apple Home and Ring fine | Reset the iPhone DNS |
 | 4 | Router-wide (only if I1 permits two DNS servers): AdGuard primary, public secondary | Household uses it for a week with no complaints | Router DNS back to automatic (one setting) |
 | 5 | Pi 5 and HA stay on public DNS. Revisit only with a reason | n/a | n/a |
 
@@ -61,5 +70,5 @@ Best / base / worst: best: stages 1 to 4 in about 3 weeks with no breaks. Base: 
 ## 5. Needed from the owner
 1. ~~I1: can DNS be changed, can two be set?~~ Answered: two fields, yes.
 2. ~~IPv6~~ Answered: on. Still open: does the app let you set or disable IPv6 DNS? (look next to the same DNS fields)
-3. Which banks and services must always work (for the allowlist)?
+3. ~~Banks and services~~ Answered: no list from the owner; the log-and-replay method (2a) replaces it.
 4. Approval of this plan as v0.1 (revise, then v1.0 on "GREEN LIGHT").

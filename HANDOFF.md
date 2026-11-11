@@ -1,17 +1,17 @@
 # HANDOFF
 
-Last updated: 2026-11-09 (Mac session end). Previous: 2026-11-08 (backup location, partial stop at step 3). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-11-11 (Mac session, partial stop: waiting on the Pi 5 file drop). Previous: 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-1. **Dashboard `habib-home-new` (D46, GREEN LIGHT 2026-11-09).** Built by the Pi 5 on branch `feat/habib-home-new` (`9fd25a3`), not merged. Five tabs: Home, Rooms, Climate, Media, Family. Not yet rendered: the Mac must render it at 430, 1280x800 and 1440 in Chrome before the owner judges it. Design: `docs/dashboard-design.md` v1.0. Pi 5 note: `docs/sessions/2026-11-09-dashboard-build.md`.
-2. **Owner action (I28):** remove the HomeDeck integration in Settings, Devices and services. The Pi 5 then deletes `custom_components/homedeck` after confirmation. The removal was refused by the automated tool, so it stays a manual step.
-3. **Presence fix (I27) before any D42 automation:** `person.waqar_habib` is in zone Sasural, so `home` checks read "nobody home". Owner decision. All four D42 automations stay disabled (D44, D45). MKH still to be added to zones.
-4. **Scenes (done, `a673312` on main):** Turn on lights, Turn off lights (15 non-Hatch lights each), Away (empty).
-5. **Session note:** `docs/sessions/2026-11-09-mac-prompts-and-handoff.md`.
+1. **Owner: start the Pi 5 deploy.** On the Pi 5 type: `git pull; read docs/prompts/pi5/2026-11-11-prayer-card-deploy.md (commit 6a4a4e4); run it`. It checks out branch `feat/nuvio-home-build` and confirms `/local/habib/habib-prayer-card.js` is served (Tier 2, no restart). Until then that URL returns 404.
+2. **Mac, after the Pi 5 reports 200:** create the Lovelace resource `/local/habib/habib-prayer-card.js?v=1` (module; GREEN LIGHT given, D47) through the HA websocket, add the prayer item to Home through Nuvio's "Card from HA (YAML)" (`type: custom:habib-prayer-card`; the order list already has key `c:hacard:hh0005`), render at 430, 1280x800 and 1440, rerun the guarded tap tests, merge `feat/nuvio-home-build` to main, then tell the Pi 5 to `git checkout main; git pull --rebase`.
+3. **habib-home Home v1 is live** (applied 2026-11-11 through Nuvio Layout import, saved in `nuvio-shared`): Front Door lock (compact, confirmed unlock), Outside weather, both thermostats, Scenes (Quick actions: Lights on, Lights off, Away). General and No room hidden on Rooms. Prayer card is the only missing piece. Rollback: backup `pre-nuvio-extend` (slug `82cc58de`, networkpiBackups) and `dashboards/nuvio-layout-2026-11-11-pre-build.json`.
+4. **Owner decisions waiting:** check the front door (I30, door sensor reads open while the lock is locked); presence zone (I27); HomeDeck removal (I28); delete `habib-home-new` (Tier 3, I33); keep both weather views on wide screens; Kitchen and Formal Living tiles are empty.
+5. **Session note:** `docs/sessions/2026-11-11-mac-nuvio-build.md`. Decision D47. Issues I30 to I33.
 
 ## Networkpi
 Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB available, disk 15%, no OOM. Phase B (Remote Control, `claude-remote.service`) has run since 2026-10-30, so I12 is closed. Login as `networkpi` (admin), then `sudo -iu claude` for the repo and service.
-- **I24 backups:** HA backs up to the `networkpiBackups` mount (daily 03:00, keep 7). Pending: confirm the 2026-11-09 03:00 run (`sudo ls -la /srv/ha-backups`), then delete test file `2c9d3f0d.tar`, then close I24 and M4.
+- **I24 backups:** HA backs up to the `networkpiBackups` mount (daily 03:00, keep 7). Evidence from HA 2026-11-11: automatic backup `06aa8ab1` (03:00) is listed on `hassio.networkpiBackups`, so the nightly copy works; the disk-side check below is still pending. Pending: confirm the 03:00 run (`sudo ls -la /srv/ha-backups`), then delete test file `2c9d3f0d.tar`, then close I24 and M4.
 - **I25 memory:** check after the 03:00 run (`sudo dmesg -T | grep -i -E 'oom|killed process' | tail`, `free -m`). Available memory fell to 250 MB with `smbd` at 179 MB.
 - **Monitor and weekly copy (M6):** drafts on `feat/networkpi-monitor` (`ffa5f69`), dry-run tested. Not installed (Tier 3). Needs: ntfy topic, healthchecks.io check, runner decision, GREEN LIGHT.
 - **AdGuard (M7, I26):** plan v0.5 in `docs/adguard-plan.md`. Install waits on I25, I24 and M6. I1 answered: router takes two DNS servers; IPv6 on, not changeable in the router app.
@@ -28,9 +28,9 @@ Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB 
 8. Adhan (M12, I17): owner picks the time. Claude does not run it.
 
 ## Device state
-- **Pi 5** (192.168.1.36): HA core 2026.11.0, Nuvio 2.31.0. HACS removed by HA OS, Nuvio and Glass Cards resources still load from `/local/community/`. Dashboards: `habib-home` (main), `nuvio-shared`, `habib-home-new` (new, admin only, from the Pi 5 build). Adhan package removed 2026-11-09 (`d6a1d09`); prayer-times sensors kept. Backup `pre-dashboard-build` (slug `e91f5e77`). Cloudflare Tunnel live (D39). Nabu Casa still active.
+- **Pi 5** (192.168.1.36): HA core 2026.11.0, Nuvio 2.31.0. HACS removed by HA OS, Nuvio and Glass Cards resources still load from `/local/community/`. Dashboards: `habib-home` (main, Home v1 applied 2026-11-11), `nuvio-shared`, `habib-home-new` (superseded by D47, admin only, delete pending). Adhan package removed 2026-11-09 (`d6a1d09`); prayer-times sensors kept. Backup `pre-dashboard-build` (slug `e91f5e77`). Cloudflare Tunnel live (D39). Nabu Casa still active.
 - **networkpi** (192.168.1.39, wired): see above.
-- **Mac:** caffeinate running (background task `b4tzob6aa`). Repo `.git` repaired 2026-11-09 by `git fetch --refetch origin` (I29). Working tree matches `origin/main`.
+- **Mac:** caffeinate running (background task `bf6ir4abo`, started 2026-11-11). Repo `.git` repaired 2026-11-09 by `git fetch --refetch origin` (I29). Working tree matches `origin/main`.
 - **Router:** DHCP reservations done. Two DNS fields available (I1).
 
 ## Automations

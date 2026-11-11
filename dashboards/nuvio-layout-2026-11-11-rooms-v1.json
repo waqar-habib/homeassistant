@@ -1,0 +1,12 @@
+{
+  "format": "nuvio-layout",
+  "schema": 2,
+  "nuvio": "2.31.0",
+  "exported": "2026-11-11T14:20:00.000Z",
+  "include": ["views"],
+  "data": {
+    "wiz": {
+      "hiddenRooms": ["general", "_none"]
+    }
+  }
+}

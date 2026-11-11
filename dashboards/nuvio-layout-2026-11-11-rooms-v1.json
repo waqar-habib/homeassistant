@@ -6,7 +6,7 @@
   "include": ["views"],
   "data": {
     "wiz": {
-      "hiddenRooms": ["general", "_none"]
+      "hiddenRooms": ["general"]
     }
   }
 }

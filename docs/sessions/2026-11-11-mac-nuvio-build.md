@@ -36,3 +36,10 @@ Nuvio toast "Restore previous" (browser local), or Settings, Backup and import, 
 
 ## 6. Owner decisions waiting
 - Door sensor check (I30). Presence zone (I27). HomeDeck removal (I28). Delete `habib-home-new` (Tier 3, I33). Kitchen and Formal Living tiles are empty but still shown. Keep both weather views on wide screens (hero left, Outside right)?
+
+## 7. Update, same day (owner feedback, D48)
+- Rooms tab was empty: my import hid `_none` (No room), which crashes Nuvio's room model (I34). Fixed: only `general` hidden. I should have re-rendered Rooms after that import.
+- Owner wants: weather hero stays, Outside card replaced by the Prayer card, Front Door smaller and elsewhere.
+- Safety finding: Nuvio's `hgPress` unlocks on ONE tap, so Quick actions, tiles and toggles must never be bound to the lock.
+- Built `www/habib/habib-cards.js` (renamed from habib-prayer-card.js): `habib-prayer-card` (five columns from 460 px) and `habib-lock-chip` (slim bar, only fires `hass-more-info`, no service call; verified: zero service calls, opens HA's lock dialog when mounted inside HA's DOM). Tested from the pushed bytes (SHA matched).
+- `dashboards/nuvio-layout-2026-11-11-home-v2.json` is ready, NOT applied (waits for the Pi 5 file drop).

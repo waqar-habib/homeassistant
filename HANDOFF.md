@@ -3,11 +3,12 @@
 Last updated: 2026-11-11 (Mac session, partial stop: waiting on the Pi 5 file drop). Previous: 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
-1. **Owner: start the Pi 5 deploy.** On the Pi 5 type: `git pull; read docs/prompts/pi5/2026-11-11-prayer-card-deploy.md (commit 6a4a4e4); run it`. It checks out branch `feat/nuvio-home-build` and confirms `/local/habib/habib-prayer-card.js` is served (Tier 2, no restart). Until then that URL returns 404.
-2. **Mac, after the Pi 5 reports 200:** create the Lovelace resource `/local/habib/habib-prayer-card.js?v=1` (module; GREEN LIGHT given, D47) through the HA websocket, add the prayer item to Home through Nuvio's "Card from HA (YAML)" (`type: custom:habib-prayer-card`; the order list already has key `c:hacard:hh0005`), render at 430, 1280x800 and 1440, rerun the guarded tap tests, merge `feat/nuvio-home-build` to main, then tell the Pi 5 to `git checkout main; git pull --rebase`.
-3. **habib-home Home v1 is live** (applied 2026-11-11 through Nuvio Layout import, saved in `nuvio-shared`): Front Door lock (compact, confirmed unlock), Outside weather, both thermostats, Scenes (Quick actions: Lights on, Lights off, Away). General and No room hidden on Rooms. Prayer card is the only missing piece. Rollback: backup `pre-nuvio-extend` (slug `82cc58de`, networkpiBackups) and `dashboards/nuvio-layout-2026-11-11-pre-build.json`.
-4. **Owner decisions waiting:** check the front door (I30, door sensor reads open while the lock is locked); presence zone (I27); HomeDeck removal (I28); delete `habib-home-new` (Tier 3, I33); keep both weather views on wide screens; Kitchen and Formal Living tiles are empty.
-5. **Session note:** `docs/sessions/2026-11-11-mac-nuvio-build.md`. Decision D47. Issues I30 to I33.
+1. **Owner: start the Pi 5 deploy.** On the Pi 5 type: `git pull; read docs/prompts/pi5/2026-11-11-prayer-card-deploy.md (commit 51fa492); run it`. It checks out branch `feat/nuvio-home-build` and confirms `/local/habib/habib-cards.js` is served (Tier 2, no restart). Until then that URL returns 404.
+2. **Mac, after the Pi 5 reports 200:** (a) create the Lovelace resource `/local/habib/habib-cards.js?v=1` (module; GREEN LIGHT D47); (b) apply `dashboards/nuvio-layout-2026-11-11-home-v2.json` through Nuvio Layout import (merge, layout): it removes the Outside card and the big lock card, adds the Prayer card (full width), a slim Front Door bar (`habib-lock-chip`) and keeps Scenes and both thermostats; (c) render Home at 430, 1280x800 and 1440 and rerun the guarded tap tests (the bar must make no service call and open the HA lock dialog); (d) merge `feat/nuvio-home-build` to main; (e) tell the Pi 5 `git checkout main; git pull --rebase`.
+3. **Live now on habib-home:** Front Door lock card (big), Outside weather, both thermostats, Scenes (Quick actions). Rooms: General hidden (hiding No room crashes Nuvio, I34, fixed). Rollback: backup `pre-nuvio-extend` (slug `82cc58de`, networkpiBackups) and `dashboards/nuvio-layout-2026-11-11-pre-build.json`.
+4. **Owner decisions waiting:** presence zone (I27); HomeDeck removal (I28); Kitchen and Formal Living tiles are empty; "No room" tile cannot be hidden (I34).
+5. **Done by owner:** front door tested OK, `habib-home-new` deleted (D48, I33 closed).
+6. **Session note:** `docs/sessions/2026-11-11-mac-nuvio-build.md`. Decisions D47, D48. Issues I30 to I34.
 
 ## Networkpi
 Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB available, disk 15%, no OOM. Phase B (Remote Control, `claude-remote.service`) has run since 2026-10-30, so I12 is closed. Login as `networkpi` (admin), then `sudo -iu claude` for the repo and service.
@@ -28,7 +29,7 @@ Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB 
 8. Adhan (M12, I17): owner picks the time. Claude does not run it.
 
 ## Device state
-- **Pi 5** (192.168.1.36): HA core 2026.11.0, Nuvio 2.31.0. HACS removed by HA OS, Nuvio and Glass Cards resources still load from `/local/community/`. Dashboards: `habib-home` (main, Home v1 applied 2026-11-11), `nuvio-shared`, `habib-home-new` (superseded by D47, admin only, delete pending). Adhan package removed 2026-11-09 (`d6a1d09`); prayer-times sensors kept. Backup `pre-dashboard-build` (slug `e91f5e77`). Cloudflare Tunnel live (D39). Nabu Casa still active.
+- **Pi 5** (192.168.1.36): HA core 2026.11.0, Nuvio 2.31.0. HACS removed by HA OS, Nuvio and Glass Cards resources still load from `/local/community/`. Dashboards: `habib-home` (main, Home v1 applied 2026-11-11), `nuvio-shared`, `habib-home-new` (deleted by the owner 2026-11-11). Adhan package removed 2026-11-09 (`d6a1d09`); prayer-times sensors kept. Backup `pre-dashboard-build` (slug `e91f5e77`). Cloudflare Tunnel live (D39). Nabu Casa still active.
 - **networkpi** (192.168.1.39, wired): see above.
 - **Mac:** caffeinate running (background task `bf6ir4abo`, started 2026-11-11). Repo `.git` repaired 2026-11-09 by `git fetch --refetch origin` (I29). Working tree matches `origin/main`.
 - **Router:** DHCP reservations done. Two DNS fields available (I1).

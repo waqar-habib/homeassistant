@@ -43,3 +43,12 @@ Nuvio toast "Restore previous" (browser local), or Settings, Backup and import, 
 - Safety finding: Nuvio's `hgPress` unlocks on ONE tap, so Quick actions, tiles and toggles must never be bound to the lock.
 - Built `www/habib/habib-cards.js` (renamed from habib-prayer-card.js): `habib-prayer-card` (five columns from 460 px) and `habib-lock-chip` (slim bar, only fires `hass-more-info`, no service call; verified: zero service calls, opens HA's lock dialog when mounted inside HA's DOM). Tested from the pushed bytes (SHA matched).
 - `dashboards/nuvio-layout-2026-11-11-home-v2.json` is ready, NOT applied (waits for the Pi 5 file drop).
+
+## 8. Completed, same day
+- Pi 5 dropped `www/habib/habib-cards.js` (sha256 `5b13d2d8f0f57c09dbc15f425e0fb73d9f7cf01e179beb2209751b799cfe814e`, 10911 bytes). The bare URL briefly returned a cached 404 from Cloudflare; any URL with a query string served 200.
+- Lovelace resource created: id `c62a8173054c4520be6ec44b5f9d5bbf`, `/local/habib/habib-cards.js?v=1` (module).
+- Applied `dashboards/nuvio-layout-2026-11-11-home-v2.json` through Nuvio Layout import (merge, layout). Saved state verified: both elements defined, Outside and lock cards removed, General still the only hidden room.
+- Rendered Home at 430, 1280x800 and 1440. Guarded tap tests: lock bar opens HA's dialog with 0 service calls; 3x `scene.turn_on`; thermostat 78 to 79; nothing reached HA.
+- The logbook showed `lock.unlock` 13:44:23Z and `lock.lock` 13:44:31Z under the owner's user, before my first lock-bar test. Treated as the owner's own front-door test; owner asked to confirm.
+- Merged `feat/nuvio-home-build` to main (`5327aa3`). Pi 5 return-to-main prompt: `docs/prompts/pi5/2026-11-11-return-to-main.md`.
+- Next iteration (owner): Rooms optimization.

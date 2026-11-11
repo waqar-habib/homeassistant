@@ -1,0 +1,46 @@
+{
+  "format": "nuvio-layout",
+  "schema": 2,
+  "nuvio": "2.31.0",
+  "exported": "2026-11-11T13:33:01.599Z",
+  "include": ["views", "layout", "look", "panel", "wall"],
+  "data": {
+    "wiz": {
+      "lang": "en",
+      "lp": 1,
+      "views": ["dashboard", "rooms", "multimedia", "family", "mapa"],
+      "hiddenRooms": [],
+      "ts": 1793337538785,
+      "hints": { "power": 0, "scenes": 0 }
+    },
+    "s": {
+      "dashboard": {
+        "order": ["+climate.downstairs", "nuvio-ac-card|climate.upstairs", "nuvio-scenes-card|scenes", "nuvio-hint-card|"],
+        "hidden": ["nuvio-ac-card|climate.upstairs", "nuvio-scenes-card|scenes"],
+        "size": { "nuvio-scenes-card|scenes": "l" },
+        "added": [],
+        "names": {},
+        "conf": { "_head": { "t": "The Habib Home", "i": "mdi:account-group", "nos": 1 } }
+      },
+      "dashboard:tiles": {
+        "order": [],
+        "hidden": [],
+        "size": {},
+        "added": [
+          {
+            "e": "c:weather:mw2x1isj",
+            "c": "nuvio-weather-card",
+            "comp": "weather",
+            "cfg": { "entity": "weather.forecast_home", "hours": 24, "sun": "sun.sun" },
+            "v": { "entity": "weather.forecast_home" }
+          }
+        ],
+        "names": {},
+        "conf": {}
+      }
+    },
+    "app": { "accent": "#2EC4D6" },
+    "pw": {},
+    "wall": {}
+  }
+}

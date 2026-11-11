@@ -1,0 +1,193 @@
+{
+  "format": "nuvio-layout",
+  "schema": 2,
+  "nuvio": "2.31.0",
+  "exported": "2026-11-11T15:30:00.000Z",
+  "include": [
+    "layout"
+  ],
+  "data": {
+    "s": {
+      "dashboard": {
+        "order": [
+          "+climate.downstairs",
+          "nuvio-ac-card|climate.upstairs",
+          "nuvio-scenes-card|scenes",
+          "nuvio-hint-card|"
+        ],
+        "hidden": [
+          "nuvio-ac-card|climate.upstairs",
+          "nuvio-scenes-card|scenes",
+          "nuvio-hint-card|"
+        ],
+        "size": {
+          "nuvio-scenes-card|scenes": "l"
+        },
+        "added": [],
+        "names": {},
+        "conf": {
+          "_head": {
+            "t": "The Habib Home",
+            "i": "mdi:account-group",
+            "nos": 1
+          }
+        }
+      },
+      "dashboard:tiles": {
+        "order": [
+          "c:hacard:hh0005",
+          "c:hacard:hh0006",
+          "c:actions:hh0004",
+          "c:ac:hh0002",
+          "c:ac:hh0003"
+        ],
+        "hidden": [],
+        "size": {
+          "c:hacard:hh0005": "l",
+          "c:hacard:hh0006": "l",
+          "c:actions:hh0004": "l",
+          "c:ac:hh0002": "s",
+          "c:ac:hh0003": "s"
+        },
+        "added": [
+          {
+            "e": "c:ac:hh0002",
+            "c": "nuvio-ac-card",
+            "comp": "ac",
+            "cfg": {
+              "entity": "climate.downstairs"
+            },
+            "v": {
+              "entity": "climate.downstairs"
+            }
+          },
+          {
+            "e": "c:ac:hh0003",
+            "c": "nuvio-ac-card",
+            "comp": "ac",
+            "cfg": {
+              "entity": "climate.upstairs"
+            },
+            "v": {
+              "entity": "climate.upstairs"
+            }
+          },
+          {
+            "e": "c:actions:hh0004",
+            "c": "nuvio-actions-card",
+            "comp": "actions",
+            "cfg": {
+              "title": "Scenes",
+              "actions": [
+                {
+                  "icon": "mdi:lightbulb-on",
+                  "name": "Lights on",
+                  "service": "scene.turn_on",
+                  "data": {
+                    "entity_id": "scene.turn_on_lights"
+                  }
+                },
+                {
+                  "icon": "mdi:lightbulb-off",
+                  "name": "Lights off",
+                  "service": "scene.turn_on",
+                  "data": {
+                    "entity_id": "scene.turn_off_lights"
+                  }
+                },
+                {
+                  "icon": "mdi:home-export-outline",
+                  "name": "Away",
+                  "service": "scene.turn_on",
+                  "data": {
+                    "entity_id": "scene.away"
+                  }
+                }
+              ]
+            },
+            "v": {
+              "entities": [
+                "scene.turn_on_lights",
+                "scene.turn_off_lights",
+                "scene.away"
+              ],
+              "x": {
+                "title": "Scenes",
+                "actions": [
+                  {
+                    "icon": "mdi:lightbulb-on",
+                    "name": "Lights on",
+                    "service": "scene.turn_on",
+                    "data": {
+                      "entity_id": "scene.turn_on_lights"
+                    }
+                  },
+                  {
+                    "icon": "mdi:lightbulb-off",
+                    "name": "Lights off",
+                    "service": "scene.turn_on",
+                    "data": {
+                      "entity_id": "scene.turn_off_lights"
+                    }
+                  },
+                  {
+                    "icon": "mdi:home-export-outline",
+                    "name": "Away",
+                    "service": "scene.turn_on",
+                    "data": {
+                      "entity_id": "scene.away"
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "e": "c:hacard:hh0005",
+            "c": "nuvio-stack-card",
+            "comp": "hacard",
+            "cfg": {
+              "direction": "vertical",
+              "glass": false,
+              "divider": false,
+              "cards": [
+                {
+                  "type": "custom:habib-prayer-card"
+                }
+              ]
+            },
+            "v": {
+              "o": {
+                "src": "type: custom:habib-prayer-card"
+              }
+            }
+          },
+          {
+            "e": "c:hacard:hh0006",
+            "c": "nuvio-stack-card",
+            "comp": "hacard",
+            "cfg": {
+              "direction": "vertical",
+              "glass": false,
+              "divider": false,
+              "cards": [
+                {
+                  "type": "custom:habib-lock-chip",
+                  "entity": "lock.living_room_front_door",
+                  "name": "Front Door"
+                }
+              ]
+            },
+            "v": {
+              "o": {
+                "src": "type: custom:habib-lock-chip\nentity: lock.living_room_front_door\nname: Front Door"
+              }
+            }
+          }
+        ],
+        "names": {},
+        "conf": {}
+      }
+    }
+  }
+}

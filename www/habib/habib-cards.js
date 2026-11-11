@@ -70,7 +70,7 @@ li.next .t{ font-weight:700; }
   li{ flex-direction:column; justify-content:center; gap:4px; padding:12px 6px; border-top:0; border-radius:16px; text-align:center;
     background:color-mix(in srgb, currentColor 6%, transparent); }
   li.next{ background:color-mix(in srgb, var(--hg-accent, #63D71E) 16%, transparent); }
-  li .t{ font-size:18px; }
+  li .t{ font-size:16px; white-space:nowrap; }
   .sr{ border-top:0; margin-top:10px; padding-top:0; }
 }
 `;

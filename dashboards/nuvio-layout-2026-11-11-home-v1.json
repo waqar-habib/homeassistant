@@ -54,8 +54,8 @@
             "cfg": {
               "title": "Scenes",
               "actions": [
-                { "icon": "mdi:lightbulb-on", "name": "Turn on lights", "service": "scene.turn_on", "data": { "entity_id": "scene.turn_on_lights" } },
-                { "icon": "mdi:lightbulb-off", "name": "Turn off lights", "service": "scene.turn_on", "data": { "entity_id": "scene.turn_off_lights" } },
+                { "icon": "mdi:lightbulb-on", "name": "Lights on", "service": "scene.turn_on", "data": { "entity_id": "scene.turn_on_lights" } },
+                { "icon": "mdi:lightbulb-off", "name": "Lights off", "service": "scene.turn_on", "data": { "entity_id": "scene.turn_off_lights" } },
                 { "icon": "mdi:home-export-outline", "name": "Away", "service": "scene.turn_on", "data": { "entity_id": "scene.away" } }
               ]
             },
@@ -64,8 +64,8 @@
               "x": {
                 "title": "Scenes",
                 "actions": [
-                  { "icon": "mdi:lightbulb-on", "name": "Turn on lights", "service": "scene.turn_on", "data": { "entity_id": "scene.turn_on_lights" } },
-                  { "icon": "mdi:lightbulb-off", "name": "Turn off lights", "service": "scene.turn_on", "data": { "entity_id": "scene.turn_off_lights" } },
+                  { "icon": "mdi:lightbulb-on", "name": "Lights on", "service": "scene.turn_on", "data": { "entity_id": "scene.turn_on_lights" } },
+                  { "icon": "mdi:lightbulb-off", "name": "Lights off", "service": "scene.turn_on", "data": { "entity_id": "scene.turn_off_lights" } },
                   { "icon": "mdi:home-export-outline", "name": "Away", "service": "scene.turn_on", "data": { "entity_id": "scene.away" } }
                 ]
               }

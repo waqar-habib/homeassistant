@@ -47,6 +47,20 @@ Milestone M12, Issue I17, Decisions D29, D34
 - Owner's answer on whether the tone was heard: **pending**.
 - Result: playback works through the `/media` path with no error. The volume is not changed by playback. The restore step returns the speaker to V0 after the test.
 
+## Owner heard-tone answer (Living Room)
+
+- Owner: "yes heard tone on living room homepod" (after the rerun).
+
+## B1 on Bedroom HomePod (`media_player.master_bedroom_homepod`, `/media` path)
+
+- Owner confirmed "safe to play" in chat.
+- V0 (start): **0.592**
+- Step 5 test volume set to 0.2 (V1 = 0.2, read back).
+- `media_player.play_media` with `media-source://media_source/local/test-tone.mp3`, `media_content_type: music`, `wait: false`. Success, no error. State `playing`, then `idle` (about 3 s).
+- V2 after the tone: **0.2** (equal to V1, so unchanged by playback).
+- Restore to V0: `media_player.volume_set` to 0.592, read back **0.592**.
+- Owner's answer on whether the tone was heard: **pending**.
+
 ## Not done (waiting on owner)
 
 - Step 6: no audio played yet. Each audio call needs the owner's "safe to play" in chat first.

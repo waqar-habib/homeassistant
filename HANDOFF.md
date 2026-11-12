@@ -1,6 +1,11 @@
 # HANDOFF
 
-Last updated: 2026-11-11 (Mac session, partial stop: waiting on the Pi 5 file drop). Previous: 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3). Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
+Last updated: 2026-11-12 (Pi 5, Adhan build, GREEN LIGHT). Previous: 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
+
+## Resume here (2026-11-12, Adhan build)
+- **Adhan built, toggle OFF.** Branch `feat/adhan-automation` (`bc0b8c5`), pushed, NOT merged. Contents: `packages/adhan.yaml` (helpers, script `adhan_play`, five prayer automations, startup check). Pre-build backup `pre-adhan-build` (slug `b7f421f8`). `ha core check` clean, reloads OK, verified: helpers exist and `input_boolean.adhan_enabled` is off. No playback, no volume change.
+- **Next (owner):** masjid timetable comparison, dry-run notice, supervised runs of `Adhan.mp3` and `Fajr.mp3` on the Living Room HomePod (owner present). Then a separate GREEN LIGHT to enable and to merge the branch to `main`.
+- Session note: `docs/sessions/2026-11-12-adhan-build.md`. Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here
 1. **Home v2 is live on habib-home** (2026-11-11, merged to main `5327aa3`): Prayer Times card (five columns from 460 px, list when narrower), slim Front Door bar (`habib-lock-chip`: opens HA's lock dialog, never calls a service), Scenes (Quick actions), both thermostats. Weather stays in the left hero. The Outside card and the big lock card are gone. Files: `www/habib/habib-cards.js` (Lovelace resource `/local/habib/habib-cards.js?v=1`), layout JSON in `dashboards/nuvio-layout-2026-11-11-*.json`. Rendered at 430, 1280x800 and 1440, guarded tap tests pass.
@@ -26,7 +31,7 @@ Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB 
 5. I14: no `pre-glass-cards` backup. I16: Rooms layout and thermostat areas (M14).
 6. Nuvio vs Glass Cards decision, after the test. Nuvio Settings (header, bottom bar, screensaver 5 min) are owner UI follow-ups.
 7. Tablet model (I5). Garage lock and Meross stay in the backlog. Hatch excluded from HomeKit (I23).
-8. Adhan (M12, I17): owner picks the time. Claude does not run it.
+8. Adhan (M12, I17): built on `feat/adhan-automation`, toggle OFF, not merged. Supervised runs and enabling need owner GREEN LIGHT.
 
 ## Device state
 - **Pi 5** (192.168.1.36): HA core 2026.11.0, Nuvio 2.31.0. HACS removed by HA OS, Nuvio and Glass Cards resources still load from `/local/community/`. Dashboards: `habib-home` (main, Home v1 applied 2026-11-11), `nuvio-shared`, `habib-home-new` (deleted by the owner 2026-11-11). Adhan package removed 2026-11-09 (`d6a1d09`); prayer-times sensors kept. Backup `pre-dashboard-build` (slug `e91f5e77`). Cloudflare Tunnel live (D39). Nabu Casa still active.

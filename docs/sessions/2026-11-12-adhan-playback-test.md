@@ -28,6 +28,16 @@ Milestone M12, Issue I17, Decisions D29, D34
 
 **The Living Room HomePod is currently at 0.2 (V1), not its starting 0.55 (V0). It must be restored (step 7) if no further test runs.**
 
+## B1 result (2026-11-12)
+
+- Owner confirmed "safe to play" in chat before the call.
+- `media_player.play_media` on `media_player.living_room_living_room_homepod`, `media-source://media_source/local/test-tone.mp3`, `media_content_type: music`, `wait: false`. Service returned success. State went `playing`, then `idle` (about 3 s).
+- Path: `/media`. Error: none.
+- V2 after the tone: **0.2**. Not equal to V0 (0.55). The restore check failed (the playback did not restore the volume).
+- Restore: `media_player.volume_set` to 0.55. Read back **0.55**. Restored.
+- Owner's answer on whether the tone was heard: **pending** (not yet asked in chat).
+- B2: not run. Owner decision needed (B1 played without error, so per the prompt B2 is skipped: "skipped, B1 passed"). B1 passed the playback step, but the restore step failed, so the result is mixed.
+
 ## Not done (waiting on owner)
 
 - Step 6: no audio played yet. Each audio call needs the owner's "safe to play" in chat first.

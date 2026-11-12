@@ -33,10 +33,19 @@ Milestone M12, Issue I17, Decisions D29, D34
 - Owner confirmed "safe to play" in chat before the call.
 - `media_player.play_media` on `media_player.living_room_living_room_homepod`, `media-source://media_source/local/test-tone.mp3`, `media_content_type: music`, `wait: false`. Service returned success. State went `playing`, then `idle` (about 3 s).
 - Path: `/media`. Error: none.
-- V2 after the tone: **0.2**. Not equal to V0 (0.55). The restore check failed (the playback did not restore the volume).
-- Restore: `media_player.volume_set` to 0.55. Read back **0.55**. Restored.
+- V2 after the tone: **0.2**. Equal to V1 (0.2 set in step 5), so the tone did not change the volume. The read was not a restore failure. I wrongly reported it as one in the first run: the volume was still at the step 5 test level, and the step 7 restore to V0 had not yet been done.
+- Restore to V0: `media_player.volume_set` to 0.55, read back **0.55**.
 - Owner's answer on whether the tone was heard: **pending** (not yet asked in chat).
-- B2: not run. Owner decision needed (B1 played without error, so per the prompt B2 is skipped: "skipped, B1 passed"). B1 passed the playback step, but the restore step failed, so the result is mixed.
+- B2: not run (B1 passed without error, so the prompt says skip).
+
+## B1 rerun (owner: "safe to play. run test again.")
+
+- Step 5 reset: volume set to 0.2 (V1 = 0.2, read back).
+- `media_player.play_media` on the Living Room HomePod, `media-source://media_source/local/test-tone.mp3`, `media_content_type: music`, `wait: false`. Success. State `playing`, then `idle` (about 3 s). No error.
+- V2 after the tone: **0.2** (equal to V1, so unchanged by playback).
+- Restore to V0: `media_player.volume_set` to 0.55, read back **0.55**.
+- Owner's answer on whether the tone was heard: **pending**.
+- Result: playback works through the `/media` path with no error. The volume is not changed by playback. The restore step returns the speaker to V0 after the test.
 
 ## Not done (waiting on owner)
 

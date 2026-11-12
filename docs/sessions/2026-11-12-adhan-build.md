@@ -37,7 +37,7 @@ Prompt: `docs/prompts/pi5/2026-11-12-adhan-build.md` (commit `a65926e`). Owner G
 - Two speakers share one saved-volume helper. Only the first speaker's V0 is written to it (spec). The other speaker's V0 is held in script memory, so a restart mid-Adhan can restore only the first speaker.
 
 ## Not done (needs owner)
-- Masjid timetable comparison (spec 4).
+- Masjid timetable comparison (spec 4): owner confirmed on 2026-11-12 that the prayer times shown in the integration are correct. No day-by-day comparison was recorded.
 - Dry-run of the failure notice (spec 7).
 - Supervised runs of `Adhan.mp3` and `Fajr.mp3` on the Living Room HomePod (spec 9).
 - GREEN LIGHT to enable the toggle (D34), and to merge `feat/adhan-automation` to `main`.

@@ -14,7 +14,7 @@ Milestone M12, Issue I17, Decisions D29, D34
   - Confirmed `remote.living_room_living_room_homepod` and `remote.master_bedroom_homepod` (not used)
   - Confirmed `notify.waqars_iphone` exists. Nothing sent.
   - No Music Assistant player entities found. Step 6 B3 will be skipped unless the owner asks otherwise.
-  - `input_boolean.adhan_enabled`: **not found (404)**. Differs from the prompt, which expects it to exist and be off. Not created, not changed.
+  - `input_boolean.adhan_enabled`: **not found (404). Expected.** The owner confirmed the toggle was deleted. The 2026-11-08 status sync records the removal of `packages/adhan.yaml` and its helper (`docs/sessions/2026-11-08-pi5-status-sync.md`). The prompt's step 1 check is moot. Not created, not changed.
 - **Step 2 (read-only, no sound):**
   - Living Room HomePod: `paused`, `volume_level` 0.55, `supported_features` 448439 (VOLUME_SET and PLAY_MEDIA present; no MEDIA_ANNOUNCE bit)
   - Bedroom HomePod: `idle`, `volume_level` 0.592, same `supported_features`
@@ -41,7 +41,7 @@ Milestone M12, Issue I17, Decisions D29, D34
 
 ## Problems
 
-- `input_boolean.adhan_enabled` missing in HA (see above).
+- `input_boolean.adhan_enabled` missing in HA. Expected, the helper was deleted. Docs that still name it as live are stale: `docs/prompts/pi5/2026-11-12-adhan-playback-test.md` (step 1 and hard rules), `docs/decisions.md` D34 and D35, and `docs/entities.md` if it lists it.
 - `ffmpeg` was missing; resolved by `persist-install ffmpeg`.
 - `ha_call_service` needs `data` (not `service_data`) for the volume payload.
 
@@ -50,4 +50,4 @@ Milestone M12, Issue I17, Decisions D29, D34
 1. Owner says "safe to play" for B1. Then call `media_player.play_media` on `media_player.living_room_living_room_homepod` with `media-source://media_source/local/test-tone.mp3`, `media_content_type: music`. Wait about 5 s, read `volume_level` as V2.
 2. If B1 errors, ask before B2 (`/local/test-tone.mp3`).
 3. Step 7: V2 must equal V0 (0.55) within 0.02. If not, set back to 0.55 and report.
-4. Owner decides on `input_boolean.adhan_enabled` before any Adhan work.
+4. Docs cleanup for the deleted toggle, as a separate Tier 1 commit. Do not edit `docs/decisions.md` without the owner's OK.

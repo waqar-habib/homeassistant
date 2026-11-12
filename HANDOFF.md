@@ -6,7 +6,7 @@ Last updated: 2026-11-12 (Pi 5, Adhan build, GREEN LIGHT). Previous: 2026-11-11 
 - **Adhan enabled 2026-11-12 17:43 (owner GREEN LIGHT).** Toggle ON. Isha 18:44 Central is the first live run, unsupervised. Supervised runs still pending.
 - Previously: built with toggle OFF. Branch `feat/adhan-automation` (`bc0b8c5`), pushed, NOT merged. Contents: `packages/adhan.yaml` (helpers, script `adhan_play`, five prayer automations, startup check). Pre-build backup `pre-adhan-build` (slug `b7f421f8`). `ha core check` clean, reloads OK, verified: helpers exist and `input_boolean.adhan_enabled` is off. No playback, no volume change.
 - **Prayer times confirmed by owner (2026-11-12):** the times shown in the integration are correct.
-- **Next (owner):** dry-run notice, supervised runs of `Adhan.mp3` and `Fajr.mp3` on the Living Room HomePod (owner present). Then a separate GREEN LIGHT to enable and to merge the branch to `main`.
+- **Next (owner):** supervised runs of `Adhan.mp3` and `Fajr.mp3` on the Living Room HomePod (owner present). Dry-run notice done 2026-11-12. Enabled and merged 2026-11-12.
 - Session note: `docs/sessions/2026-11-12-adhan-build.md`. Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
 
 ## Resume here

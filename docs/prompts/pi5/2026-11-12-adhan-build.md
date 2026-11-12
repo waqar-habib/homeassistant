@@ -48,6 +48,7 @@ Script `adhan_play` with fields `media_file` (`Adhan.mp3` or `Fajr.mp3`) and `sp
 5. Wait for `playing` (30 s timeout), then for not `playing` (900 s timeout).
 6. Restore each speaker to its V0. Read back. Retry once on mismatch. Clear `input_number.adhan_saved_volume` to 0.
 7. On any failure after step 2: `media_player.media_stop` on each speaker, restore V0 if known, then `notify.send_message` with `entity_id: notify.waqars_iphone` and a short message.
+8. On success (all speakers restored and read back): `notify.send_message` with `entity_id: notify.waqars_iphone`, message "Adhan <file> ran on <speakers>, volume restored". Owner asked for this on 2026-11-12, so it is part of every run.
 
 Automations (mode `single`, enabled, each gated by `input_boolean.adhan_enabled` = on):
 - Fajr: trigger at the Fajr sensor time. Call `adhan_play` with `Fajr.mp3` and `[media_player.living_room_living_room_homepod]`.

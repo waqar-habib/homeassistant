@@ -33,6 +33,7 @@ Milestone: M12. Issue: I17. Decisions: D29 (volume and schedule, updated by D49)
 5. Wait for state `playing` (timeout 30 s), then for not `playing` (timeout 900 s). The tested file is 150.9 s.
 6. Restore V0. Read back. Clear `input_number.adhan_saved_volume`. Retry once on mismatch.
 7. On any failure in 2 to 6: `media_player.media_stop`, restore V0 if known, notify.
+8. On success: notify "Adhan <file> ran on <speakers>, volume restored" (owner request, 2026-11-12, so the owner knows each run executed).
 
 ## Helpers (created by the build, OFF or at 0)
 

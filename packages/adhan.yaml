@@ -1,0 +1,375 @@
+# Adhan automation. Built with the toggle OFF (D34, D49, D50).
+# Spec: docs/adhan-spec.md. Production volume 0.35. Each speaker is restored
+# to the volume read at trigger time (V0). Failure: stop, restore, notify.
+# Known limit: a stored saved-volume of 0 is treated as "nothing to restore" at startup.
+
+input_boolean:
+  adhan_enabled:
+    name: Adhan enabled
+    icon: mdi:mosque
+    initial: off
+
+input_number:
+  adhan_saved_volume:
+    name: Adhan saved volume
+    icon: mdi:volume-medium
+    min: 0
+    max: 1
+    step: 0.01
+    mode: slider
+    initial: 0
+
+script:
+  adhan_play:
+    alias: Adhan play
+    mode: single
+    icon: mdi:mosque
+    fields:
+      media_file:
+        name: Media file
+        required: true
+        selector:
+          select:
+            options:
+              - Adhan.mp3
+              - Fajr.mp3
+      speakers:
+        name: Speakers
+        required: true
+        selector:
+          entity:
+            domain: media_player
+            multiple: true
+    variables:
+      target_volume: 0.35
+      fail_reason: ""
+      volume_touched: false
+      v0_list: >-
+        {% set ns = namespace(l=[]) %}{% for s in speakers %}{% set ns.l = ns.l + [state_attr(s, 'volume_level')] %}{% endfor %}{{ ns.l }}
+    sequence:
+      # 1. Gate
+      - alias: Stop unless the gate is on
+        if:
+          - condition: state
+            entity_id: input_boolean.adhan_enabled
+            state: "off"
+        then:
+          - stop: Adhan disabled
+
+      # 2. Read V0, fail closed if any volume is unknown
+      - alias: Fail closed if a volume is unknown
+        if:
+          - condition: template
+            value_template: "{{ v0_list | reject('is_number') | list | count > 0 }}"
+        then:
+          - variables:
+              fail_reason: volume unreadable
+
+      - alias: Save the first speaker's V0 for restart recovery
+        if:
+          - condition: template
+            value_template: "{{ fail_reason == '' }}"
+        then:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.adhan_saved_volume
+            data:
+              value: "{{ v0_list[0] }}"
+
+      # 3. Set 0.35, read back, fail closed
+      - alias: Set speakers to target volume and read back
+        if:
+          - condition: template
+            value_template: "{{ fail_reason == '' }}"
+        then:
+          - variables:
+              volume_touched: true
+          - repeat:
+              for_each: "{{ speakers }}"
+              sequence:
+                - action: media_player.volume_set
+                  target:
+                    entity_id: "{{ repeat.item }}"
+                  data:
+                    volume_level: "{{ target_volume }}"
+          - wait_template: >-
+              {% set ns = namespace(ok=true) %}{% for s in speakers %}{% if (state_attr(s, 'volume_level') | float(-1) - target_volume) | abs > 0.02 %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ ns.ok }}
+            timeout: "00:00:10"
+          - if:
+              - condition: template
+                value_template: >-
+                  {% set ns = namespace(ok=true) %}{% for s in speakers %}{% if (state_attr(s, 'volume_level') | float(-1) - target_volume) | abs > 0.02 %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ not ns.ok }}
+            then:
+              - variables:
+                  fail_reason: volume set failed
+
+      # 4. Play on each speaker
+      - alias: Play the file on each speaker
+        if:
+          - condition: template
+            value_template: "{{ fail_reason == '' }}"
+        then:
+          - action: media_player.play_media
+            target:
+              entity_id: "{{ speakers }}"
+            data:
+              media_content_id: "media-source://media_source/local/{{ media_file }}"
+              media_content_type: music
+
+      # 5. Wait for playing (30 s), then for not playing (900 s)
+      - alias: Wait for playback to start
+        if:
+          - condition: template
+            value_template: "{{ fail_reason == '' }}"
+        then:
+          - wait_template: >-
+              {% set ns = namespace(ok=true) %}{% for s in speakers %}{% if not is_state(s, 'playing') %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ ns.ok }}
+            timeout: "00:00:30"
+          - if:
+              - condition: template
+                value_template: >-
+                  {% set ns = namespace(ok=true) %}{% for s in speakers %}{% if not is_state(s, 'playing') %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ not ns.ok }}
+            then:
+              - variables:
+                  fail_reason: playback did not start
+
+      - alias: Wait for playback to finish
+        if:
+          - condition: template
+            value_template: "{{ fail_reason == '' }}"
+        then:
+          - wait_template: >-
+              {% set ns = namespace(any=false) %}{% for s in speakers %}{% if is_state(s, 'playing') %}{% set ns.any = true %}{% endif %}{% endfor %}{{ not ns.any }}
+            timeout: "00:15:00"
+          - if:
+              - condition: template
+                value_template: >-
+                  {% set ns = namespace(any=false) %}{% for s in speakers %}{% if is_state(s, 'playing') %}{% set ns.any = true %}{% endif %}{% endfor %}{{ ns.any }}
+            then:
+              - variables:
+                  fail_reason: still playing after 900 s
+
+      # 7. On failure after the volume change: stop playback first
+      - alias: Stop playback on failure
+        if:
+          - condition: template
+            value_template: "{{ fail_reason != '' and volume_touched }}"
+        then:
+          - action: media_player.media_stop
+            target:
+              entity_id: "{{ speakers }}"
+
+      # 6. Restore each speaker to its own V0, read back, one retry
+      - alias: Restore each speaker to its own V0
+        if:
+          - condition: template
+            value_template: "{{ volume_touched }}"
+        then:
+          - repeat:
+              for_each: "{{ range(speakers | length) | list }}"
+              sequence:
+                - action: media_player.volume_set
+                  target:
+                    entity_id: "{{ speakers[repeat.item] }}"
+                  data:
+                    volume_level: "{{ v0_list[repeat.item] }}"
+          - wait_template: >-
+              {% set ns = namespace(ok=true) %}{% for i in range(speakers | length) %}{% if (state_attr(speakers[i], 'volume_level') | float(-1) - v0_list[i] | float(0)) | abs > 0.02 %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ ns.ok }}
+            timeout: "00:00:10"
+          - if:
+              - condition: template
+                value_template: >-
+                  {% set ns = namespace(ok=true) %}{% for i in range(speakers | length) %}{% if (state_attr(speakers[i], 'volume_level') | float(-1) - v0_list[i] | float(0)) | abs > 0.02 %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ not ns.ok }}
+            then:
+              - repeat:
+                  for_each: "{{ range(speakers | length) | list }}"
+                  sequence:
+                    - action: media_player.volume_set
+                      target:
+                        entity_id: "{{ speakers[repeat.item] }}"
+                      data:
+                        volume_level: "{{ v0_list[repeat.item] }}"
+              - wait_template: >-
+                  {% set ns = namespace(ok=true) %}{% for i in range(speakers | length) %}{% if (state_attr(speakers[i], 'volume_level') | float(-1) - v0_list[i] | float(0)) | abs > 0.02 %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ ns.ok }}
+                timeout: "00:00:10"
+              - if:
+                  - condition: template
+                    value_template: >-
+                      {% set ns = namespace(ok=true) %}{% for i in range(speakers | length) %}{% if (state_attr(speakers[i], 'volume_level') | float(-1) - v0_list[i] | float(0)) | abs > 0.02 %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ not ns.ok }}
+                then:
+                  - variables:
+                      fail_reason: restore failed, check speakers and the saved volume helper
+
+      # 8. Outcome
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ fail_reason == '' }}"
+            sequence:
+              - action: input_number.set_value
+                target:
+                  entity_id: input_number.adhan_saved_volume
+                data:
+                  value: 0
+              - action: notify.send_message
+                target:
+                  entity_id: notify.waqars_iphone
+                data:
+                  message: "Adhan {{ media_file }} ran on {{ speakers | join(', ') }}, volume restored"
+        default:
+          - action: notify.send_message
+            target:
+              entity_id: notify.waqars_iphone
+            data:
+              message: "Adhan {{ media_file }} FAILED on {{ speakers | join(', ') }}: {{ fail_reason }}. Check the speakers."
+
+automation:
+  - id: adhan_fajr
+    alias: "Adhan: Fajr"
+    mode: single
+    triggers:
+      - trigger: time
+        at: sensor.living_room_adhan_fajr_prayer
+    conditions:
+      - condition: state
+        entity_id: input_boolean.adhan_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('sensor.living_room_adhan_fajr_prayer') not in ['unknown', 'unavailable'] }}"
+    actions:
+      - action: script.adhan_play
+        data:
+          media_file: Fajr.mp3
+          speakers:
+            - media_player.living_room_living_room_homepod
+
+  - id: adhan_dhuhr
+    alias: "Adhan: Dhuhr"
+    mode: single
+    triggers:
+      - trigger: time
+        at: sensor.living_room_adhan_dhuhr_prayer
+    conditions:
+      - condition: state
+        entity_id: input_boolean.adhan_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('sensor.living_room_adhan_dhuhr_prayer') not in ['unknown', 'unavailable'] }}"
+    actions:
+      - action: script.adhan_play
+        data:
+          media_file: Adhan.mp3
+          speakers:
+            - media_player.living_room_living_room_homepod
+            - media_player.master_bedroom_homepod
+
+  - id: adhan_asr
+    alias: "Adhan: Asr"
+    mode: single
+    triggers:
+      - trigger: time
+        at: sensor.living_room_adhan_asr_prayer
+    conditions:
+      - condition: state
+        entity_id: input_boolean.adhan_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('sensor.living_room_adhan_asr_prayer') not in ['unknown', 'unavailable'] }}"
+    actions:
+      - action: script.adhan_play
+        data:
+          media_file: Adhan.mp3
+          speakers:
+            - media_player.living_room_living_room_homepod
+            - media_player.master_bedroom_homepod
+
+  - id: adhan_maghrib
+    alias: "Adhan: Maghrib"
+    mode: single
+    triggers:
+      - trigger: time
+        at: sensor.living_room_adhan_maghrib_prayer
+    conditions:
+      - condition: state
+        entity_id: input_boolean.adhan_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('sensor.living_room_adhan_maghrib_prayer') not in ['unknown', 'unavailable'] }}"
+    actions:
+      - action: script.adhan_play
+        data:
+          media_file: Adhan.mp3
+          speakers:
+            - media_player.living_room_living_room_homepod
+            - media_player.master_bedroom_homepod
+
+  - id: adhan_isha
+    alias: "Adhan: Isha"
+    mode: single
+    triggers:
+      - trigger: time
+        at: sensor.living_room_adhan_isha_prayer
+    conditions:
+      - condition: state
+        entity_id: input_boolean.adhan_enabled
+        state: "on"
+      - condition: template
+        value_template: "{{ states('sensor.living_room_adhan_isha_prayer') not in ['unknown', 'unavailable'] }}"
+    actions:
+      - action: script.adhan_play
+        data:
+          media_file: Adhan.mp3
+          speakers:
+            - media_player.living_room_living_room_homepod
+            - media_player.master_bedroom_homepod
+
+  # Startup check: restore a volume left at the Adhan level by a restart.
+  - id: adhan_startup_restore
+    alias: "Adhan: restore stuck volume on start"
+    mode: single
+    triggers:
+      - trigger: homeassistant
+        event: start
+    conditions:
+      - condition: numeric_state
+        entity_id: input_number.adhan_saved_volume
+        above: 0
+    actions:
+      - repeat:
+          for_each:
+            - media_player.living_room_living_room_homepod
+            - media_player.master_bedroom_homepod
+          sequence:
+            - if:
+                - condition: template
+                  value_template: "{{ not is_state(repeat.item, 'playing') }}"
+              then:
+                - action: media_player.volume_set
+                  target:
+                    entity_id: "{{ repeat.item }}"
+                  data:
+                    volume_level: "{{ states('input_number.adhan_saved_volume') | float }}"
+      - wait_template: >-
+          {% set ns = namespace(ok=true) %}{% for s in ['media_player.living_room_living_room_homepod', 'media_player.master_bedroom_homepod'] %}{% if not is_state(s, 'playing') and (state_attr(s, 'volume_level') | float(-1) - states('input_number.adhan_saved_volume') | float(0)) | abs > 0.02 %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ ns.ok }}
+        timeout: "00:00:15"
+      - if:
+          - condition: template
+            value_template: >-
+              {% set ns = namespace(ok=true) %}{% for s in ['media_player.living_room_living_room_homepod', 'media_player.master_bedroom_homepod'] %}{% if not is_state(s, 'playing') and (state_attr(s, 'volume_level') | float(-1) - states('input_number.adhan_saved_volume') | float(0)) | abs > 0.02 %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ not ns.ok }}
+        then:
+          - action: notify.send_message
+            target:
+              entity_id: notify.waqars_iphone
+            data:
+              message: "Adhan startup: volume restore did not read back on one or more HomePods. Check them."
+        else:
+          - action: notify.send_message
+            target:
+              entity_id: notify.waqars_iphone
+            data:
+              message: "Adhan startup: stored volume restored on the HomePods."
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.adhan_saved_volume
+        data:
+          value: 0

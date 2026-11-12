@@ -73,7 +73,7 @@ EXIT=0
 
 - Playback ran about 154 s for a 150.9 s file (buffering included). It ended on its own; no manual stop.
 - Restore happened in-script after playback ended. No manual step.
-- Owner's answer on whether the full Adhan played with no cut-off or distortion: **pending** (step 5.3, to ask).
+- Owner's answer on whether the full Adhan played with no cut-off or distortion: **"Sounded fine, full track, no cut-off."** Owner confirmed.
 
 ## Next step
 

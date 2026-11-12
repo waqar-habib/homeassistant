@@ -3,7 +3,8 @@
 Last updated: 2026-11-12 (Pi 5, Adhan build, GREEN LIGHT). Previous: 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
 
 ## Resume here (2026-11-12, Adhan build)
-- **Adhan built, toggle OFF.** Branch `feat/adhan-automation` (`bc0b8c5`), pushed, NOT merged. Contents: `packages/adhan.yaml` (helpers, script `adhan_play`, five prayer automations, startup check). Pre-build backup `pre-adhan-build` (slug `b7f421f8`). `ha core check` clean, reloads OK, verified: helpers exist and `input_boolean.adhan_enabled` is off. No playback, no volume change.
+- **Adhan enabled 2026-11-12 17:43 (owner GREEN LIGHT).** Toggle ON. Isha 18:44 Central is the first live run, unsupervised. Supervised runs still pending.
+- Previously: built with toggle OFF. Branch `feat/adhan-automation` (`bc0b8c5`), pushed, NOT merged. Contents: `packages/adhan.yaml` (helpers, script `adhan_play`, five prayer automations, startup check). Pre-build backup `pre-adhan-build` (slug `b7f421f8`). `ha core check` clean, reloads OK, verified: helpers exist and `input_boolean.adhan_enabled` is off. No playback, no volume change.
 - **Prayer times confirmed by owner (2026-11-12):** the times shown in the integration are correct.
 - **Next (owner):** dry-run notice, supervised runs of `Adhan.mp3` and `Fajr.mp3` on the Living Room HomePod (owner present). Then a separate GREEN LIGHT to enable and to merge the branch to `main`.
 - Session note: `docs/sessions/2026-11-12-adhan-build.md`. Read this first, then `docs/issues.md` and the Open list in `docs/decisions.md`.
@@ -32,7 +33,7 @@ Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB 
 5. I14: no `pre-glass-cards` backup. I16: Rooms layout and thermostat areas (M14).
 6. Nuvio vs Glass Cards decision, after the test. Nuvio Settings (header, bottom bar, screensaver 5 min) are owner UI follow-ups.
 7. Tablet model (I5). Garage lock and Meross stay in the backlog. Hatch excluded from HomeKit (I23).
-8. Adhan (M12, I17): built on `feat/adhan-automation`, toggle OFF, not merged. Supervised runs and enabling need owner GREEN LIGHT.
+8. Adhan (M12, I17): ENABLED 2026-11-12 (owner GREEN LIGHT). Supervised runs still pending.
 
 ## Device state
 - **Pi 5** (192.168.1.36): HA core 2026.11.0, Nuvio 2.31.0. HACS removed by HA OS, Nuvio and Glass Cards resources still load from `/local/community/`. Dashboards: `habib-home` (main, Home v1 applied 2026-11-11), `nuvio-shared`, `habib-home-new` (deleted by the owner 2026-11-11). Adhan package removed 2026-11-09 (`d6a1d09`); prayer-times sensors kept. Backup `pre-dashboard-build` (slug `e91f5e77`). Cloudflare Tunnel live (D39). Nabu Casa still active.

@@ -44,3 +44,9 @@ Prompt: `docs/prompts/pi5/2026-11-12-adhan-build.md` (commit `a65926e`). Owner G
 
 ## Resume point
 Owner to plan the supervised runs. Enabling and merging need a separate GREEN LIGHT.
+
+## Enabled (owner GREEN LIGHT, 2026-11-12, 17:43 Central)
+- Owner GREEN LIGHT to enable now, after an end-to-end check (clean `ha core check`, 6 automations loaded, failure path dry-run clean). Owner was told that tonight's Isha (18:44) would play `Adhan.mp3` on both HomePods at 0.35 without a supervised run first.
+- `input_boolean.adhan_enabled` set to ON at 17:43. Speakers at 0.55 and 0.592 at enable time.
+- Still open: supervised runs of `Adhan.mp3` and `Fajr.mp3` (D49 spec 9, not yet done). Owner to record the outcome of tonight's Isha.
+- Merge: the feature commit is on `main` as `6818808` (replayed, not a merge commit; package identical to `feat/adhan-automation` `bc0b8c5`).

@@ -3,7 +3,17 @@
 Target: pi5
 Date: 2026-11-12
 Tier: 3 (plays the real Adhan file on a HomePod)
-GREEN LIGHT: **not given in this file.** Committing this prompt does not authorize the run. The owner is physically at the Bedroom HomePod and must type "GREEN LIGHT" in the Pi 5 session before step 4. Record the owner's exact words and time in the session note.
+GREEN LIGHT: run 1 (2026-11-12, about 14:07) used the owner's "GREEN LIGHT." It FAILED (see `docs/sessions/2026-11-12-adhan-e2e-test.md`). Run 2 uses the owner's "GREEN LIGHT/safe to test" in chat, after the changes below. The owner was physically next to the Bedroom HomePod.
+
+## Owner changes after run 1 (2026-11-12)
+
+- Test volume is **0.35**, not 0.2. Owner: at 0.592 the Adhan was "too loud". The owner was present and heard it.
+- Script v2 (`/data/adhan_test.py`, not in git) fixes the run 1 defects:
+  1. The play call runs in a thread. The HTTP call blocks until playback, so it no longer times out the run.
+  2. The restore waits until the speaker is no longer `playing`.
+  3. On failure, playback is stopped (`media_player.media_stop`) before the restore.
+  4. The failure notice uses `notify.send_message` with `entity_id: notify.waqars_iphone` (run 1 got HTTP 400 on the old `notify/waqars_iphone` path).
+- D29 says 20%. The owner changed the test level to 0.35 for this test. The decision row is not edited in this run.
 
 Milestone: M12. Issue: I17. Decisions: D29 (Adhan.mp3 at 20%), D34 (fail closed, restore volume, notify on failure).
 Builds on: `docs/sessions/2026-11-12-adhan-playback-test.md` (`/media` path passed on both HomePods with a 3-second tone; restore was manual).
@@ -16,6 +26,7 @@ One full run with the real `/media/Adhan.mp3` on `media_player.master_bedroom_ho
 
 - Only `media_player.master_bedroom_homepod` is used. Do not touch the Living Room HomePod.
 - Only `Adhan.mp3`. Do not play `Fajr.mp3`, `test-tone.mp3`, or anything else.
+- Test volume is 0.35 (owner, 2026-11-12). Not 0.2 and not the starting volume.
 - Run the script **once**. If it fails, do not run it again. Go to step 6.
 - Do not enable `input_boolean.adhan_enabled` (it is deleted; see the session note). Do not create, edit or enable any automation or script in HA. Do not edit YAML, so `ha core check` is not needed.
 - Do not call any `lock.*` service. Do not touch `switch.804_*`.

@@ -52,6 +52,29 @@ EXIT=1
 - Final volume: **0.592 (V0)**, read back at 14:07:44.
 - Owner's answer on whether the Adhan was heard in full: not asked. The run stopped at about 41 s.
 
+## Run 2 (PASSED), 2026-11-12
+
+- Owner: "I was present next to the bedroom homepod during the test. when the volume went up to 0.592, it became too loud. You can set the test volume to 0.35. Write the changes to test case and proceed accordingly. GREEN LIGHT/safe to test."
+- Changes written to `docs/prompts/pi5/2026-11-12-adhan-e2e-test.md`: test volume 0.35, script v2 fixes (threaded play call, restore after playback ends, stop on failure, `notify.send_message`).
+- Pre-run: Bedroom HomePod `idle`, V0 = 0.592.
+- Run:
+
+```
+14:15:38 start state=idle V0=0.5920000000000001
+14:15:39 V1 after set=0.35
+14:15:39 play_media sent
+14:15:41 playing after 2 s
+14:18:12 play_media call returned
+14:18:14 playback ended (state=idle) after 154 s
+14:18:18 restore to V0=0.5920000000000001: read 0.5920000000000001 -> OK
+RESULT {"entity": "media_player.master_bedroom_homepod", "media": "media-source://media_source/local/Adhan.mp3", "V0": 0.5920000000000001, "test_volume": 0.35, "played": true, "restored": true, "pass": true}
+EXIT=0
+```
+
+- Playback ran about 154 s for a 150.9 s file (buffering included). It ended on its own; no manual stop.
+- Restore happened in-script after playback ended. No manual step.
+- Owner's answer on whether the full Adhan played with no cut-off or distortion: **pending** (step 5.3, to ask).
+
 ## Next step
 
 - Owner decides: fix the script (defects above), then re-run with a new GREEN LIGHT. Or hold the Adhan rebuild.

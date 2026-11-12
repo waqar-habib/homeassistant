@@ -30,14 +30,19 @@ The test does **not** build or enable any automation. It does not touch `input_b
 
 ## Part A: Read-only checks (Tier 0, run now)
 
-1. Read the state and attributes of these entities and record them:
-   - `media_player.living_room_living_room_homepod`
-   - `media_player.master_bedroom_homepod`
+1. **Confirm entity IDs with ha-mcp (required before anything else).** Do not use an ID from memory or from this file until ha-mcp confirms it. Use the ha-mcp entity search (or the entity registry tool) for each of these and record the exact ID returned:
+   - HomePod media players: search "homepod" and "media_player". Confirm `media_player.living_room_living_room_homepod` and `media_player.master_bedroom_homepod` exist. If either is missing or renamed, record the ID that matches the Living Room or Master HomePod (match on area and integration `apple_tv`), and stop for owner input if the match is unclear.
+   - Matching remote entities (`remote.living_room_living_room_homepod`, `remote.master_bedroom_homepod`): confirm they exist. Not used in the test, but record them so the owner knows if the Apple TV integration changed.
+   - Music Assistant player entities: search "music_assistant" and "media_player". List any HomePod player IDs. This decides whether B3 runs.
+   - Volume helper and notification target: confirm `notify.waqars_iphone` exists (for the failure notice check). Do not send anything.
+   - Adhan toggle: confirm `input_boolean.adhan_enabled` exists and is `off`. Read only.
+   - Front door and lock entities are not used by this test. Do not query them.
+   Compare the ha-mcp results with `docs/entities.md`. Record any difference in the results file and in the Part A output. Use only the IDs ha-mcp confirms for Part B.
+2. Read the state and attributes of the confirmed HomePod media players and record them:
    Record `state`, `volume_level`, `is_volume_muted`, `supported_features` (decode the bits: VOLUME_SET, PLAY_MEDIA, MEDIA_ANNOUNCE, BROWSE_MEDIA), and `media_content_type`.
-2. Check whether the media folder has the test inputs. Do not play anything:
+3. Check whether the media folder has the test inputs. Do not play anything:
    - `/media/Adhan.mp3` and `/media/Fajr.mp3` exist (record size only)
    - `/config/www/` exists and is writable
-3. Check whether Music Assistant is installed and lists a HomePod player (`music_assistant` integration, or entities whose names match the HomePods). Record the entity ID if found, or "not found".
 4. Read the `apple_tv` integration's recent log lines for media errors (last 200 lines of the HA log, filtered on `apple_tv` and `media`). Record any "media streaming" errors with timestamps.
 5. Stop here and write the Part A results. Do not continue to Part B on your own.
 
@@ -45,14 +50,14 @@ The test does **not** build or enable any automation. It does not touch `input_b
 
 ## Part B: Live playback test (Tier 3, needs GREEN LIGHT)
 
-Only run this after the owner's GREEN LIGHT in chat. Tell the owner before each audio step, and wait for their reply that it is safe to play.
+Only run this after the owner's GREEN LIGHT in chat. Run it only with the entity IDs that ha-mcp confirmed in Part A step 1. Tell the owner before each audio step, and wait for their reply that it is safe to play.
 
 1. Create `test-tone.mp3`: a 3-second tone at low level. Use `ffmpeg` if installed (`-f lavfi -i "sine=frequency=440:duration=3" -af volume=0.2`). Save it to `/media/test-tone.mp3` and copy it to `/config/www/test-tone.mp3`. If `ffmpeg` is missing, ask the owner to supply a short MP3 and stop until they do.
 2. Read `volume_level` on `media_player.living_room_living_room_homepod` and record it as `V0`.
 3. Set that HomePod to 0.2 with `media_player.volume_set`. Read it back and record it as `V1`. If `V1` is not 0.2, stop Part B and record why.
 4. **Test B1 (`/media` path):** call `media_player.play_media` on the Living Room HomePod with `media-source://media_source/local/test-tone.mp3`, `media_content_type: music`. Ask the owner whether they heard it. Record: service call result, errors, time to start, owner's answer.
 5. **Test B2 (`/local` path):** same call with `media-source://media_source/local/test-tone.mp3` only if B1 failed. Otherwise skip and say why. Use the `www` copy (`/local/test-tone.mp3`) if the media_source name differs. Record the same fields.
-6. **Test B3 (Music Assistant):** only if Part A step 3 found a HomePod player. Call `music_assistant.play_announcement` with `url` set to the test file's URL on the Pi (`http://192.168.1.36:8123/local/test-tone.mp3`) and `announce_volume: 20`. Record the same fields. Skip with a reason if MA has no HomePod player.
+6. **Test B3 (Music Assistant):** only if Part A step 1 (ha-mcp) found a Music Assistant HomePod player. Use the ID ha-mcp confirmed. Call `music_assistant.play_announcement` with `url` set to the test file's URL on the Pi (`http://192.168.1.36:8123/local/test-tone.mp3`) and `announce_volume: 20`. Record the same fields. Skip with a reason if MA has no HomePod player.
 7. **Restore check (for each test that played):** after the tone ends (about 5 s), read `volume_level` again. Record `V2`. Pass only if `V2` equals `V0` within 0.02. If not, set the speaker back to `V0` with `media_player.volume_set`, read it again, and record that as the restore result. Report the mismatch to the owner.
 8. **Failure notice:** if any test errors, confirm the failure notice would go to `notify.waqars_iphone`. Do not send a test notification unless the owner asks.
 

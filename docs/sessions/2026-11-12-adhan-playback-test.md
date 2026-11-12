@@ -61,6 +61,27 @@ Milestone M12, Issue I17, Decisions D29, D34
 - Restore to V0: `media_player.volume_set` to 0.592, read back **0.592**.
 - Owner's answer on whether the tone was heard: **pending**.
 
+## Final results (2026-11-12)
+
+Owner confirmed: "Heard tone for all tests on both Homepods."
+
+| Test | Entity | Path | Played (owner) | Error | V0 | V1 | V2 | Restored | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| Step 2 | both HomePods | read | n/a | none | 0.55 / 0.592 | | | n/a | VOLUME_SET and PLAY_MEDIA present; no MEDIA_ANNOUNCE bit; apple_tv log search empty |
+| B1 run 1 | Living Room | `/media` | yes | none | 0.55 | 0.2 | 0.2 | yes, 0.55 | |
+| B1 run 2 | Living Room | `/media` | yes | none | 0.55 | 0.2 | 0.2 | yes, 0.55 | rerun, owner "run test again" |
+| B1 | Bedroom | `/media` | yes | none | 0.592 | 0.2 | 0.2 | yes, 0.592 | |
+| B2 | Both | `/local` | not run | | | | | | skipped, B1 passed |
+| B3 | MA HomePod | `play_announcement` | not run | | | | | | skipped, no MA HomePod player |
+
+- Confirmed IDs: `media_player.living_room_living_room_homepod`, `media_player.master_bedroom_homepod`, `remote.living_room_living_room_homepod`, `remote.master_bedroom_homepod`, `notify.waqars_iphone`.
+- `input_boolean.adhan_enabled`: deleted by the owner, so the 404 is expected.
+- Owner GREEN LIGHT: 2026-11-12, scope = this combined test.
+- Final volumes: Living Room 0.55, Bedroom 0.592 (both confirmed by read-back).
+- Restore check (V2 vs V0): V2 stayed at the step 5 test level (0.2) because playback did not change the volume. The step 7 restore to V0 was then done on each speaker and read back. The check passes for playback behavior (the tone did not change the volume) and the restore works.
+- Pass/fail: **B1 on the `/media` path passed on both HomePods** (played, heard, no error, volume restored to V0).
+- Open: the Adhan automations and scripts are deleted. Prayer-time sensors stay live. Nothing has been rebuilt.
+
 ## Not done (waiting on owner)
 
 - Step 6: no audio played yet. Each audio call needs the owner's "safe to play" in chat first.

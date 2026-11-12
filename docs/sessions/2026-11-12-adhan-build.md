@@ -38,7 +38,7 @@ Prompt: `docs/prompts/pi5/2026-11-12-adhan-build.md` (commit `a65926e`). Owner G
 
 ## Not done (needs owner)
 - Masjid timetable comparison (spec 4): owner confirmed on 2026-11-12 that the prayer times shown in the integration are correct. No day-by-day comparison was recorded.
-- Dry-run of the failure notice (spec 7): DONE 2026-11-12 at 17:39 Central, owner GREEN LIGHT B. Toggle ON for about one second, then OFF. `script.adhan_play` called with `Fajr.mp3` and a nonexistent speaker (`media_player.dryrun_no_such_speaker`). Trace (run `292dc240...`): gate passed, "volume unreadable" fail, playback and volume steps skipped, failure notice sent: "Adhan Fajr.mp3 FAILED on media_player.dryrun_no_such_speaker: volume unreadable. Check the speakers." No audio, no volume change. Speakers after: 0.55 and 0.592, unchanged. Toggle confirmed OFF. Notice delivery to the iPhone not visually confirmed by Claude; owner to confirm receipt.
+- Dry-run of the failure notice (spec 7): DONE 2026-11-12 at 17:39 Central, owner GREEN LIGHT B. Toggle ON for about one second, then OFF. `script.adhan_play` called with `Fajr.mp3` and a nonexistent speaker (`media_player.dryrun_no_such_speaker`). Trace (run `292dc240...`): gate passed, "volume unreadable" fail, playback and volume steps skipped, failure notice sent: "Adhan Fajr.mp3 FAILED on media_player.dryrun_no_such_speaker: volume unreadable. Check the speakers." No audio, no volume change. Speakers after: 0.55 and 0.592, unchanged. Toggle confirmed OFF. Owner confirmed 2026-11-12 that the notification arrived on the iPhone as expected.
 - Supervised runs of `Adhan.mp3` and `Fajr.mp3` on the Living Room HomePod (spec 9).
 - GREEN LIGHT to enable the toggle (D34), and to merge `feat/adhan-automation` to `main`.
 

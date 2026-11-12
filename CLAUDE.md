@@ -24,7 +24,7 @@ Areas — Downstairs: Living Room, Kitchen, Master, Nursery, Formal Living. Upst
 
 ```
 configuration.yaml   # HA root config (owned by the Pi; must include packages, see below)
-packages/            # one YAML package per feature (adhan.yaml, ...). Preferred place for new config.
+packages/            # one YAML package per feature (e.g. `<feature>.yaml`). Preferred place for new config.
 dashboards/          # exported Nuvio layout backups (JSON) + any YAML dashboards
 HANDOFF.md           # current state and resume point for both devices (read first)
 docs/                # setup runbook, devices, decisions, issues, milestones, voice feasibility

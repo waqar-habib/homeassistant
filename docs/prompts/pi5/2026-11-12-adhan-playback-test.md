@@ -3,7 +3,7 @@
 Target: pi5
 Date: 2026-11-12
 Tier: 3 (plays audio on the HomePods)
-GREEN LIGHT: yes (2026-11-12). Owner's words in chat: "GREEN LIGHT". Scope: this combined test as written in this file, nothing else. Not covered: enabling `input_boolean.adhan_enabled`, any automation or script, the Adhan package, or any change to the front door lock. The owner still confirms each audio step in chat (step 6).
+GREEN LIGHT: yes (2026-11-12). Owner's words in chat: "GREEN LIGHT". Scope: this combined test as written in this file, nothing else. Not covered: any automation or script, the Adhan package, or any change to the front door lock. The owner still confirms each audio step in chat (step 6).
 
 Milestone: M12. Issue: I17. Decisions: D29, D34.
 
@@ -20,7 +20,7 @@ The test does not build or enable any automation.
 ## Hard rules
 
 - Do not play `Adhan.mp3` or `Fajr.mp3`. Test audio is `test-tone.mp3` only.
-- Do not enable `input_boolean.adhan_enabled`. Do not create, edit or enable any automation or script.
+- Do not create, edit or enable any automation or script.
 - Do not call any `lock.*` service. Do not touch `lock.living_room_front_door` or any `switch.804_*` entity.
 - Do not restart HA or the Pi. Do not reload the HomePod integration.
 - No YAML changes, so `ha core check` is not needed. If you find you must change YAML, stop and tell the owner.
@@ -36,7 +36,6 @@ Use the ha-mcp entity search or registry tool for each item and record the exact
 - Matching remote entities (`remote.living_room_living_room_homepod`, `remote.master_bedroom_homepod`): confirm they exist and record them. They are not used in this test.
 - Music Assistant player entities: search "music_assistant" and "media_player". List any HomePod player IDs. This decides whether step 6 (B3) runs.
 - `notify.waqars_iphone`: confirm it exists. Do not send anything.
-- `input_boolean.adhan_enabled`: confirm it exists and is `off`. Read only.
 
 Compare the ha-mcp results with `docs/entities.md` and record any difference. Use only the IDs ha-mcp confirms for the rest of the run.
 

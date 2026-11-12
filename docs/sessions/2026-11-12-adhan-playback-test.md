@@ -50,4 +50,4 @@ Milestone M12, Issue I17, Decisions D29, D34
 1. Owner says "safe to play" for B1. Then call `media_player.play_media` on `media_player.living_room_living_room_homepod` with `media-source://media_source/local/test-tone.mp3`, `media_content_type: music`. Wait about 5 s, read `volume_level` as V2.
 2. If B1 errors, ask before B2 (`/local/test-tone.mp3`).
 3. Step 7: V2 must equal V0 (0.55) within 0.02. If not, set back to 0.55 and report.
-4. Docs cleanup for the deleted toggle, as a separate Tier 1 commit. Do not edit `docs/decisions.md` without the owner's OK.
+4. Docs cleanup for the deleted toggle: done (owner GREEN LIGHT, see the cleanup commit). `docs/decisions.md` left unchanged as the decision history.

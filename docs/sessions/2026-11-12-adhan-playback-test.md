@@ -1,4 +1,4 @@
-# Session: Adhan HomePod playback test (partial stop at step 3)
+# Session: Adhan HomePod playback test (partial stop at step 6)
 
 Date: 2026-11-12
 Device: Pi 5 (Claude Terminal)
@@ -14,42 +14,40 @@ Milestone M12, Issue I17, Decisions D29, D34
   - Confirmed `remote.living_room_living_room_homepod` and `remote.master_bedroom_homepod` (not used)
   - Confirmed `notify.waqars_iphone` exists. Nothing sent.
   - No Music Assistant player entities found. Step 6 B3 will be skipped unless the owner asks otherwise.
-  - `input_boolean.adhan_enabled`: **not found (404)**. Differs from the prompt, which expects it to exist and be off. Not created, not changed. Needs a check in `docs/entities.md` before any Adhan work.
+  - `input_boolean.adhan_enabled`: **not found (404)**. Differs from the prompt, which expects it to exist and be off. Not created, not changed.
 - **Step 2 (read-only, no sound):**
-  - Living Room HomePod: state `paused`, `volume_level` 0.55, `supported_features` 448439 (includes VOLUME_SET and PLAY_MEDIA; no MEDIA_ANNOUNCE bit)
-  - Bedroom HomePod: state `idle`, `volume_level` 0.592, same `supported_features`
+  - Living Room HomePod: `paused`, `volume_level` 0.55, `supported_features` 448439 (VOLUME_SET and PLAY_MEDIA present; no MEDIA_ANNOUNCE bit)
+  - Bedroom HomePod: `idle`, `volume_level` 0.592, same `supported_features`
   - `/media/Adhan.mp3` (2,425,393 bytes) and `/media/Fajr.mp3` (5,418,931 bytes) exist. Not played.
   - `/config/www/` exists and is writable.
   - HA error log search for `apple_tv` and system log search for `media` returned no entries in the bounded window.
-- **Decision point A:** passed. `volume_level` present on both, VOLUME_SET present on both.
-- **Step 3 (test tone):** **blocked. `ffmpeg` is not installed.** Per the prompt, stopped and asked the owner for a short MP3.
-- **Step 4 (V0):** read on Living Room HomePod = **0.55** (recorded from the step 2 read, no new call).
+- **Decision point A:** passed.
+- **Step 3 (test tone):** ffmpeg 8.1.3 installed via `persist-install` (persists under `/data/packages`). Created a 3.000 s, 440 Hz tone at volume 0.2 and saved to `/media/test-tone.mp3` (24,468 bytes) and `/config/www/test-tone.mp3` (same size).
+- **Step 4 (V0):** Living Room HomePod `volume_level` = **0.55**.
+- **Step 5 (set test volume):** `media_player.volume_set` to 0.2 on the Living Room HomePod. Read back **V1 = 0.2**.
 
-## Not done (stopped)
+**The Living Room HomePod is currently at 0.2 (V1), not its starting 0.55 (V0). It must be restored (step 7) if no further test runs.**
 
-- Step 3: test tone not created. Nothing copied to `/config/www/`.
-- Step 5: volume not changed. The speaker is still at 0.55.
-- Step 6: no audio played (B1, B2, B3 all not run).
-- Step 7: restore check not run (nothing played).
-- Step 8: not applicable.
-- Results table: partial (Step 2 row only).
-- `docs/issues.md` I17: progress note added, status still Open.
+## Not done (waiting on owner)
+
+- Step 6: no audio played yet. Each audio call needs the owner's "safe to play" in chat first.
+  - B1 (`/media` path) is next. Owner confirmation pending.
+  - B2 runs only if B1 fails.
+  - B3 (Music Assistant) is skipped, no MA HomePod player found.
+- Step 7: restore check not run (nothing played yet).
+- Step 8: not applicable until a test errors.
+- Results table: partial (Step 2 row and the step 3 to 5 facts only).
+- `docs/issues.md` I17: needs the final result.
 
 ## Problems
 
-- `input_boolean.adhan_enabled` missing (see above).
-- `ffmpeg` missing on the Pi 5 (no install attempted; the prompt says to ask the owner).
-- `ha_get_logs` needed the `error_log` or `system` source (the prompt did not specify).
-
-## Decisions
-
-- Stopped at step 3 instead of going on to steps 4 and 5. Setting the volume to 0.2 without a tone to test and without a restore would leave the speaker at 20%.
-- Commit is local only. The prompt says push to `main` only if the owner asks, which overrides the general session push rule for this run.
+- `input_boolean.adhan_enabled` missing in HA (see above).
+- `ffmpeg` was missing; resolved by `persist-install ffmpeg`.
+- `ha_call_service` needs `data` (not `service_data`) for the volume payload.
 
 ## Resume point
 
-1. Owner chooses one for the tone:
-   - (a) install ffmpeg on the Pi 5 (persistent package install), then resume from step 3
-   - (b) send a short MP3 for the test tone, then resume from step 3
-2. Owner confirms what `input_boolean.adhan_enabled` should be (it was not found).
-3. Resume at step 3, then step 4 (V0 re-read), step 5 (set 0.2), step 6 (owner confirms each audio call), step 7 (restore check).
+1. Owner says "safe to play" for B1. Then call `media_player.play_media` on `media_player.living_room_living_room_homepod` with `media-source://media_source/local/test-tone.mp3`, `media_content_type: music`. Wait about 5 s, read `volume_level` as V2.
+2. If B1 errors, ask before B2 (`/local/test-tone.mp3`).
+3. Step 7: V2 must equal V0 (0.55) within 0.02. If not, set back to 0.55 and report.
+4. Owner decides on `input_boolean.adhan_enabled` before any Adhan work.

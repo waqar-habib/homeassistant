@@ -58,3 +58,9 @@ Owner to plan the supervised runs. Enabling and merging need a separate GREEN LI
 - Owner heard nothing, consistent with the above.
 - Toggle is still OFF. Not re-enabled without owner confirmation.
 - Unrelated: Living Room HomePod played and paused at 20:04 to 20:30 Central (not an Adhan run).
+
+## Manual triggers from the UI (2026-11-12, about 21:13 Central): no sound, no notice
+- Traces: `automation.adhan_fajr` (03:13 UTC) and `automation.adhan_maghrib` (03:14 UTC) ran and called `script.adhan_play`. In each run the script stopped at its first step: toggle OFF, `stop: Adhan disabled`, `error: false`. Silent by design (spec: "if OFF, do nothing"). The failure notice is only sent after the gate passes.
+- `automation.adhan_dhuhr` and `automation.adhan_asr` have no traces, so no run reached the script.
+- The toggle is still OFF. Isha (18:44) did not run because the toggle was OFF at that time.
+- Owner to decide: a supervised manual run needs the toggle ON, with the owner present.

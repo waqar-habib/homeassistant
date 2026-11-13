@@ -64,3 +64,12 @@ Owner to plan the supervised runs. Enabling and merging need a separate GREEN LI
 - `automation.adhan_dhuhr` and `automation.adhan_asr` have no traces, so no run reached the script.
 - The toggle is still OFF. Isha (18:44) did not run because the toggle was OFF at that time.
 - Owner to decide: a supervised manual run needs the toggle ON, with the owner present.
+
+## Supervised test, Fajr on Living Room HomePod (2026-11-12, 21:17 Central): stopped early, reported as success
+- Owner chose option 1. Toggle ON at 21:16. `automation.adhan_fajr` triggered manually (skip conditions) with `Fajr.mp3` on the Living Room HomePod only.
+- Trace `ed05a856...`: saved V0 0.55, set 0.35 (read back OK), `play_media` at 21:17:00. The HomePod showed `playing` at 21:17:01.5 and `idle` at 21:17:22.8 (about 21 s of playback).
+- `/media/Fajr.mp3` is 5,418,931 bytes. At typical MP3 bitrates that is about 5.5 minutes, so playback stopped early. Not a normal end.
+- Script bug: the "wait for not playing" step ends as soon as the speaker goes idle, so an early stop counts as success. Final notice was "Adhan Fajr.mp3 ran on ... volume restored", which is wrong.
+- Restore worked: Living Room back to 0.55, helper cleared to 0.
+- Toggle left ON per owner choice. Recommend OFF until the script checks playback length (or the bug is fixed). Owner decides.
+- Cause of the early stop not yet found. Candidates: HomePod or Apple TV integration ending playback, or the media-source file. Not tested.

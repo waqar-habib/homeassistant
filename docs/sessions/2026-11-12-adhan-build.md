@@ -73,3 +73,10 @@ Owner to plan the supervised runs. Enabling and merging need a separate GREEN LI
 - Restore worked: Living Room back to 0.55, helper cleared to 0.
 - Toggle left ON per owner choice. Recommend OFF until the script checks playback length (or the bug is fixed). Owner decides.
 - Cause of the early stop not yet found. Candidates: HomePod or Apple TV integration ending playback, or the media-source file. Not tested.
+
+## Owner: Fajr run "ran fine" (the early stop was the owner stopping it by hand). Maghrib test (21:19 Central)
+- Owner confirmed the Fajr run was stopped by hand after a few seconds. The early stop is not a playback fault. The "ran" notice still reads as success for a manual stop: a known wording issue, not fixed.
+- `automation.adhan_maghrib` triggered manually (skip conditions) for the Bedroom test. Both HomePods started at 0.35. The script was still running, so the automation trigger call timed out in the tool (the run was still in progress).
+- Owner said "Passed. You can stop the test." Stopped by Claude: `media_player.media_stop` on both HomePods, `script.adhan_play` turned off, then volumes set back to Living Room 0.55 and Bedroom 0.592 (the levels read at the start of this session). Saved-volume helper cleared to 0.
+- Final state: both HomePods idle, script off, helper 0, toggle left ON (owner's enable decision).
+- The Bedroom's level is not stored by the script (only the first speaker's is), so the stop restore was manual. Known limit from the spec.

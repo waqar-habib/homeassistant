@@ -50,3 +50,11 @@ Owner to plan the supervised runs. Enabling and merging need a separate GREEN LI
 - `input_boolean.adhan_enabled` set to ON at 17:43. Speakers at 0.55 and 0.592 at enable time.
 - Still open: supervised runs of `Adhan.mp3` and `Fajr.mp3` (D49 spec 9, not yet done). Owner to record the outcome of tonight's Isha.
 - Merge: the feature commit is on `main` as `6818808` (replayed, not a merge commit; package identical to `feat/adhan-automation` `bc0b8c5`).
+
+## Isha 2026-11-13 00:44 UTC (18:44 Central): did not play
+- The `automation.adhan_isha` trigger fired at 18:44:00. Its toggle condition failed (trace `7369cc8f...`, execution `failed_conditions`). Nothing played and no volume changed. Speakers 0.55 and 0.592.
+- Cause: `input_boolean.adhan_enabled` was OFF at 18:44. History: ON at 17:39:54 (dry-run), OFF at 17:39:58 (dry-run end), ON at 17:43:10 (enable), OFF at 17:44:59 (about 2 minutes later). Nothing in this session set it OFF after 17:43.
+- The OFF at 17:44:59 is unexplained: no HA restart since Nov 11, and no config or script writes the toggle. The logbook does not show that change. Source unknown, possibly a UI tap. Owner to confirm.
+- Owner heard nothing, consistent with the above.
+- Toggle is still OFF. Not re-enabled without owner confirmation.
+- Unrelated: Living Room HomePod played and paused at 20:04 to 20:30 Central (not an Adhan run).

@@ -1,6 +1,9 @@
 # Adhan automation. Built with the toggle OFF (D34, D49, D50).
 # Spec: docs/adhan-spec.md. Production volume 0.35. Each speaker is restored
 # to the volume read at trigger time (V0). Failure: stop, restore, notify.
+# Finish: the script waits for the track length (media_duration, or the table
+# below), not for the HomePod to report idle. A HomePod can stay "playing"
+# after a track ends (2026-11-13, Fajr run). Playing past the track length is not a failure.
 # Known limit: a stored saved-volume of 0 is treated as "nothing to restore" at startup.
 
 input_boolean:
@@ -44,6 +47,8 @@ script:
       target_volume: 0.35
       fail_reason: ""
       volume_touched: false
+      play_started: 0
+      track_s: 0
       v0_list: >-
         {% set ns = namespace(l=[]) %}{% for s in speakers %}{% set ns.l = ns.l + [state_attr(s, 'volume_level')] %}{% endfor %}{{ ns.l }}
     sequence:
@@ -103,7 +108,16 @@ script:
               - variables:
                   fail_reason: volume set failed
 
-      # 4. Play on each speaker
+      # 4. Record the start time, then play on each speaker.
+      # play_media may not return until the track has ended, so later timing uses play_started.
+      - alias: Record the start time
+        if:
+          - condition: template
+            value_template: "{{ fail_reason == '' }}"
+        then:
+          - variables:
+              play_started: "{{ now().timestamp() }}"
+
       - alias: Play the file on each speaker
         if:
           - condition: template
@@ -116,22 +130,31 @@ script:
               media_content_id: "media-source://media_source/local/{{ media_file }}"
               media_content_type: music
 
-      # 5. Wait for playing (30 s), then for not playing (900 s)
+      # 5. Playback started: a speaker is playing, or the call ran at least 20 s (the track has already played)
       - alias: Wait for playback to start
         if:
           - condition: template
             value_template: "{{ fail_reason == '' }}"
         then:
           - wait_template: >-
-              {% set ns = namespace(ok=true) %}{% for s in speakers %}{% if not is_state(s, 'playing') %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ ns.ok }}
+              {% set ns = namespace(ok=false) %}{% for s in speakers %}{% if is_state(s, 'playing') %}{% set ns.ok = true %}{% endif %}{% endfor %}{{ ns.ok or (now().timestamp() - (play_started | float(0))) >= 20 }}
             timeout: "00:00:30"
           - if:
               - condition: template
-                value_template: >-
-                  {% set ns = namespace(ok=true) %}{% for s in speakers %}{% if not is_state(s, 'playing') %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ not ns.ok }}
+                value_template: "{{ not wait.completed }}"
             then:
               - variables:
                   fail_reason: playback did not start
+
+      # 6. Wait for the track length (media_duration, else table), plus 10 s, capped at 900 s from the start
+      - alias: Set the track length
+        if:
+          - condition: template
+            value_template: "{{ fail_reason == '' }}"
+        then:
+          - variables:
+              track_s: >-
+                {% set d = state_attr(speakers[0], 'media_duration') | float(0) %}{% set m = {'Fajr.mp3': 225, 'Adhan.mp3': 151} %}{{ d if d > 0 else m.get(media_file, 0) }}
 
       - alias: Wait for playback to finish
         if:
@@ -140,26 +163,29 @@ script:
         then:
           - wait_template: >-
               {% set ns = namespace(any=false) %}{% for s in speakers %}{% if is_state(s, 'playing') %}{% set ns.any = true %}{% endif %}{% endfor %}{{ not ns.any }}
-            timeout: "00:15:00"
-          - if:
-              - condition: template
-                value_template: >-
-                  {% set ns = namespace(any=false) %}{% for s in speakers %}{% if is_state(s, 'playing') %}{% set ns.any = true %}{% endif %}{% endfor %}{{ ns.any }}
-            then:
-              - variables:
-                  fail_reason: still playing after 900 s
+            timeout: >-
+              {% set base = play_started | float(0) %}{% set tr = track_s | float(0) %}{% set dl = base + tr + 10 if tr > 0 else base + 900 %}{{ [ [ (dl - now().timestamp()) | round(0) | int, 1 ] | max, 900 ] | min }}
 
-      # 7. On failure after the volume change: stop playback first
-      - alias: Stop playback on failure
+      # Still "playing" after the track length is a stuck state, not a failure. Without a track length, it is the 900 s timeout.
+      - alias: Fail only if no track length is known and speakers are still playing
         if:
           - condition: template
-            value_template: "{{ fail_reason != '' and volume_touched }}"
+            value_template: "{% set ns = namespace(any=false) %}{% for s in speakers %}{% if is_state(s, 'playing') %}{% set ns.any = true %}{% endif %}{% endfor %}{{ ns.any and (track_s | float(0)) <= 0 }}"
+        then:
+          - variables:
+              fail_reason: still playing after 900 s
+
+      # 7. On failure after the volume change, or if the speakers still show playing: stop playback first
+      - alias: Stop playback on failure or if still playing
+        if:
+          - condition: template
+            value_template: "{% set ns = namespace(any=false) %}{% for s in speakers %}{% if is_state(s, 'playing') %}{% set ns.any = true %}{% endif %}{% endfor %}{{ volume_touched and (fail_reason != '' or ns.any) }}"
         then:
           - action: media_player.media_stop
             target:
               entity_id: "{{ speakers }}"
 
-      # 6. Restore each speaker to its own V0, read back, one retry
+      # 6b. Restore each speaker to its own V0, read back, one retry
       - alias: Restore each speaker to its own V0
         if:
           - condition: template

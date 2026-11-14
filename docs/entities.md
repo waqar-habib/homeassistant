@@ -274,3 +274,9 @@ Findings:
 2. Assign areas to the no-area entities above, starting with the Nest thermostats and the Waqar's iPhone sensors.
 3. Kitchen and Formal Living have no entities. Add devices there or remove the areas.
 4. I7 (backlog): `light.study_study_floor_lamp` shows twice in Apple Home. Remove it from the bridge filter after GREEN LIGHT. The Guest Nightstand shows once and needs no change.
+
+## Recorded 2026-11-14 (fresh lights and switches check)
+- **New with Porch (smart switch install):** `light.smart_wi_fi_light_switch` ("Porch", area Outdoor), on.
+- **Removed in the owner's cleanup (2026-11-14):** `light.study_study_floor_lamp`, `light.upstairs_guest_guest_nightstand`, `light.unk_1`, `light.unk_2`, `switch.nursery_hatch_toddler_lock`. Owner confirmed the cleanup.
+- **Nest thermostat switches:** `switch.nest_thermostat` (Game Room) and `switch.nest_thermostat_2` (Living Room) now have areas.
+- **Not part of this household, kept separate:** `switch.804_front_door_1_touch_locking` and `switch.804_front_door_keypress_beep`. Owner: "804 lock is NOT a part of this household, keep separate." Do not include in household scenes, automations or the household inventory.

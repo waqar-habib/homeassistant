@@ -4,7 +4,7 @@ Last updated: 2026-11-12 (Pi 5, Adhan build, GREEN LIGHT). Previous: 2026-11-11 
 
 ## Resume here (2026-11-14, Adhan owner confirmation)
 - **Owner confirmed 2026-11-14: all 5 Adhan automations work as expected.**
-- **Toggle `input_boolean.adhan_enabled` is OFF** since 2026-11-14 13:00 CST. Not recorded why. Owner to confirm whether intentional. Nothing enabled or changed by Claude.
+- **Toggle `input_boolean.adhan_enabled` is ON** since 2026-11-14 17:41 CST (owner GREEN LIGHT). Earlier OFF at 13:00 CST had no recorded cause. All five `automation.adhan_*` are on.
 - Last code change `7c0a2fa` (finish by track length). Post-fix runs in traces: Dhuhr 11-13 and 11-14, Fajr 11-14 05:48 CST, Isha 11-13 18:44 CST. Outcomes of the notices and volume restore not yet read in detail.
 - Session note: `docs/sessions/2026-11-14-adhan-owner-confirm.md`.
 

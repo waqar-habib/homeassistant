@@ -2,7 +2,13 @@
 
 Last updated: 2026-11-12 (Pi 5, Adhan build, GREEN LIGHT). Previous: 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
 
-## Resume here (2026-11-12, Adhan build)
+## Resume here (2026-11-14, Adhan owner confirmation)
+- **Owner confirmed 2026-11-14: all 5 Adhan automations work as expected.**
+- **Toggle `input_boolean.adhan_enabled` is OFF** since 2026-11-14 13:00 CST. Not recorded why. Owner to confirm whether intentional. Nothing enabled or changed by Claude.
+- Last code change `7c0a2fa` (finish by track length). Post-fix runs in traces: Dhuhr 11-13 and 11-14, Fajr 11-14 05:48 CST, Isha 11-13 18:44 CST. Outcomes of the notices and volume restore not yet read in detail.
+- Session note: `docs/sessions/2026-11-14-adhan-owner-confirm.md`.
+
+## Previous (2026-11-12, Adhan build)
 - **Adhan enabled 2026-11-12 17:43 (owner GREEN LIGHT).** Toggle ON. Isha 18:44 Central is the first live run, unsupervised. Supervised runs still pending.
 - Previously: built with toggle OFF. Branch `feat/adhan-automation` (`bc0b8c5`), pushed, NOT merged. Contents: `packages/adhan.yaml` (helpers, script `adhan_play`, five prayer automations, startup check). Pre-build backup `pre-adhan-build` (slug `b7f421f8`). `ha core check` clean, reloads OK, verified: helpers exist and `input_boolean.adhan_enabled` is off. No playback, no volume change.
 - **Prayer times confirmed by owner (2026-11-12):** the times shown in the integration are correct.

@@ -1,0 +1,40 @@
+# Evening Away: five lights on at sunset for 120 minutes, only when nobody is home.
+# Requested by owner 2026-11-14. "Home" means a person entity in state `home`.
+# Any other state (a zone such as Sasural, Neighborhood or not_home) counts as away.
+# This is a local fix for I27; the general presence fix is still open.
+# If someone arrives during the 120 minutes, the lights stay on until the timer ends.
+
+automation:
+  - id: evening_away_lights_120_min
+    alias: "Evening Away: lights on for 2 hours when no one is home"
+    description: "At sunset, if no person is home, turn on the console lamp, game room, dresser, side table and Nursery floor lamp, then turn them off after 120 minutes."
+    mode: single
+    triggers:
+      - trigger: sun
+        event: sunset
+        offset: "0:00:00"
+    conditions:
+      - condition: template
+        value_template: >-
+          {{ states.person | selectattr('state', 'eq', 'home') | list | count == 0 }}
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id:
+            - light.console_lamp
+            - light.game_room
+            - light.dresser
+            - light.side_table
+            - light.nursery_floor_lamp
+      - delay:
+          hours: 2
+          minutes: 0
+          seconds: 0
+      - action: light.turn_off
+        target:
+          entity_id:
+            - light.console_lamp
+            - light.game_room
+            - light.dresser
+            - light.side_table
+            - light.nursery_floor_lamp

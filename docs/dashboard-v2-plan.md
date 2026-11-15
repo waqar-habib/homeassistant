@@ -104,6 +104,6 @@ R1 (Ring login) is dropped: the owner signed in; P0 confirms read-only.
 
 ## 12. Owner updates after the discovery prompt (2026-11-15 13:38, D60)
 - Outdoor group = Porch light, Front Door lock and unlock, Garage Door open and close. On the kiosk and WH only.
-- Hatch: no control anywhere; one on/off button on WH only.
+- Hatch lights: no control or button anywhere (D61). Optional WH-only brown-noise button, only if a start and stop method is verified in HA; otherwise dropped.
 - Lock and garage buttons are built in the component prompts and need the owner's "GREEN LIGHT outdoor controls".
 - Arrival automations are a separate prompt (Tier 3, not part of the dashboard series).

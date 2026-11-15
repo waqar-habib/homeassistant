@@ -23,4 +23,7 @@ See D52 to D55 in `docs/decisions.md`. Summary: drop Nuvio for the new dashboard
 4. After the tablet arrives: T1, P6, P7, P8.
 
 ## Update 13:12 CST: FamFam (D56)
-Owner dropped the HA Family Hub link and chose FamFam for calendar and grocery together. Researched the integration page and famfam.life; plan moved to v0.5, prompt FF1 added, issue I38 opened. Resume: owner creates the FamFam family and token, P0 then FF1 on the Pi 5, then the calendar card and grocery tab are built on the FamFam entities.
+Owner dropped the HA Family Hub link and chose FamFam for calendar and grocery together. Researched the integration page and famfam.life; plan moved to v0.5, the FamFam integration prompt added, issue I38 opened. Resume: owner creates the FamFam family and token, P0 then FF1 on the Pi 5, then the calendar card and grocery tab are built on the FamFam entities.
+
+## Update 13:20 CST: owner answers on FamFam (D57)
+Goal is a fully synced household with MKH migrated to Home Assistant; pilot on the free plan; Apple events start fresh for the pilot (Claude default); standing GREEN LIGHT confirmed for the FamFam install steps. FamFam prompt file renamed to `2026-11-15-famfam-integration.md`. Resume: owner runs the discovery prompt, then the foundations prompt; owner creates the FamFam family and token; Pi 5 runs the FamFam integration prompt.

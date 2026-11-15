@@ -13,7 +13,7 @@ Three purpose-built dashboards on one design system, easy to change:
 2. Kiosk lights are buttons by room: Living Room, Bedroom (HA area Master), Nursery (independent), plus two new groups Upstairs and Downstairs that switch their lights together. Nursery and the two Hatch lights are in neither group.
 3. Status strip shows current indoor temperature per thermostat (not setpoints). A tap opens the thermostat cards (setpoint, mode).
 4. Ring Battery Doorbell Plus, no subscription, signed in to HA. Separate Ring tab on the kiosk and on the WH phone. A doorbell press switches the kiosk to the Ring tab (section 6).
-5. Family calendar and grocery: FamFam (D56), prompt FF1. It replaces the CalDAV plan (C1, D30 "M&W Family") and the HA Family Hub idea unless FamFam fails its pilot. The kiosk calendar card and the grocery tab are source-agnostic (CR1: calendar and todo entity IDs live in dashboard YAML), so swapping the source is a YAML change. Fully Kiosk ($10 one-time, owner's figure, unconfirmed) is bought after the tablet arrives; build now in browser renders.
+5. Family calendar and grocery: FamFam (D56), the FamFam integration prompt. It replaces the CalDAV plan (C1, D30 "M&W Family") and the HA Family Hub idea unless FamFam fails its pilot. The kiosk calendar card and the grocery tab are source-agnostic (CR1: calendar and todo entity IDs live in dashboard YAML), so swapping the source is a YAML change. Fully Kiosk ($10 one-time, owner's figure, unconfirmed) is bought after the tablet arrives; build now in browser renders.
 6. Customizable by design (section 7). The owner can edit by hand or ask Claude on the Pi 5 for simple changes. This is the Nuvio pain point the design must remove.
 7. Claude defaults, applied unless the owner objects: groups are dashboard-side (no new HA entities); status strip shows two numbers (Down, Up); Upstairs and Downstairs buttons appear on all three views.
 
@@ -82,7 +82,7 @@ Still required on every step: backup, `ha core check`, verification, a rollback 
 ## 10. Prompt series (Pi 5 unless noted; Mac renders are the visual check, the Pi 5 cannot screenshot)
 1. P0 discovery (Tier 0) and P1 foundations and dev loop (Tier 2): committed 2026-11-15.
 2. P2 components, P3 MKH view, P4 WH view, P5 kiosk view: written after the P0 report, with real entity IDs.
-3. FF1 FamFam integration (owner creates the FamFam family and organiser token and pastes it into HA's config flow; C1 CalDAV only if FamFam is not adopted), A1 doorbell takeover: parallel lane. FF1 runs after P0 and not at the same time as P1 (it needs a core restart).
+3. FamFam integration prompt (owner creates the FamFam family and organiser token and pastes it into HA's config flow; C1 CalDAV only if FamFam is not adopted), A1 doorbell takeover: parallel lane. The FamFam integration prompt runs after P0 and not at the same time as P1 (it needs a core restart).
 4. After the tablet arrives: T1 tablet setup (owner, ADB, Fully Kiosk, non-admin wall user), P6 soak and glass decision, P7 cutover, P8 QA and docs.
 R1 (Ring login) is dropped: the owner signed in; P0 confirms read-only.
 

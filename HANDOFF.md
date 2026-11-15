@@ -4,7 +4,7 @@ Last updated: 2026-11-15 (cloud session, dashboard v2 plan and prompts P0, P1). 
 
 ## Resume here (2026-11-15, dashboard v2)
 1. **Owner standing GREEN LIGHT (D53, 2026-11-15)** for the dashboard series, with exclusions (lock and garage service calls, Adhan, D42 automations, HomeKit Bridge, network and DNS, secrets). Plan: `docs/dashboard-v2-plan.md` (v0.4). Decisions D52 to D55, issues I35 to I37, milestone M19.
-2. **Pi 5 next:** run P0 then P1. Pointer: `git pull; read docs/prompts/pi5/2026-11-15-dashboard-p0-discovery.md then docs/prompts/pi5/2026-11-15-dashboard-p1-foundations.md (commit see git log); run P0, then P1 if P0 has no blockers`.
+2. **Pi 5 next (P0 done, commit d41abd5, blockers do not stop P1):** run P1. Open items I39 to I42 and D59. Originally: run P0 then P1. Pointer: `git pull; read docs/prompts/pi5/2026-11-15-dashboard-p0-discovery.md then docs/prompts/pi5/2026-11-15-dashboard-p1-foundations.md (commit see git log); run P0, then P1 if P0 has no blockers`.
 3. **Then (cloud or Mac session):** read the P0 report, write P2 (components) and P3 to P5 with real entity IDs; C1 CalDAV (owner creates the app-specific password, enters it in HA) and A1 doorbell takeover (ships disabled) in a parallel lane.
 4. **Owner:** confirm D54 defaults (dashboard-side groups, two temperatures, group buttons on all views), where the Porch light appears, and the scope reading of D53. Run the Ring press-latency protocol when P0 writes it (I35). After the tablet arrives: T1, P6, P7, P8.
 5. **Owner rule (D58):** in every message to the owner, write a step code only with its full phrase, for example "You complete P0 which is the discovery prompt on the Pi 5". Never a bare code.

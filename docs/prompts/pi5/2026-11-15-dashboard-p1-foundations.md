@@ -8,7 +8,7 @@ Read HANDOFF.md and docs/dashboard-v2-plan.md first. Preconditions: docs/session
 
 Goal: a dev loop, a design foundation and an editing path for three new dashboards: habib-wh (owner iPhone), habib-mkh (MKH iPhone), habib-kiosk (wall tablet). Apple Home stays primary. Customization rules CR1 to CR6 in the plan are acceptance criteria.
 
-1. Backup: ha backups new --name "pre-habib-ui". Verify the name with ha backups list. Then git checkout -b feat/habib-ui.
+1. First run git checkout main and git pull --rebase (the previous session may have left the Pi 5 on another branch such as feat/evening-lights; leave that branch unchanged). Then backup: ha backups new --name "pre-habib-ui". Verify the name with ha backups list. Then git checkout -b feat/habib-ui.
 2. Create www/habib/loader.js. It imports /local/habib/habib-ui.js with ?t=<Date.now()> when the page URL has ?dev or localStorage habib_dev is "1", and with ?v=<VERSION> (a constant, start at 1) otherwise.
 3. Create www/habib/habib-ui.js containing:
    a. CSS custom properties (--habib-*) for a Material 3 tonal palette, dark and light, accent #2EC4D6; a type scale (Roboto, already shipped by HA; no web fonts); an 8 px spacing scale; radii; elevation.

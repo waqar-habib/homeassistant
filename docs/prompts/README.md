@@ -10,6 +10,7 @@ docs/prompts/
   networkpi/  Claude on networkpi (Raspberry Pi 3B+)
   mac/        Claude on the Mac
   cloud/      Claude Code cloud sessions
+  templates/  reusable prompt templates (for example pi5-dashboard-change.md)
 ```
 
 Filename: `YYYY-MM-DD-<slug>.md`.

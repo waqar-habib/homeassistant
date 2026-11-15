@@ -1,8 +1,14 @@
 # HANDOFF
 
-Last updated: 2026-11-15 (cloud session, dashboard v2 plan and prompts P0, P1). Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
+Last updated: 2026-11-15 (Pi 5, dashboard components run). Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
 
-## Resume here (2026-11-15, dashboard v2)
+## Resume here (2026-11-15, after the components run)
+1. **Done on the Pi 5 (Sonnet 5.5):** foundation verified (session note `docs/sessions/2026-11-15-dashboard-p1-foundations.md`), I44 closed. New library: `www/habib/habib-logic.js` (pure logic, 19 node tests), `habib-ui.js` with `habib-light-button`, `habib-action-button`, `habib-status-strip`, a shared bottom sheet, and a diag card that no longer redraws on every state change. Loader `VERSION` 2, resource `/local/habib/loader.js?v=2`. Dashboard `habib-lab` (admin only, sidebar) holds every card; export `dashboards/habib-lab-2026-11-15.json`. Cookbook recipes added. Backup `pre-habib-components` (slug `5bcc956c`).
+2. **Not verified (I46):** no real render or tap yet. **Owner checks:** (1) on the iPhone open habib-lab and tap the single light, the Upstairs group and the scene button; (2) press and hold a light for the brightness sheet; (3) in Edit dashboard, Add card, search "Habib" and confirm the three Habib cards appear; (4) tell the cloud session what looked wrong. The cloud session renders habib-lab at 430x932, 1280x800 and 960x600.
+3. **Next after the checks:** the P3 to P5 prompts (real WH, MKH and kiosk views) build on these cards. Lock, garage and outdoor controls still wait for "GREEN LIGHT outdoor controls" (D60); arrival automations for "GREEN LIGHT arrival automations".
+4. Session note: `docs/sessions/2026-11-15-dashboard-p2-components.md`.
+
+## Earlier today (2026-11-15, dashboard v2)
 1. **Owner standing GREEN LIGHT (D53, 2026-11-15)** for the dashboard series, with exclusions (lock and garage service calls, Adhan, D42 automations, HomeKit Bridge, network and DNS, secrets). Plan: `docs/dashboard-v2-plan.md` (v0.4). Decisions D52 to D55, issues I35 to I37, milestone M19.
 2a. **Owner answers D60 (13:38):** Outdoor group on kiosk and WH only; no Hatch light controls (D61; optional WH brown-noise button only if start and stop are verified); arrival automations drafted in `docs/prompts/pi5/2026-11-15-arrival-lock-garage.md` (needs owner phrases "GREEN LIGHT outdoor controls" and "GREEN LIGHT arrival automations"; zones are an owner step).
 2c. **I45 (14:07, likely resolved 14:29):** the new dashboards showed "Configuration error"; after a refresh habib-kiosk renders (owner screenshot). Confirm habib-wh and habib-mkh, then run the components prompt. The diagnosis prompt `docs/prompts/pi5/2026-11-15-dashboard-p1-diagnose.md` is optional.

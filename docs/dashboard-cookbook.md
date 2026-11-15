@@ -121,7 +121,7 @@ Edit the card's `title` value. Example: rename the `habib-wh` card.
               - light.study_lamp
 ```
 
-Optional `columns: 6` sets the card's width in the section grid (1 to 12, default 12). Entity IDs come from `docs/dashboard-config.md`.
+Optional `columns: 6` sets the card's width in the section grid (1 to 12, default 6, half a section like Apple Home). Entity IDs come from `docs/dashboard-config.md`.
 
 ## Group of lights, change members (tested on habib-lab)
 

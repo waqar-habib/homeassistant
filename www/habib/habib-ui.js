@@ -125,14 +125,19 @@ function iconHtml(icon) {
   return icon ? `<ha-icon class="icon" icon="${escapeHtml(icon)}"></ha-icon>` : "";
 }
 
+// Round icon badge used on tiles (Apple Home style).
+function badgeHtml(icon) {
+  return icon ? `<span class="badge">${iconHtml(icon)}</span>` : "";
+}
+
 // Styles shared by the interactive cards. Colours and radii come from the --habib-* tokens.
 const CARD_CSS = `
   :host { display: block; }
   * { box-sizing: border-box; }
-  .tile { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: var(--habib-space-2);
-          width: 100%; min-width: 220px; min-height: 64px; padding: var(--habib-space-1) var(--habib-space-2);
+  .tile { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px;
+          width: 100%; min-width: 0; min-height: 88px; padding: var(--habib-space-2) var(--habib-space-2);
           background: var(--habib-surface-container); color: var(--habib-on-surface);
-          border-radius: var(--habib-radius-m); font: var(--habib-type-body); cursor: pointer;
+          border-radius: var(--habib-radius-l); font: var(--habib-type-body); cursor: pointer;
           transition: background-color .15s, color .15s; -webkit-user-select: none; user-select: none;
           -webkit-touch-callout: none; touch-action: manipulation; }
   .tile:focus-visible { outline: 2px solid var(--habib-accent); outline-offset: 2px; }
@@ -142,9 +147,12 @@ const CARD_CSS = `
   .tile.missing { color: var(--habib-error); border: 1px dashed var(--habib-error); cursor: default; }
   .tile.blocked { color: var(--habib-error); cursor: default; }
   .tile.done { background: var(--habib-surface-high); }
-  .icon { flex: none; --mdc-icon-size: 28px; width: 28px; height: 28px; }
+  .icon { flex: none; --mdc-icon-size: 24px; width: 24px; height: 24px; }
+  .badge { flex: none; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px;
+           border-radius: 50%; background: rgba(0,0,0,.25); }
+  .tile.on .badge { background: rgba(0,0,0,.18); }
   .text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-  .name { font: var(--habib-type-title); overflow-wrap: anywhere; }
+  .name { font: 500 17px/22px var(--habib-font); overflow-wrap: anywhere; }
   .label, .note { font: var(--habib-type-label); opacity: .85; overflow-wrap: anywhere; }
   .empty { padding: var(--habib-space-2); color: var(--habib-error); font: var(--habib-type-label);
            background: var(--habib-surface-container); border-radius: var(--habib-radius-m); }
@@ -335,7 +343,7 @@ class HabibLightButton extends HabibCard {
       <style>${CARD_CSS}</style>
       <button class="tile ${cls} ${this._pending ? "pending" : ""}" type="button"
         ${v.kind === "missing" ? "disabled" : ""} aria-label="${escapeHtml(cfg.name || "Light")}: ${escapeHtml(label)}">
-        ${iconHtml(cfg.icon)}
+        ${badgeHtml(cfg.icon)}
         <span class="text">
           <span class="name">${escapeHtml(cfg.name || "")}</span>
           <span class="label">${escapeHtml(label)}</span>
@@ -433,7 +441,7 @@ class HabibLightButton extends HabibCard {
   getGridOptions() {
     const cols = Number(this._config && this._config.columns);
     return {
-      columns: Number.isFinite(cols) && cols >= 1 && cols <= 12 ? cols : 12,
+      columns: Number.isFinite(cols) && cols >= 1 && cols <= 12 ? cols : 6,
       rows: "auto",
       min_columns: 3,
     };
@@ -486,7 +494,7 @@ class HabibActionButton extends HabibCard {
       <style>${CARD_CSS}</style>
       <button class="tile ${cls}" type="button" ${problem ? "disabled" : ""}
         aria-label="${escapeHtml(cfg.name || "Action")}${label ? ": " + escapeHtml(label) : ""}">
-        ${iconHtml(cfg.icon)}
+        ${badgeHtml(cfg.icon)}
         <span class="text">
           <span class="name">${escapeHtml(cfg.name || "")}</span>
           ${label ? `<span class="label">${escapeHtml(label)}</span>` : ""}
@@ -518,7 +526,7 @@ class HabibActionButton extends HabibCard {
   }
 
   getGridOptions() {
-    return { columns: 12, rows: "auto", min_columns: 3 };
+    return { columns: 6, rows: "auto", min_columns: 3 };
   }
 
   static getStubConfig() {

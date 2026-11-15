@@ -27,5 +27,12 @@ Prompt: `docs/prompts/pi5/2026-11-15-dashboard-p2-components.md`. Standing GREEN
 - No render or touch test (I46). Pi 5 cannot render. Owner checks and the cloud render are listed in HANDOFF.
 - Hatch brown-noise button (D61): not built; stop method not verified.
 
+## Owner checks and follow-up fixes (same day, iPhone)
+- Owner confirmed: tap on single light, group and scene button; long-press brightness sheet; three Habib cards in the Add card picker.
+- Screenshot 1: status strip overlapped by the next card (fixed height, wrapped chips). Fix: strip `rows: auto` (loader v3).
+- Screenshot 2: large gaps between buttons. Fix: buttons `rows: auto` (loader v4).
+- Screenshot 3 and Apple Home reference: buttons too wide. Fix: default half width (`columns: 6`), 88 px minimum height, pill radius, round icon badge; the 220 px minimum width rule was dropped (half a phone section is about 190 px). Loader v5, merge 105e11c. Owner: "all good so far".
+- Still open: tablet (960x600, 1280x800) render by the cloud session; optional lighter "on" fill like Apple Home.
+
 ## Resume point
 After the owner checks and the cloud render: fix findings, then P3 to P5. Rollback: delete habib-lab, `git revert` the merge, resource back to `loader.js?v=1`, or restore backup pre-habib-components.

@@ -101,3 +101,9 @@ R1 (Ring login) is dropped: the owner signed in; P0 confirms read-only.
 - FamFam integration: https://github.com/bencom-tech/famfam-homeassistant ; FamFam app and plans: https://famfam.life
 - HA Family Hub (dropped, D56): https://jvarhol.github.io/HA-Family-Hub/
 - Nuvio commands and wall-tablet features (reference for what is dropped): https://github.com/kczepiec/nuvio
+
+## 12. Owner updates after the discovery prompt (2026-11-15 13:38, D60)
+- Outdoor group = Porch light, Front Door lock and unlock, Garage Door open and close. On the kiosk and WH only.
+- Hatch: no control anywhere; one on/off button on WH only.
+- Lock and garage buttons are built in the component prompts and need the owner's "GREEN LIGHT outdoor controls".
+- Arrival automations are a separate prompt (Tier 3, not part of the dashboard series).

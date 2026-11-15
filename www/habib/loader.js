@@ -1,8 +1,8 @@
-// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=1
+// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=2
 // Dev loop: add ?dev to the dashboard URL (or set localStorage habib_dev to "1")
 // to load habib-ui.js with a fresh timestamp on every page load (no cache).
 // Production loads habib-ui.js pinned to VERSION. Bump VERSION on every JS change (CR6).
-const VERSION = 1;
+const VERSION = 2;
 
 const isDev = (() => {
   try {

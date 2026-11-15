@@ -1,0 +1,155 @@
+{
+  "url_path": "habib-lab",
+  "title": "Habib Lab",
+  "icon": "mdi:flask-outline",
+  "require_admin": true,
+  "show_in_sidebar": true,
+  "config_hash": "eb522b64ea28c0d9",
+  "config": {
+    "views": [
+      {
+        "title": "Lab",
+        "path": "lab",
+        "type": "sections",
+        "max_columns": 4,
+        "sections": [
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "heading",
+                "heading": "Light buttons",
+                "heading_style": "title"
+              },
+              {
+                "type": "custom:habib-light-button",
+                "name": "Study lamp",
+                "icon": "mdi:lamp",
+                "entities": [
+                  "light.study_lamp"
+                ]
+              },
+              {
+                "type": "custom:habib-light-button",
+                "name": "Upstairs",
+                "icon": "mdi:stairs-up",
+                "entities": [
+                  "light.game_room",
+                  "light.upstairs_guest",
+                  "light.study_lamp"
+                ]
+              },
+              {
+                "type": "custom:habib-light-button",
+                "name": "Downstairs",
+                "icon": "mdi:stairs-down",
+                "entities": [
+                  "light.buffet",
+                  "light.floor_lamp",
+                  "light.side_table",
+                  "light.console_lamp",
+                  "light.dresser",
+                  "light.mahams_lamp",
+                  "light.waqars_lamp"
+                ]
+              },
+              {
+                "type": "custom:habib-light-button",
+                "name": "Nursery",
+                "icon": "mdi:baby-face-outline",
+                "entities": [
+                  "light.bookshelf",
+                  "light.changing_table",
+                  "light.nursery_floor_lamp"
+                ]
+              }
+            ]
+          },
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "heading",
+                "heading": "Action, status and error states",
+                "heading_style": "title"
+              },
+              {
+                "type": "custom:habib-action-button",
+                "name": "All lights on",
+                "icon": "mdi:lightbulb-group",
+                "action": {
+                  "service": "scene.turn_on",
+                  "data": {
+                    "entity_id": "scene.turn_on_lights"
+                  }
+                }
+              },
+              {
+                "type": "custom:habib-status-strip",
+                "items": [
+                  {
+                    "kind": "clock"
+                  },
+                  {
+                    "entity": "climate.downstairs",
+                    "attribute": "current_temperature",
+                    "label": "Downstairs",
+                    "icon": "mdi:thermometer",
+                    "unit": "°"
+                  },
+                  {
+                    "entity": "climate.upstairs",
+                    "attribute": "current_temperature",
+                    "label": "Upstairs",
+                    "icon": "mdi:thermometer",
+                    "unit": "°"
+                  },
+                  {
+                    "entity": "lock.living_room_front_door",
+                    "label": "Front door",
+                    "icon": "mdi:door",
+                    "tap": "none",
+                    "states": {
+                      "locked": {
+                        "text": "Locked",
+                        "tone": "ok"
+                      },
+                      "unlocked": {
+                        "text": "Unlocked",
+                        "tone": "warn"
+                      }
+                    }
+                  },
+                  {
+                    "entity": "cover.general_garage_door_garage_door",
+                    "label": "Garage",
+                    "icon": "mdi:garage",
+                    "tap": "none",
+                    "states": {
+                      "closed": {
+                        "text": "Closed",
+                        "tone": "ok"
+                      },
+                      "open": {
+                        "text": "Open",
+                        "tone": "warn"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "custom:habib-light-button",
+                "name": "Typo test",
+                "icon": "mdi:alert-outline",
+                "entities": [
+                  "light.does_not_exist_test"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

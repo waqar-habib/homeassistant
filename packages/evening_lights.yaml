@@ -1,0 +1,21 @@
+# Evening lights: all lights on at sunset, except the Nursery.
+# Requested by owner 2026-11-14. The Nursery exclusion uses the HA area, so new
+# lights in other areas are included automatically.
+
+automation:
+  - id: evening_all_lights_on_at_sunset
+    alias: "Evening: all lights on at sunset except Nursery"
+    description: "Turn on every light outside the Nursery area at sunset."
+    mode: single
+    triggers:
+      - trigger: sun
+        event: sunset
+        offset: "0:00:00"
+    actions:
+      - action: light.turn_on
+        target:
+          entity_id: >-
+            {{ states.light
+               | map(attribute='entity_id')
+               | reject('in', area_entities('Nursery'))
+               | list }}

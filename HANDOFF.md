@@ -1,8 +1,15 @@
 # HANDOFF
 
-Last updated: 2026-11-12 (Pi 5, Adhan build, GREEN LIGHT). Previous: 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
+Last updated: 2026-11-15 (cloud session, dashboard v2 plan and prompts P0, P1). Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
 
-## Resume here (2026-11-14, Adhan owner confirmation)
+## Resume here (2026-11-15, dashboard v2)
+1. **Owner standing GREEN LIGHT (D53, 2026-11-15)** for the dashboard series, with exclusions (lock and garage service calls, Adhan, D42 automations, HomeKit Bridge, network and DNS, secrets). Plan: `docs/dashboard-v2-plan.md` (v0.4). Decisions D52 to D55, issues I35 to I37, milestone M19.
+2. **Pi 5 next:** run P0 then P1. Pointer: `git pull; read docs/prompts/pi5/2026-11-15-dashboard-p0-discovery.md then docs/prompts/pi5/2026-11-15-dashboard-p1-foundations.md (commit see git log); run P0, then P1 if P0 has no blockers`.
+3. **Then (cloud or Mac session):** read the P0 report, write P2 (components) and P3 to P5 with real entity IDs; C1 CalDAV (owner creates the app-specific password, enters it in HA) and A1 doorbell takeover (ships disabled) in a parallel lane.
+4. **Owner:** confirm D54 defaults (dashboard-side groups, two temperatures, group buttons on all views), where the Porch light appears, and the scope reading of D53. Run the Ring press-latency protocol when P0 writes it (I35). After the tablet arrives: T1, P6, P7, P8.
+5. Session note: `docs/sessions/2026-11-15-dashboard-plan.md`. `habib-home` (Nuvio) stays the live dashboard until cutover.
+
+## Previous (2026-11-14, Adhan owner confirmation)
 - **Owner confirmed 2026-11-14: all 5 Adhan automations work as expected.**
 - **Toggle `input_boolean.adhan_enabled` is ON** since 2026-11-14 17:41 CST (owner GREEN LIGHT). Earlier OFF at 13:00 CST had no recorded cause. All five `automation.adhan_*` are on.
 - Last code change `7c0a2fa` (finish by track length). Post-fix runs in traces: Dhuhr 11-13 and 11-14, Fajr 11-14 05:48 CST, Isha 11-13 18:44 CST. Outcomes of the notices and volume restore not yet read in detail.

@@ -21,3 +21,4 @@
 | M16 | Geofencing: 3 mile zone, "everyone away" rule, Away AC, Cool Down and Evening (D32); Away Evening waits for the owner's light picks | To do. GREEN LIGHT given 2026-10-30 (D35). Depends on M15 (MKH person) and on the owner creating the zone. Ships notify-only first | |
 | M17 | Wall tablet: wall-tablet mode and kiosk-mode (I5) | To do. After the tablet is bought | |
 | M18 | habib-home Home v1 (lock, 2 thermostats, scenes, prayer times) via Nuvio Layout import, 3-size render and tap tests | Done | 2026-11-11 |
+| M19 | Dashboard v2: habib-wh, habib-mkh, habib-kiosk on a Material 3 glass card library, editable by YAML or Pi 5 prompts (D52 to D55) | In progress: plan v0.4 and prompts P0 and P1 committed 2026-11-15. Next: P0 report, then P2 to P5. Tablet steps (T1, P6) wait for the tablet | 2026-11-15 |

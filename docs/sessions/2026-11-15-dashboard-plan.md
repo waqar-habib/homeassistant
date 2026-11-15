@@ -21,3 +21,6 @@ See D52 to D55 in `docs/decisions.md`. Summary: drop Nuvio for the new dashboard
 2. Cloud or Mac session: read `docs/sessions/2026-11-15-dashboard-p0-discovery.md`, then write P2 (components) and P3 to P5 with real entity IDs; C1 CalDAV and A1 doorbell takeover in a parallel lane.
 3. Owner: confirm or adjust the Claude defaults in D54 (dashboard-side groups, two temperatures, group buttons on all views), the Porch placement, and the scope reading of the standing GREEN LIGHT (D53).
 4. After the tablet arrives: T1, P6, P7, P8.
+
+## Update 13:12 CST: FamFam (D56)
+Owner dropped the HA Family Hub link and chose FamFam for calendar and grocery together. Researched the integration page and famfam.life; plan moved to v0.5, prompt FF1 added, issue I38 opened. Resume: owner creates the FamFam family and token, P0 then FF1 on the Pi 5, then the calendar card and grocery tab are built on the FamFam entities.

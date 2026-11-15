@@ -1,6 +1,6 @@
-# Dashboard v2 plan: Habib WH, Habib MKH, Habib Kiosk (v0.4 draft)
+# Dashboard v2 plan: Habib WH, Habib MKH, Habib Kiosk (v0.5 draft)
 
-Status: v0.4 draft, owner collaboration 2026-11-14 to 2026-11-15 (cloud session). Supersedes the Nuvio direction in `docs/dashboard-design.md` for the three new dashboards. `habib-home` (Nuvio) and `nuvio-shared` stay untouched until cutover (P7). Apple Home stays the primary control surface until the owner says otherwise.
+Status: v0.5 draft (v0.4 plus D56: FamFam replaces the CalDAV and HA Family Hub calendar plans), owner collaboration 2026-11-14 to 2026-11-15 (cloud session). Supersedes the Nuvio direction in `docs/dashboard-design.md` for the three new dashboards. `habib-home` (Nuvio) and `nuvio-shared` stay untouched until cutover (P7). Apple Home stays the primary control surface until the owner says otherwise.
 
 ## 1. Goal
 Three purpose-built dashboards on one design system, easy to change:
@@ -13,7 +13,7 @@ Three purpose-built dashboards on one design system, easy to change:
 2. Kiosk lights are buttons by room: Living Room, Bedroom (HA area Master), Nursery (independent), plus two new groups Upstairs and Downstairs that switch their lights together. Nursery and the two Hatch lights are in neither group.
 3. Status strip shows current indoor temperature per thermostat (not setpoints). A tap opens the thermostat cards (setpoint, mode).
 4. Ring Battery Doorbell Plus, no subscription, signed in to HA. Separate Ring tab on the kiosk and on the WH phone. A doorbell press switches the kiosk to the Ring tab (section 6).
-5. Family calendar: CalDAV (iCloud "M&W Family", D30), prompt C1. Fully Kiosk ($10 one-time, owner's figure, unconfirmed) is bought after the tablet arrives; build now in browser renders.
+5. Family calendar and grocery: FamFam (D56), prompt FF1. It replaces the CalDAV plan (C1, D30 "M&W Family") and the HA Family Hub idea unless FamFam fails its pilot. The kiosk calendar card and the grocery tab are source-agnostic (CR1: calendar and todo entity IDs live in dashboard YAML), so swapping the source is a YAML change. Fully Kiosk ($10 one-time, owner's figure, unconfirmed) is bought after the tablet arrives; build now in browser renders.
 6. Customizable by design (section 7). The owner can edit by hand or ask Claude on the Pi 5 for simple changes. This is the Nuvio pain point the design must remove.
 7. Claude defaults, applied unless the owner objects: groups are dashboard-side (no new HA entities); status strip shows two numbers (Down, Up); Upstairs and Downstairs buttons appear on all three views.
 
@@ -70,7 +70,7 @@ MKH iPhone (430x932), one screen, no scroll for lights: status strip (lock, indo
 6. **CR6.** JS changes bump `VERSION` in `loader.js`, follow the dev loop (`?dev`), and need a visual check before production.
 
 ## 8. Facts and unknowns
-Confirmed from sources: Fully Kiosk's HA integration exposes screen on and off, screensaver, brightness, motion detection, load URL, kiosk lock and available RAM, and needs Remote Admin (paid Plus license). CalDAV with iCloud uses `https://caldav.icloud.com` and an app-specific password; calendar entities refresh about every 15 minutes. WallMode (free) is early development, Android 16 unverified. HA Family Hub (JVarhol) is a GPL-3.0 custom integration in active beta; install method, calendar sources and RAM use are not stated.
+Confirmed from sources: Fully Kiosk's HA integration exposes screen on and off, screensaver, brightness, motion detection, load URL, kiosk lock and available RAM, and needs Remote Admin (paid Plus license). CalDAV with iCloud uses `https://caldav.icloud.com` and an app-specific password; calendar entities refresh about every 15 minutes. WallMode (free) is early development, Android 16 unverified. HA Family Hub (JVarhol) was dropped by the owner on 2026-11-15. FamFam (D56), from the integration page and famfam.life: a family organiser app (iOS and Android) with an MIT-licensed HA custom integration (`bencom-tech/famfam-homeassistant`, early development, 13 commits and 0 stars at fetch time, no releases). It polls the FamFam cloud (`famfam.life`) every 60 s by default using a token an organiser creates in the app. Entities: a calendar per member, a family calendar and a read-only meal-plan calendar; one `todo` entity per list (aisle grouping in `categories` and `item_categories` attributes); next-event, tonight's-dinner and dinner-headcount sensors; shopping-trip entities (need Plus). `famfam.add_list_item` takes an aisle category; `todo.add_item` cannot. Calendar window is 7 days back to 28 days forward; writes are single events only. Free plan: 3 lists, 20 items per list, 20 events a month, 3 members; Plus is $2.99 a month per the site (unverified here). Not stated and unconfirmed: sync with iCloud or Google calendars, Siri support, where data is stored, minimum HA version, TLS and retention details.
 Unknown until P0 or later: Ring entity names, snapshot age, press latency and live-view wake time for the Battery Doorbell Plus; whether shared iCloud calendars return events through CalDAV; brightness support per light; the tablet's real CSS width.
 
 ## 9. Standing GREEN LIGHT (D53)
@@ -82,14 +82,14 @@ Still required on every step: backup, `ha core check`, verification, a rollback 
 ## 10. Prompt series (Pi 5 unless noted; Mac renders are the visual check, the Pi 5 cannot screenshot)
 1. P0 discovery (Tier 0) and P1 foundations and dev loop (Tier 2): committed 2026-11-15.
 2. P2 components, P3 MKH view, P4 WH view, P5 kiosk view: written after the P0 report, with real entity IDs.
-3. C1 CalDAV (owner creates the app-specific password and enters it in HA), A1 doorbell takeover: parallel lane.
+3. FF1 FamFam integration (owner creates the FamFam family and organiser token and pastes it into HA's config flow; C1 CalDAV only if FamFam is not adopted), A1 doorbell takeover: parallel lane. FF1 runs after P0 and not at the same time as P1 (it needs a core restart).
 4. After the tablet arrives: T1 tablet setup (owner, ADB, Fully Kiosk, non-admin wall user), P6 soak and glass decision, P7 cutover, P8 QA and docs.
 R1 (Ring login) is dropped: the owner signed in; P0 confirms read-only.
 
 ## 11. Backlog (ideas only, no wireframes)
-- **B1 Grocery tab.** HA already has `todo.shopping_list`. Research: whether the shared Apple Reminders list is readable in HA (CalDAV supports to-do items; iCloud's upgraded Reminders may not be exposed, unconfirmed); Hey Siri to HA (Companion app shortcuts or Assist). The owner's current problem: the Siri shortcut adds items unsorted at the bottom. Needs an aisle-categorizing step (rules or a conversation agent). Nice to have: aisle-grouped display, check-off from the tablet.
+- **B1 Grocery tab (now planned through FamFam, D56; the research below applies only if FamFam is not adopted).** HA already has `todo.shopping_list`. Research: whether the shared Apple Reminders list is readable in HA (CalDAV supports to-do items; iCloud's upgraded Reminders may not be exposed, unconfirmed); Hey Siri to HA (Companion app shortcuts or Assist). The owner's current problem: the Siri shortcut adds items unsorted at the bottom. Needs an aisle-categorizing step (rules or a conversation agent). Nice to have: aisle-grouped display, check-off from the tablet.
 - **B2 Islamic tab** (MasjidAl style). Prayer times and countdown from the existing sensors; candidates: Hijri date (source to choose), Jumu'ah time, iqamah offsets from the masjid timetable (D28), sunrise, Ramadan mode. Ayah and hadith rotation only from cited, authenticated sources shown with their reference (surah:ayah; collection, number and grading); API licensing unconfirmed. No AI-generated translations. No Adhan playback change (D34).
-- **B3 Full family calendar tab.** Evaluate HA Family Hub (`JVarhol/HA-Family-Hub`): install path, sources, RAM, Material 3 fit.
+- **B3 Family tab: full calendar and grocery through FamFam (D56).** Month and week views and the aisle-grouped grocery list as our own cards on FamFam entities. Needs the FF1 pilot results first. Nice to have: dinner check-in and tonight's dinner on the kiosk.
 - **B4 One-tap tab switcher and automated rotation.** Idle-timer rotation between tabs, pause on touch, Ring takeover overrides; in-page switching, no reload.
 - **B5 Google TV read-only board.** HA Cast needs HTTPS (available) and has no touch input; decide after the kiosk is perfected.
 
@@ -98,5 +98,6 @@ R1 (Ring login) is dropped: the owner signed in; P0 confirms read-only.
 - CalDAV integration: https://www.home-assistant.io/integrations/caldav
 - Ring with HA, 2026 (third-party, unconfirmed against official docs): https://www.hometechtested.com/blog/ring-cameras-home-assistant-2026
 - WallMode: https://community.home-assistant.io/t/wallmode-a-free-open-source-android-kiosk-app-for-home-assistant/1024625
-- HA Family Hub: https://jvarhol.github.io/HA-Family-Hub/ and https://community.home-assistant.io/t/ha-family-hub-a-ha-focused-alternative-to-skylight-nori-cozyla-etc/1025747
+- FamFam integration: https://github.com/bencom-tech/famfam-homeassistant ; FamFam app and plans: https://famfam.life
+- HA Family Hub (dropped, D56): https://jvarhol.github.io/HA-Family-Hub/
 - Nuvio commands and wall-tablet features (reference for what is dropped): https://github.com/kczepiec/nuvio

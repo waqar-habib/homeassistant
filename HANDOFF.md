@@ -7,7 +7,8 @@ Last updated: 2026-11-15 (cloud session, dashboard v2 plan and prompts P0, P1). 
 2. **Pi 5 next:** run P0 then P1. Pointer: `git pull; read docs/prompts/pi5/2026-11-15-dashboard-p0-discovery.md then docs/prompts/pi5/2026-11-15-dashboard-p1-foundations.md (commit see git log); run P0, then P1 if P0 has no blockers`.
 3. **Then (cloud or Mac session):** read the P0 report, write P2 (components) and P3 to P5 with real entity IDs; C1 CalDAV (owner creates the app-specific password, enters it in HA) and A1 doorbell takeover (ships disabled) in a parallel lane.
 4. **Owner:** confirm D54 defaults (dashboard-side groups, two temperatures, group buttons on all views), where the Porch light appears, and the scope reading of D53. Run the Ring press-latency protocol when P0 writes it (I35). After the tablet arrives: T1, P6, P7, P8.
-5. Session note: `docs/sessions/2026-11-15-dashboard-plan.md`. `habib-home` (Nuvio) stays the live dashboard until cutover.
+5. **FamFam (D56, I38):** owner chose FamFam for family calendar and grocery (replaces CalDAV C1 and HA Family Hub). Pi 5 prompt `docs/prompts/pi5/2026-11-15-famfam-ff1-integration.md` runs after P0, not alongside P1 (it needs a core restart in a prayer-safe window). Owner first creates the FamFam family and organiser token and pastes the token into HA's config flow.
+6. Session note: `docs/sessions/2026-11-15-dashboard-plan.md`. `habib-home` (Nuvio) stays the live dashboard until cutover.
 
 ## Previous (2026-11-14, Adhan owner confirmation)
 - **Owner confirmed 2026-11-14: all 5 Adhan automations work as expected.**

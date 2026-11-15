@@ -1,0 +1,26 @@
+{
+  "url_path": "habib-kiosk",
+  "title": "Habib Kiosk",
+  "icon": "mdi:tablet",
+  "require_admin": true,
+  "show_in_sidebar": true,
+  "config_hash": "21a68caaec133cf3",
+  "config": {
+    "views": [
+      {
+        "title": "Home",
+        "path": "home",
+        "type": "sections",
+        "max_columns": 4,
+        "sections": [
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "custom:habib-diag", "title": "Habib Kiosk diagnostics" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "url_path": "habib-wh",
+  "title": "Habib WH",
+  "icon": "mdi:cellphone",
+  "require_admin": true,
+  "show_in_sidebar": true,
+  "config_hash": "2772cd49283ab6e6",
+  "config": {
+    "views": [
+      {
+        "title": "Home",
+        "path": "home",
+        "type": "sections",
+        "max_columns": 4,
+        "sections": [
+          {
+            "type": "grid",
+            "cards": [
+              { "type": "custom:habib-diag", "title": "Habib WH diagnostics" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

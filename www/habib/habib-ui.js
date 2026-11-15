@@ -434,9 +434,8 @@ class HabibLightButton extends HabibCard {
     const cols = Number(this._config && this._config.columns);
     return {
       columns: Number.isFinite(cols) && cols >= 1 && cols <= 12 ? cols : 12,
-      rows: 2,
+      rows: "auto",
       min_columns: 3,
-      min_rows: 1,
     };
   }
 
@@ -519,7 +518,7 @@ class HabibActionButton extends HabibCard {
   }
 
   getGridOptions() {
-    return { columns: 12, rows: 2, min_columns: 3, min_rows: 1 };
+    return { columns: 12, rows: "auto", min_columns: 3 };
   }
 
   static getStubConfig() {

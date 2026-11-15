@@ -639,7 +639,7 @@ class HabibStatusStrip extends HabibCard {
   }
 
   getGridOptions() {
-    return { columns: 12, rows: 1, min_columns: 4, min_rows: 1 };
+    return { columns: 12, rows: "auto", min_columns: 4 };
   }
 
   static getStubConfig() {

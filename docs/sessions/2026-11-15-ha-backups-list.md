@@ -35,8 +35,8 @@ Location key: **local** = `.local` on the Pi 5 SD card. **nbk** = `networkpiBack
 | 2026-11-16 04:06 | pre-zones-v2 | a3bbb3d6 | full | nbk | no | 300.50 |
 
 ## Notes
-1. 27 backups. The two newest are the zone rollback points (D65 zone rebuild). `pre-zones-v2` holds the old Neighborhood 1000 m, Leander 2000 m, Sasural 600 m and Near Home 4828 m zones. Restoring is Tier 3 (GREEN LIGHT).
-2. Seven daily automatic backups are listed (11-09 to 11-15), each in both locations, which matches the "keep 7" setting. This is more evidence for I24 (nightly copy to networkpi works). The disk-side check on networkpi is still pending.
-3. Test file `test-networkpi-location` (`2c9d3f0d`) is still present; HANDOFF says delete it before closing I24 and M4 (deletion is Tier 3).
+1. 27 backups at the time of the listing (26 after `2c9d3f0d` was deleted, 60a5e9e). The two newest are the zone rollback points (D65 zone rebuild). `pre-zones-v2` holds the old Neighborhood 1000 m, Leander 2000 m, Sasural 600 m and Near Home 4828 m zones. Restoring is Tier 3 (GREEN LIGHT).
+2. Seven daily automatic backups are listed (11-09 to 11-15), each in both locations, which matches the "keep 7" setting. This is more evidence for I24 (nightly copy to networkpi works). Disk-side check done (owner `sudo ls -la /srv/ha-backups`, after the deletion): 18 .tar files, all 7 automatic files present with sizes identical to HA's list, every nbk-only backup present, `2c9d3f0d.tar` gone, `daily/` and `weekly/` still empty. 5.1 GB used by the share.
+3. Test file `test-networkpi-location` (`2c9d3f0d`) deleted 2026-11-15 (owner GREEN LIGHT). I24 and I25 are resolved. M4 remaining: weekly copy (M6) and pruning of manual backups (I49).
 4. Backup `pre-i18-resolve` (`01d19d96`) keeps its misnamed title (known, D40).
 5. Several full backups (`fe78b1d3`, `781c2d05`, `a062666c`, `744a21ce`) and the add-on backups exist only on the Pi 5 SD card (location local). Worth reviewing later, since SD space and writes matter (SSD upgrade planned). Deletion is Tier 3.

@@ -128,3 +128,9 @@ Do not use lock.804 or switch.804 as Ring or door entities.
 - `habib-wh` (18 entity IDs): the MKH set plus `light.game_room`, `light.upstairs_guest`, `light.study_lamp` (tile "Study"), `light.smart_wi_fi_light_switch` (Porch, on and off) and `cover.general_garage_door_garage_door` (status chip only), and two `thermostat` cards for the climate entities.
 - Not used on either: Hatch lights, Ring, calendar, media, scenes, any lock or garage control.
 - Live config hashes: habib-wh `b29a354a4958b891`, habib-mkh `5b147c2b63ec0fe5`. Exports: `dashboards/habib-wh-2026-11-16-iter1.json`, `dashboards/habib-mkh-2026-11-16-iter1.json`.
+
+## 12. Glass redesign (2026-11-16, D70)
+
+- Both views: theme `Habib Glass`, `max_columns` 4 (WH) and 3 (MKH), `dense_section_placement`. Generator: `dashboards/habib-glass-build.py`. Exports: `dashboards/habib-{wh,mkh}-2026-11-16-glass.json`. Hashes: habib-wh `7ecc07e2887a6c77`, habib-mkh `47794b40818dd448`.
+- Added entities (all verified live 2026-11-16 00:50): `weather.forecast_home`, `sun.sun`, `person.waqar_habib`, `person.maham_habib`, the six `sensor.living_room_adhan_*` times, `input_boolean.adhan_enabled` (display only), `media_player.living_room_living_room_homepod`, `media_player.master_bedroom_homepod`, `todo.shopping_list`.
+- Lamp art per light is a guess (`art:` key: table-lamp, floor-lamp, desk-lamp, pendant, shelf, nightlight, coach, group). Change it in the config, not in JavaScript.

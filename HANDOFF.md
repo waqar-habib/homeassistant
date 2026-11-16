@@ -1,6 +1,9 @@
 # HANDOFF
 
-Last updated: 2026-11-15 (Pi 5, nursery lamp fix after the components run). Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
+Last updated: 2026-11-16 00:55 CST (Pi 5, glass dashboards). Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
+
+## Glass dashboards live (2026-11-16 00:55 CST, Pi 5, D70)
+habib-wh and habib-mkh redesigned to the owner's 2026 reference: glass panels on an evergreen wallpaper, drawn lamps that glow in their real colour with inline brightness, clock and weather hero, prayer countdown, climate dials, security status, HomePod player, shopping list. `habib-glass.js`, loader v7, theme "Habib Glass" per view, fonts self-hosted. Rendered in local Chromium with mock states; not yet seen in the real frontend. **Owner next:** refresh the app, open both dashboards, report issues. Rollback: `-iter1` exports plus loader `?v=6`; backup `pre-dashboard-glass` (c769dd3d). Note: `docs/sessions/2026-11-16-dashboard-glass.md`. Fajr 05:49 check (D69) still pending.
 
 ## Dashboard iteration 1 live (2026-11-16, Pi 5)
 habib-ui restyled to Material 3 theme tokens (loader v6) and real habib-wh and habib-mkh views are live; hashes wh `b29a354a4958b891`, mkh `5b147c2b63ec0fe5`. Unrendered by Claude. Owner checks the iPhone; Mac session checks breakpoints; iteration 2 follows. Backup `pre-dashboard-iter1`. Note `docs/sessions/2026-11-16-dashboard-iter1.md`.

@@ -4,7 +4,7 @@ Source: Chrome, read by the Mac Claude session under `docs/prompts/mac/2026-11-1
 
 ## Answers to the five questions
 
-- **a. Selected toggle colour roles.** Not found on the pages read. The switch overview gives no colour tokens; the switch spec tokens were not read. General rule from the colour roles page: a container uses a container role (for example `secondary container`) and its content uses the matching `on` role. The colour roles page cites "the selection state of a navigation icon" as a secondary-role use. The navigation bar page says the active label moved from on-surface-variant to secondary. (Sources: colour roles, navigation bar.)
+- **a. Selected toggle colour roles.** Answered in `docs/design/m3-components.md` section 1 after reading the component spec pages. Switch: track primary, handle on primary, icon on primary container (selected); track surface container highest with outline (unselected). Filled toggle button: primary and on primary selected, surface container and on surface variant unselected. Tonal: secondary and on secondary selected. List item: primary container and on primary container. Order-based mappings are marked inferred there.
 - **b. Frosted glass or blur.** Not found. None of the pages read mention blur, frosted or translucent surfaces. Material 3 uses tonal surface colours and state layers for depth (elevation page: "Elevation can be shown as tonal surface colors or shadows"). Glass effects are therefore not part of Material 3 as read here.
 - **c. Card corner radius.** Cards: 12dp corner radius (cards specs, Measurements). Large and extra large steps: large increased 20dp, extra large increased 32dp, extra extra large 48dp (shape overview, "M3 Expressive update", May 2025). The base "large" value before the increase was not on the page read.
 - **d. Minimum touch target.** 48dp interactive target; the state layer itself is 40dp (state layers page, "The size of state layers is 40dp while the interactive target size is 48dp"). Bottom sheet drag handle: 48dp hit target (bottom sheets overview, Differences from M2).
@@ -72,7 +72,7 @@ Card 12dp (cards specs). Bottom sheet top corners 28dp (bottom sheets overview).
 | Navigation bar | 3 to 5 destinations for compact and medium windows. Flexible navigation bar (expressive) is shorter, usable in medium windows. Active indicator is a pill; M3 uses filled icons plus indicator for active state. No drop shadow. |
 | Bottom sheets | Standard and modal. Compact and medium breakpoints. 28dp top corner radius; max width 640dp; optional drag handle with 48dp hit target. |
 | Dialogs | Basic and full-screen. Increased corner radius; larger headline; custom basic dialog positioning. Numeric radius: not found. |
-| Sliders | Not read (page not opened). |
+| Sliders | Read later: see `docs/design/m3-components.md` (track heights 16 to 96dp, handle width 4dp). |
 
 ## Icons (icons overview, read 2026-11-15)
 - Material Symbols is the icon set: variable font, three styles (outlined, rounded, sharp).

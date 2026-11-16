@@ -1,0 +1,186 @@
+# Arrival garage: open the primary house garage door (Door A only) when Waqar or Maham
+# drives into the Arrival Home zone. Owner GREEN LIGHT 2026-11-15 (garage only, driving only).
+# The 804 lock is NOT part of this package and is built separately (D66 and later).
+#
+# DRY RUN by default: while input_boolean.arrival_garage_live is OFF, the automation only
+# sends a notification saying what it would do. Only the owner turns the switch ON.
+#
+# Rules (all must hold to act):
+#   1. Armed: the person was outside zone.arrival_home for at least 10 minutes (anti-jitter,
+#      stops a re-open when leaving by car). Armed state is cleared on every arrival run.
+#   2. Driving: the phone's Activity sensor reads Automotive.
+#   3. GPS accuracy better than 50 m, person state not unknown or unavailable.
+#   4. Garage cover is closed, no active fault, vacation mode off.
+#   5. At least 30 minutes since the last run (any person).
+# Never auto-closes. If the door is still open 15 minutes after an open, both phones are told.
+# Door B (`cover.general_garage_door_garage_door_2`, shared home) is disabled (D66) and never used.
+
+input_boolean:
+  arrival_garage_live:
+    name: "Arrival garage LIVE (owner only)"
+    icon: mdi:garage-open-variant
+  arrival_garage_armed_waqar:
+    name: "Arrival garage armed: Waqar"
+    icon: mdi:shield-check
+  arrival_garage_armed_maham:
+    name: "Arrival garage armed: Maham"
+    icon: mdi:shield-check
+
+input_datetime:
+  arrival_garage_last_action:
+    name: "Arrival garage last run"
+    has_date: true
+    has_time: true
+    initial: "2000-01-01 00:00:00"
+
+script:
+  arrival_garage_notify:
+    alias: "Arrival garage: notify both phones"
+    mode: queued
+    fields:
+      message:
+        description: "Notification text"
+        example: "Dry run: would open the garage"
+    sequence:
+      - action: notify.waqars_iphone
+        continue_on_error: true
+        data:
+          title: "Arrival garage"
+          message: "{{ message }}"
+      - action: notify.mahams_iphone
+        continue_on_error: true
+        data:
+          title: "Arrival garage"
+          message: "{{ message }}"
+
+automation:
+  - id: arrival_garage_arm
+    alias: "Arrival garage: arm a person after 10 minutes outside the zone"
+    description: "Sets the person's armed switch once they have been outside zone.arrival_home for 10 minutes."
+    mode: parallel
+    max: 4
+    triggers:
+      - trigger: template
+        id: waqar
+        value_template: >-
+          {% set d = distance('person.waqar_habib', 'zone.arrival_home') %}
+          {{ d is number and d * 1000 > (state_attr('zone.arrival_home', 'radius') | float(0)) }}
+        for: "00:10:00"
+      - trigger: template
+        id: maham
+        value_template: >-
+          {% set d = distance('person.maham_habib', 'zone.arrival_home') %}
+          {{ d is number and d * 1000 > (state_attr('zone.arrival_home', 'radius') | float(0)) }}
+        for: "00:10:00"
+    actions:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: "input_boolean.arrival_garage_armed_{{ trigger.id }}"
+
+  - id: arrival_garage_open
+    alias: "Arrival garage: open on arrival (dry run unless live)"
+    description: "Person enters zone.arrival_home while armed and driving: open Door A if live, otherwise notify only."
+    mode: single
+    max_exceeded: silent
+    triggers:
+      - trigger: zone
+        id: waqar
+        entity_id: person.waqar_habib
+        zone: zone.arrival_home
+        event: enter
+      - trigger: zone
+        id: maham
+        entity_id: person.maham_habib
+        zone: zone.arrival_home
+        event: enter
+    conditions:
+      - condition: template
+        value_template: "{{ is_state('input_boolean.arrival_garage_armed_' ~ trigger.id, 'on') }}"
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: "input_boolean.arrival_garage_armed_{{ trigger.id }}"
+      - variables:
+          who: "{{ 'Waqar' if trigger.id == 'waqar' else 'Maham' }}"
+          person_id: "person.{{ trigger.id }}_habib"
+          activity: "sensor.{{ 'waqars' if trigger.id == 'waqar' else 'mahams' }}_iphone_activity"
+          garage: cover.general_garage_door_garage_door
+          dist_m: >-
+            {% set d = distance(person_id, 'zone.home') %}
+            {{ (d * 1000) | round(0) | int if d is number else 'unknown' }}
+          problems: >-
+            {%- set p = [] -%}
+            {%- if (states(activity) | lower) != 'automotive' -%}
+              {%- set p = p + ['not driving (activity: ' ~ states(activity) ~ ')'] -%}
+            {%- endif -%}
+            {%- if (state_attr(person_id, 'gps_accuracy') | float(9999)) >= 50 -%}
+              {%- set p = p + ['GPS accuracy worse than 50 m'] -%}
+            {%- endif -%}
+            {%- if states(person_id) in ['unknown', 'unavailable'] -%}
+              {%- set p = p + ['person state ' ~ states(person_id)] -%}
+            {%- endif -%}
+            {%- if states(garage) != 'closed' -%}
+              {%- set p = p + ['garage is ' ~ states(garage)] -%}
+            {%- endif -%}
+            {%- if not is_state('binary_sensor.general_garage_door_active_fault', 'off') -%}
+              {%- set p = p + ['garage fault sensor is ' ~ states('binary_sensor.general_garage_door_active_fault')] -%}
+            {%- endif -%}
+            {%- if not is_state('binary_sensor.general_garage_door_vacation_mode', 'off') -%}
+              {%- set p = p + ['garage vacation mode is ' ~ states('binary_sensor.general_garage_door_vacation_mode')] -%}
+            {%- endif -%}
+            {%- if now().timestamp() - (state_attr('input_datetime.arrival_garage_last_action', 'timestamp') | float(0)) < 1800 -%}
+              {%- set p = p + ['ran less than 30 minutes ago'] -%}
+            {%- endif -%}
+            {{ p | join('; ') }}
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ problems == '' }}"
+            sequence:
+              - action: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.arrival_garage_last_action
+                data:
+                  datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+              - choose:
+                  - conditions:
+                      - condition: state
+                        entity_id: input_boolean.arrival_garage_live
+                        state: "on"
+                    sequence:
+                      - action: cover.open_cover
+                        target:
+                          entity_id: cover.general_garage_door_garage_door
+                      - action: script.arrival_garage_notify
+                        data:
+                          message: "{{ who }} is {{ dist_m }} m from home and driving. Opening the garage door."
+                      - wait_template: "{{ not is_state('cover.general_garage_door_garage_door', 'closed') }}"
+                        timeout: "00:02:00"
+                        continue_on_timeout: true
+                      - if:
+                          - condition: state
+                            entity_id: cover.general_garage_door_garage_door
+                            state: "closed"
+                        then:
+                          - action: script.arrival_garage_notify
+                            data:
+                              message: "The garage did not start opening within 2 minutes of the command. Check the door."
+                          - stop: "Garage did not move"
+                      - wait_template: "{{ is_state('cover.general_garage_door_garage_door', 'closed') }}"
+                        timeout: "00:15:00"
+                        continue_on_timeout: true
+                      - if:
+                          - condition: template
+                            value_template: "{{ not is_state('cover.general_garage_door_garage_door', 'closed') }}"
+                        then:
+                          - action: script.arrival_garage_notify
+                            data:
+                              message: "The garage door is still {{ states('cover.general_garage_door_garage_door') }} 15 minutes after opening for {{ who }}. It does not close automatically."
+                default:
+                  - action: script.arrival_garage_notify
+                    data:
+                      message: "DRY RUN: {{ who }} is {{ dist_m }} m from home and driving. Would open the garage door. Nothing was opened."
+        default:
+          - action: script.arrival_garage_notify
+            data:
+              message: "Arrival garage: {{ who }} entered the zone but no action was taken: {{ problems }}."

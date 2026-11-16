@@ -13,3 +13,8 @@ Owner GREEN LIGHT 2026-11-16 (update module, execute plan, restart when needed).
 - Owner: hard refresh, then confirm the "Material You Utilities" sidebar item and that HA dialogs and cards look Material 3. Admin item: the panel's "Create Helpers" adds input helpers; decide whether to use it (D64 says colours come from the theme).
 - Claude: render `habib-lab` and check tokens reach our cards. Not yet done (needs the cloud renderer or an owner screenshot).
 - Rollback: remove the two config blocks, restart, restore `pre-material-you-utilities`.
+
+## Addendum 00:16 CST, Adhan enabled
+1. Owner asked to keep Adhan enabled so Fajr fires (D69). `input_boolean.adhan_enabled` turned ON 00:16.
+2. The prayer sensors held 2026-11-15 values after the restart and after a reload at 00:15:26. A second reload at 00:16 gave today's times (Fajr 05:49, Dhuhr 12:16, Isha 18:42). The integration seems to keep the previous day's data until shortly after 00:15, so a reload or restart just after midnight can leave stale times; reload again once past 00:16. Daily history confirms normal rollover at about 00:15.
+3. Resume: after 05:49 check `automation.adhan_fajr` trace, `last_triggered`, HomePod volume restored to 0.55.

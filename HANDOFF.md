@@ -3,6 +3,7 @@
 Last updated: 2026-11-15 (Pi 5, nursery lamp fix after the components run). Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
 
 ## Utilities config applied (2026-11-16 00:00 CST, Pi 5)
+Adhan gate turned ON 00:16 CST on the owner's instruction (D69); first live run is Fajr 05:49. Check the trace and volume restore afterwards.
 Material You Utilities 2.2.0 now loads via `extra_module_url` plus sidebar panel; restart done, backup `pre-material-you-utilities`. Owner checks UI; Claude checks habib-lab tokens. Fajr sensor looked stale after restart: recheck before 05:49. Details: `docs/sessions/2026-11-16-material-you-utilities-config.md`.
 
 ## Material You evaluation done (2026-11-15, Pi 5, read only)

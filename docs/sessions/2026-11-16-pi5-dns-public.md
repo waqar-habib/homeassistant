@@ -70,3 +70,15 @@ Step 1 (backup `pre-pi5-dns`), then step 2, after the owner's GREEN LIGHT.
 **Open item:** `ha_get_system_health` still lists `hassio.nameservers` as `192.168.1.1, 2603:8082:d840:62::1`. It may be a cached value; check again on the next session.
 
 **Rollback (not used):** `ha network update end0 --ipv4-method auto` with the nameserver list cleared, or restore backup `pre-pi5-dns` (slug `91b983ed`).
+
+## Recheck and router DNS removal (owner GREEN LIGHT "execute all next steps", 2026-11-16)
+
+**ha-mcp:** connected at `http://192.168.1.36:9583` (the earlier `0.0.0.0` entry was wrong and was replaced). Its tools are not loaded in the Claude session, so the checks below were made by calling the MCP server's HTTP JSON-RPC directly (`tools/call`).
+
+**Recheck of `hassio.nameservers` (Supervisor, `ha_get_system_health`):** `192.168.1.1, 2603:8082:d840:62::1, 1.1.1.1, 9.9.9.9`. The router addresses are still there. The earlier value was not stale.
+
+**Router DNS removal: not done.** The ha-mcp tools have no network-configuration service. `ha_list_services` for `hassio` shows only app, add-on, host reboot/shutdown, backup, restore and mount services. The static IPv4 change therefore cannot be made from here. It must be done in the Pi 5 UI (Settings, System, Network, end0, IPv4: method Static, address `192.168.1.36/24`, gateway `192.168.1.1`, DNS `1.1.1.1` and `9.9.9.9`) or with `ha network update end0 --ipv4-method static ...` in the Claude Terminal add-on. Rollback is to set method back to auto, or restore backup `pre-pi5-dns` (slug `91b983ed`).
+
+**Health at the time of the recheck:** HA core 2026.11.1 running. Cloud logged in, remote and relayer connected, IoT connected. Host and Supervisor connectivity true, NTP synced. Supervisor healthy.
+
+**Open:** owner runs the static change, then re-reads `hassio.nameservers`. Expected: router address gone. If the router address stays, the change did not save as static.

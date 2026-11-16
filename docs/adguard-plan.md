@@ -1,6 +1,6 @@
 # AdGuard Home plan (D8, I1, M7) — DRAFT v0.5
 
-Status: plan only. Nothing installed. Install is Tier 3 (DNS, firewall, new service on networkpi) and needs a GREEN LIGHT per stage.
+Status: plan only. Nothing installed. 2026-11-15: owner tabled the monitor (M6) and asked to start AdGuard, so stage 0 no longer waits on M6 (stage 1 has no clients, so an outage affects nobody). I24 and I25 are resolved. Stage 1 prompt: `docs/prompts/networkpi/2026-11-15-adguard-stage1.md`, waiting on "GREEN LIGHT AdGuard stage 1". Stage 1 installs with ZERO lists (section 2a), not one list as the stage table says; section 4 is read that way. Add the monitor before stage 3 or 4, when real clients depend on DNS. Install is Tier 3 (DNS, firewall, new service on networkpi) and needs a GREEN LIGHT per stage.
 
 ## 1. Lesson from the old Pi-hole (owner, 2026-11-08)
 1. First run blocked everything useful; fixed by pushing an allowlist. Fix here: start with ONE conservative list, not a pile of aggregated lists.

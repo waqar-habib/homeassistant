@@ -38,11 +38,14 @@ outdoor = sec(label("Outdoor"), L("Porch", "light.smart_wi_fi_light_switch", "co
 def view(sections, maxc):
     return {"views": [{"title": "Home", "path": "home", "type": "sections", "max_columns": maxc, "theme": "Habib Glass",
                        "dense_section_placement": True, "sections": sections}]}
-wh = view([sec(hero, prayer),
-           sec(label("Home"), {"type": "custom:habib-security", "items": [lock, garage]}, climate),
+# Habib WH is the owner's iPhone: the large cards fold to a 60px summary bar (collapsible, starts folded).
+def fold(c): return {**c, "collapsible": True}
+wh = view([sec(hero, fold(prayer)),
+           sec(label("Home"), {"type": "custom:habib-security", "items": [lock, garage]}, fold(climate)),
            floors, living, bedroom, nursery, upstairs, outdoor,
-           sec(label("Listen"), media), sec(label("Lists"), todo)], 4)
-mkh = view([sec(hero, prayer), floors, bedroom, nursery, living,
+           sec(label("Listen"), fold(media)), sec(label("Lists"), fold(todo))], 4)
+# Habib MKH has no prayer card (owner, 2026-11-16).
+mkh = view([sec(hero), floors, bedroom, nursery, living,
             sec(label("Home"), {"type": "custom:habib-security", "items": [lock], "subtitle": "Front door"}, climate),
             sec(label("Listen"), media), sec(label("Lists"), todo)], 3)
 json.dump(wh, open("wh.json", "w"), indent=1); json.dump(mkh, open("mkh.json", "w"), indent=1)

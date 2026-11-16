@@ -55,7 +55,24 @@ const GLASS = `
   .press { transition: transform .18s cubic-bezier(.3,1.6,.4,1); }
   .press:active { transform: scale(.97); }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  .fold { all: unset; cursor: pointer; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; flex: none;
+    background: rgba(255,255,255,.10); color: var(--g-dim); }
+  .fold svg { width: 16px; height: 16px; }
+  .fold.abs { position: absolute; top: 12px; right: 12px; z-index: 2; }
+  .mini { cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 0 12px 0 18px; min-height: 60px; height: auto; outline: none; }
+  .mini .ml { font: 600 11px/14px var(--g-font); letter-spacing: .14em; text-transform: uppercase; color: var(--g-dim); flex: none; }
+  .mini .mv { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: right;
+    font: 500 15px var(--g-font); font-variant-numeric: tabular-nums; }
+  .mini .mv b { font: 600 17px var(--g-display); }
+  .mini .mv .w { color: rgb(var(--g-warm)); } .mini .mv .d { color: var(--g-dim); font-size: 13px; }
+  .mini .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: rgb(var(--g-mint));
+    box-shadow: 0 0 8px rgb(var(--g-mint)); margin-right: 6px; vertical-align: 2px; }
+  .mini .pb { position: absolute; left: 18px; right: 18px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: rgba(255,255,255,.10); overflow: hidden; }
+  .mini .pb span { display: block; height: 100%; background: rgb(var(--g-warm)); box-shadow: 0 0 10px rgba(var(--g-warm), .8); }
+  .mini:focus-visible { box-shadow: 0 0 0 2px rgba(var(--g-warm), .8); }
 `;
+
+const CHEV = (up) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${up ? "M6 15l6-6 6 6" : "M6 9l6 6 6-6"}"/></svg>`;
 
 function registerCard(type, name, description) {
   window.customCards = window.customCards || [];
@@ -86,8 +103,34 @@ class GlassCard extends HTMLElement {
     if (!config || typeof config !== "object") throw new Error("Invalid configuration");
     this._config = config;
     this._validate(config);
+    // Opt-in fold (collapsible: true). Starts folded unless collapsed: false. The viewer's
+    // last choice is remembered per dashboard in localStorage (a convenience only).
+    this._collapsible = config.collapsible === true;
+    if (this._collapsible) {
+      this._foldKey = `habib_fold:${location.pathname}:${config.type}:${config.title || config.name || ""}`;
+      let saved = null;
+      try { saved = localStorage.getItem(this._foldKey); } catch (e) { saved = null; }
+      this._collapsed = saved === null ? config.collapsed !== false : saved === "1";
+    } else {
+      this._collapsed = false;
+    }
     if (!this.shadowRoot) {
       this.attachShadow({ mode: "open" });
+      const toggle = (e) => {
+        const t = e.target.closest && e.target.closest("[data-collapse]");
+        if (!t || !this._collapsible) return false;
+        haptic(this);
+        this._collapsed = !this._collapsed;
+        try { localStorage.setItem(this._foldKey, this._collapsed ? "1" : "0"); } catch (err) { /* private mode */ }
+        this._maybeRender(true);
+        const next = this.shadowRoot.querySelector("[data-collapse]");
+        if (next && e.type === "keydown") next.focus();
+        return true;
+      };
+      this.shadowRoot.addEventListener("click", toggle);
+      this.shadowRoot.addEventListener("keydown", (e) => {
+        if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("[data-collapse]")) { e.preventDefault(); toggle(e); }
+      });
       this._setup();
     }
     this._sig = null;
@@ -112,11 +155,35 @@ class GlassCard extends HTMLElement {
   }
   _maybeRender(force) {
     if (!this._config || !this.shadowRoot || this._hold) return;
-    const sig = this._signature();
+    const sig = this._signature() + (this._collapsible ? `|fold${this._collapsed ? 1 : 0}` : "");
     if (!force && sig === this._sig) return;
     this._sig = sig;
+    if (this._collapsed) { this._renderFolded(); return; }
     this._render();
+    if (this._collapsible) this._addFoldButton();
   }
+  // Folded: one 60px glass bar with a label, a one-line summary and a chevron.
+  _renderFolded() {
+    const s = this._summary();
+    this.shadowRoot.innerHTML = `<style>${GLASS}</style>
+      <div class="glass mini press" data-collapse role="button" tabindex="0" aria-expanded="false" aria-label="Show ${esc(s.label)}">
+        <span class="ml">${esc(s.label)}</span><span class="mv">${s.html}</span>
+        <span class="fold">${CHEV(false)}</span>${s.progress != null ? `<div class="pb"><span style="width:${Math.round(s.progress * 100)}%"></span></div>` : ""}
+      </div>`;
+  }
+  // Expanded: put the fold button in the card's [data-fold-slot] if it has one, else top right.
+  _addFoldButton() {
+    const b = document.createElement("button");
+    b.className = "fold";
+    b.setAttribute("data-collapse", "");
+    b.setAttribute("aria-expanded", "true");
+    b.setAttribute("aria-label", "Fold card");
+    b.innerHTML = CHEV(true);
+    const slot = this.shadowRoot.querySelector("[data-fold-slot]");
+    if (slot) slot.appendChild(b);
+    else { b.classList.add("abs"); const g = this.shadowRoot.querySelector(".glass"); if (g) g.appendChild(b); }
+  }
+  _summary() { return { label: this._config.title || "", html: "" }; }
   _later(fn, ms) {
     const id = setTimeout(() => { this._timers.delete(id); fn(); }, ms);
     this._timers.add(id);
@@ -332,15 +399,24 @@ class HabibPrayer extends GlassCard {
   }
   _connected() { this._tick(); }
   _tick() { this._later(() => { this._maybeRender(false); this._tick(); }, 30000); }
-  _render() {
-    const now = new Date();
+  _plan() {
     const times = {};
     for (const k of this._keys) {
       const s = this._st(this._config.prayers[k]);
       times[k] = s && !["unknown", "unavailable"].includes(s.state) ? new Date(s.state) : null;
     }
-    const sameDay = (a, b) => a.toDateString() === b.toDateString();
-    const plan = G.prayerPlan(times, now, sameDay);
+    return G.prayerPlan(times, new Date(), (a, b) => a.toDateString() === b.toDateString());
+  }
+  _summary() {
+    const plan = this._plan();
+    const n = plan.next;
+    if (!n) return { label: "Prayer", html: `<span class="d">Times unavailable</span>` };
+    const t = n.at.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    return { label: "Prayer", progress: plan.progress,
+      html: `<b>${PRAYER_NAMES[n.key]}</b> <span class="d">${esc(t)}</span> · <span class="w">${esc(G.formatCountdown(plan.msLeft))}</span>` };
+  }
+  _render() {
+    const plan = this._plan();
     const adhan = this._config.adhan ? this._st(this._config.adhan) : null;
     const fmt = (d) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     const rows = plan.rows.map((r) => {
@@ -357,6 +433,7 @@ class HabibPrayer extends GlassCard {
       <style>${GLASS}
         .glass { padding: 18px 18px 14px; display: flex; flex-direction: column; gap: 12px; }
         .head { display: flex; align-items: center; justify-content: space-between; }
+        .right { display: flex; align-items: center; gap: 8px; }
         .label { font: 600 13px/16px "Habib Display", serif; letter-spacing: .22em; text-transform: uppercase; }
         .adhan { font: 600 11px/1 var(--g-font); padding: 6px 9px; border-radius: 999px; display: flex; gap: 6px; align-items: center;
           background: rgba(255,255,255,.10); color: var(--g-dim); }
@@ -383,7 +460,7 @@ class HabibPrayer extends GlassCard {
       </style>
       <div class="glass">
         <div class="head"><span class="label">Prayer Times</span>
-          ${adhan ? `<span class="adhan ${adhan.state === "on" ? "on" : ""}"><i></i>Adhan ${adhan.state === "on" ? "on" : "off"}</span>` : ""}</div>
+          <span class="right" data-fold-slot>${adhan ? `<span class="adhan ${adhan.state === "on" ? "on" : ""}"><i></i>Adhan ${adhan.state === "on" ? "on" : "off"}</span>` : ""}</span></div>
         ${next ? `<div class="hero"><div class="hrow"><span class="nx">Next · <b>${PRAYER_NAMES[next.key]}</b></span>
           <span class="cd">${esc(G.formatCountdown(plan.msLeft))}</span></div>
           <div class="bar"><span style="width:${Math.round(plan.progress * 100)}%"></span></div></div>` : ""}
@@ -749,8 +826,18 @@ class HabibClimate extends GlassCard {
       .cur { font: 200 40px/1 var(--g-display); letter-spacing: -.03em; } .cur sup { font-size: 18px; vertical-align: 18px; }
       .rng { font: 600 11px var(--g-font); color: var(--g-dim); margin-top: 4px; }
       .foot { text-align: center; margin-top: -6px; } .title { font-size: 15px; }
+      .hd { display: flex; align-items: center; justify-content: space-between; min-height: 30px; }
     </style>
-    <div class="glass"><div class="eyebrow">Climate</div><div class="grid">${tiles}</div></div>`;
+    <div class="glass"><div class="hd"><div class="eyebrow">Climate</div><span data-fold-slot></span></div><div class="grid">${tiles}</div></div>`;
+  }
+  _summary() {
+    const parts = this._items.map((it) => {
+      const s = this._st(it.entity);
+      const cur = s && typeof s.attributes.current_temperature === "number" ? `${Math.round(s.attributes.current_temperature)}°` : "–";
+      const heat = s && s.attributes.hvac_action === "heating", cool = s && s.attributes.hvac_action === "cooling";
+      return `<span class="d">${esc(it.name || (s && s.attributes.friendly_name) || it.entity)}</span> <b${heat ? ' style="color:#ffb36b"' : cool ? ' style="color:#8fc9ff"' : ""}>${cur}</b>`;
+    });
+    return { label: this._config.title || "Climate", html: parts.join("&ensp;") };
   }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-climate", entities: [] }; }
@@ -883,6 +970,7 @@ class HabibMedia extends GlassCard {
     }).join("")}</div>` : "";
     this.shadowRoot.innerHTML = `<style>${GLASS}
       .glass { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+      .hd { display: flex; align-items: center; justify-content: space-between; min-height: 30px; }
       .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
       .tab { all: unset; cursor: pointer; font: 600 12px var(--g-font); padding: 7px 11px; border-radius: 999px; color: var(--g-dim);
         background: rgba(255,255,255,.07); display: flex; align-items: center; gap: 6px; }
@@ -917,7 +1005,7 @@ class HabibMedia extends GlassCard {
       .dead { opacity: .5; pointer-events: none; }
     </style>
     <div class="glass">
-      <div class="eyebrow">Now playing</div>
+      <div class="hd"><div class="eyebrow">Now playing</div><span data-fold-slot></span></div>
       ${tabs}
       <div class="main ${dead ? "dead" : ""}">
         <div class="disc">${pic ? `<img class="art" src="${esc(pic)}" alt="">` : `<div class="vinyl ${playing ? "spin" : ""}"></div>`}</div>
@@ -928,6 +1016,13 @@ class HabibMedia extends GlassCard {
       </div>
       <div class="vol ${dead ? "dead" : ""}">${ICON.vol}<input type="range" min="0" max="100" step="1" value="${vol}" aria-label="Volume"></div>
     </div>`;
+  }
+  _summary() {
+    const playing = this._players.find((p) => { const s = this._st(p.entity); return s && s.state === "playing"; });
+    if (!playing) return { label: "Listen", html: `<span class="d">Nothing playing</span>` };
+    const s = this._st(playing.entity);
+    const t = s.attributes.media_title || "Playing";
+    return { label: "Listen", html: `<i class="dot"></i><b>${esc(t)}</b> <span class="d">${esc(playing.name || s.attributes.friendly_name || "")}</span>` };
   }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-media", players: [] }; }
@@ -966,8 +1061,12 @@ class HabibTodo extends GlassCard {
       if (e.target.closest && e.target.closest("[data-open]")) moreInfo(this, this._config.entity);
     });
     root.addEventListener("keydown", (e) => { if (e.key === "Enter" && e.target.matches("input")) this._add(); });
-    root.addEventListener("focusin", () => { this._hold = true; });
-    root.addEventListener("focusout", () => { this._hold = false; this._later(() => this._maybeRender(false), 50); });
+    // Hold renders only while the add field has focus (a focused fold bar must still re-render).
+    root.addEventListener("focusin", (e) => { if (e.target.matches && e.target.matches("input")) this._hold = true; });
+    root.addEventListener("focusout", (e) => {
+      if (!(e.target.matches && e.target.matches("input"))) return;
+      this._hold = false; this._later(() => this._maybeRender(false), 50);
+    });
   }
   _add() {
     const input = this.shadowRoot.querySelector("input");
@@ -987,6 +1086,7 @@ class HabibTodo extends GlassCard {
     this.shadowRoot.innerHTML = `<style>${GLASS}
       .glass { padding: 16px; display: flex; flex-direction: column; gap: 10px; }
       .head { display: flex; justify-content: space-between; align-items: flex-start; }
+      .right { display: flex; align-items: center; gap: 8px; }
       .big { font: 700 22px/26px var(--g-display); letter-spacing: -.01em;
         background: linear-gradient(90deg, #c9d8ff, #f3c8ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
       .open { all: unset; cursor: pointer; font: 600 12px var(--g-font); color: var(--g-dim); padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.08); }
@@ -1009,12 +1109,18 @@ class HabibTodo extends GlassCard {
     <div class="glass">
       <div class="head"><div><div class="big">${esc(this._config.title || (s && s.attributes.friendly_name) || "List")}</div>
         <div class="sub">${open.length ? `${open.length} item${open.length === 1 ? "" : "s"}` : "All done"}</div></div>
-        <button class="open" data-open>Open</button></div>
+        <span class="right" data-fold-slot><button class="open" data-open>Open</button></span></div>
       <div class="list">${rows || `<div class="empty">Nothing on the list. Add something below.</div>`}
         ${open.length > max ? `<div class="sub">+${open.length - max} more</div>` : ""}</div>
       <div class="add"><input type="text" placeholder="Add an item…" enterkeyhint="done" aria-label="New item">
         <button class="plus" data-add aria-label="Add"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button></div>
     </div>`;
+  }
+  _summary() {
+    const n = this._items.filter((i) => i.status === "needs_action").length;
+    const s = this._st(this._config.entity);
+    return { label: this._config.title || (s && s.attributes.friendly_name) || "List",
+      html: n ? `<b>${n}</b> <span class="d">item${n === 1 ? "" : "s"}</span>` : `<span class="d">All done</span>` };
   }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-todo", entity: "todo.shopping_list" }; }

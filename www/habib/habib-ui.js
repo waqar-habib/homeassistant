@@ -13,89 +13,44 @@ const TOKENS_ID = "habib-ui-tokens";
 
 const TOKENS = `
 :root {
-  --habib-accent: #2EC4D6;
-  --habib-on-accent: #00363D;
-
-  --habib-surface: #1B1F23;
-  --habib-surface-container: #22272C;
-  --habib-surface-high: #2A3036;
-  --habib-on-surface: #E2E6EA;
-  --habib-on-surface-muted: #A4ADB6;
-  --habib-outline: #3C444C;
-  --habib-error: #FFB4AB;
+  /* Colour comes only from the Material You theme (--md-sys-color-*), with HA's own variables as fallback. */
+  --habib-primary: var(--md-sys-color-primary, var(--primary-color));
+  --habib-on-primary: var(--md-sys-color-on-primary, var(--text-primary-color, #fff));
+  --habib-secondary-container: var(--md-sys-color-secondary-container, var(--secondary-background-color));
+  --habib-on-secondary-container: var(--md-sys-color-on-secondary-container, var(--primary-text-color));
+  --habib-surface: var(--md-sys-color-surface, var(--primary-background-color));
+  --habib-surface-container: var(--md-sys-color-surface-container, var(--card-background-color));
+  --habib-surface-container-low: var(--md-sys-color-surface-container-low, var(--card-background-color));
+  --habib-surface-container-high: var(--md-sys-color-surface-container-high, var(--secondary-background-color));
+  --habib-on-surface: var(--md-sys-color-on-surface, var(--primary-text-color));
+  --habib-on-surface-variant: var(--md-sys-color-on-surface-variant, var(--secondary-text-color));
+  --habib-outline-variant: var(--md-sys-color-outline-variant, var(--divider-color));
+  --habib-error: var(--md-sys-color-error, var(--error-color));
 
   --habib-font: Roboto, "Helvetica Neue", Arial, sans-serif;
-  --habib-type-title: 500 20px/28px var(--habib-font);
-  --habib-type-body: 400 16px/24px var(--habib-font);
+  --habib-type-heading: 500 16px/24px var(--habib-font);
+  --habib-type-body: 400 14px/20px var(--habib-font);
   --habib-type-label: 500 14px/20px var(--habib-font);
+  --habib-type-support: 400 12px/16px var(--habib-font);
 
   --habib-space-1: 8px;
   --habib-space-2: 16px;
   --habib-space-3: 24px;
 
-  --habib-radius-s: 8px;
-  --habib-radius-m: 16px;
-  --habib-radius-l: 28px;
-
-  --habib-elevation-1: 0 1px 2px rgba(0,0,0,.3);
-  --habib-elevation-2: 0 4px 12px rgba(0,0,0,.35);
-
-  --habib-glass-blur: 16px;
-  --habib-glass-fill: rgba(42, 48, 54, .72);
+  --habib-radius-chip: 8px;
+  --habib-radius-card: 12px;
+  --habib-radius-sheet: 28px;
 }
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) {
-    --habib-accent: #00677A;
-    --habib-on-accent: #FFFFFF;
-    --habib-surface: #F5F7F9;
-    --habib-surface-container: #FFFFFF;
-    --habib-surface-high: #E6EBEF;
-    --habib-on-surface: #1A1C1E;
-    --habib-on-surface-muted: #4B545C;
-    --habib-outline: #C3CBD2;
-    --habib-error: #BA1A1A;
-    --habib-glass-fill: rgba(255, 255, 255, .72);
-  }
-}
-:root[data-theme="light"] {
-  --habib-accent: #00677A;
-  --habib-on-accent: #FFFFFF;
-  --habib-surface: #F5F7F9;
-  --habib-surface-container: #FFFFFF;
-  --habib-surface-high: #E6EBEF;
-  --habib-on-surface: #1A1C1E;
-  --habib-on-surface-muted: #4B545C;
-  --habib-outline: #C3CBD2;
-  --habib-error: #BA1A1A;
-  --habib-glass-fill: rgba(255, 255, 255, .72);
-}
-/* Tablet: a 12 px blur. The tablet dashboard sets data-device="tablet" on its root. */
-:root[data-device="tablet"] { --habib-glass-blur: 12px; }
-/* Global off switch: no blur anywhere. */
-:root[data-glass="off"] { --habib-glass-blur: 0px; }
 
 habib-surface, habib-diag {
   display: block;
   box-sizing: border-box;
   color: var(--habib-on-surface);
   background: var(--habib-surface-container);
-  border-radius: var(--habib-radius-m);
+  border-radius: var(--habib-radius-card);
   padding: var(--habib-space-2);
   font: var(--habib-type-body);
 }
-/* Glass is opt-in per surface (class habib-glass). Design limit: at most 4 per screen. */
-habib-surface.habib-glass, habib-diag.habib-glass {
-  background: var(--habib-glass-fill);
-  -webkit-backdrop-filter: blur(var(--habib-glass-blur));
-  backdrop-filter: blur(var(--habib-glass-blur));
-}
-habib-surface[data-glass="off"], habib-diag[data-glass="off"] {
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-.habib-title { font: var(--habib-type-title); margin: 0 0 var(--habib-space-1); }
-.habib-row { display: flex; justify-content: space-between; gap: var(--habib-space-1); padding: 2px 0; }
-.habib-muted { color: var(--habib-on-surface-muted); font: var(--habib-type-label); }
 `;
 
 function injectTokens() {
@@ -125,37 +80,39 @@ function iconHtml(icon) {
   return icon ? `<ha-icon class="icon" icon="${escapeHtml(icon)}"></ha-icon>` : "";
 }
 
-// Round icon badge used on tiles (Apple Home style).
+// Tile icon: icon and text only (D67), no round badge.
 function badgeHtml(icon) {
-  return icon ? `<span class="badge">${iconHtml(icon)}</span>` : "";
+  return iconHtml(icon);
 }
 
 // Styles shared by the interactive cards. Colours and radii come from the --habib-* tokens.
 const CARD_CSS = `
   :host { display: block; }
   * { box-sizing: border-box; }
-  .tile { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: 12px;
-          width: 100%; min-width: 0; min-height: 88px; padding: var(--habib-space-2) var(--habib-space-2);
-          background: var(--habib-surface-container); color: var(--habib-on-surface);
-          border-radius: var(--habib-radius-l); font: var(--habib-type-body); cursor: pointer;
-          transition: background-color .15s, color .15s; -webkit-user-select: none; user-select: none;
+  .tile { all: unset; box-sizing: border-box; position: relative; overflow: hidden; display: flex; align-items: center;
+          gap: 12px; width: 100%; min-width: 0; min-height: 64px; padding: 12px var(--habib-space-2);
+          background: var(--habib-surface-container); color: var(--habib-on-surface-variant);
+          border-radius: var(--habib-radius-card); font: var(--habib-type-label); cursor: pointer;
+          transition: background-color .15s, color .15s, opacity .15s; -webkit-user-select: none; user-select: none;
           -webkit-touch-callout: none; touch-action: manipulation; }
-  .tile:focus-visible { outline: 2px solid var(--habib-accent); outline-offset: 2px; }
-  .tile.on { background: var(--habib-accent); color: var(--habib-on-accent); }
+  /* State layer on the content colour: hover .08, focus .10, pressed .10. */
+  .tile::before { content: ""; position: absolute; inset: 0; background: currentColor; opacity: 0;
+                  pointer-events: none; transition: opacity .15s; }
+  @media (hover: hover) { .tile:hover::before { opacity: .08; } }
+  .tile:focus-visible::before, .tile:active::before { opacity: .10; }
+  .tile:focus-visible { outline: 2px solid var(--habib-primary); outline-offset: 2px; }
+  .tile.on { background: var(--habib-secondary-container); color: var(--habib-on-secondary-container); }
   .tile.pending { opacity: .7; }
-  .tile.dead { color: var(--habib-on-surface-muted); border: 1px dashed var(--habib-outline); }
+  .tile.dead { opacity: .38; cursor: default; }
   .tile.missing { color: var(--habib-error); border: 1px dashed var(--habib-error); cursor: default; }
   .tile.blocked { color: var(--habib-error); cursor: default; }
-  .tile.done { background: var(--habib-surface-high); }
+  .tile.done { background: var(--habib-secondary-container); color: var(--habib-on-secondary-container); }
   .icon { flex: none; --mdc-icon-size: 24px; width: 24px; height: 24px; }
-  .badge { flex: none; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px;
-           border-radius: 50%; background: rgba(0,0,0,.25); }
-  .tile.on .badge { background: rgba(0,0,0,.18); }
   .text { display: flex; flex-direction: column; min-width: 0; flex: 1; }
-  .name { font: 500 17px/22px var(--habib-font); overflow-wrap: anywhere; }
-  .label, .note { font: var(--habib-type-label); opacity: .85; overflow-wrap: anywhere; }
-  .empty { padding: var(--habib-space-2); color: var(--habib-error); font: var(--habib-type-label);
-           background: var(--habib-surface-container); border-radius: var(--habib-radius-m); }
+  .name { font: var(--habib-type-label); overflow-wrap: anywhere; }
+  .label, .note { font: var(--habib-type-support); opacity: .85; overflow-wrap: anywhere; }
+  .empty { padding: var(--habib-space-2); color: var(--habib-error); font: var(--habib-type-support);
+           background: var(--habib-surface-container); border-radius: var(--habib-radius-card); }
 `;
 
 // ---- Shared bottom sheet (no blur; closes on scrim tap and Escape) ---------------------
@@ -170,22 +127,25 @@ function openSheet({ title, build }) {
   root.innerHTML = `
     <style>
       * { box-sizing: border-box; }
-      .scrim { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.5);
+      .scrim { position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.32);
                display: flex; align-items: flex-end; justify-content: center; }
-      .panel { width: 100%; max-width: 520px; background: var(--habib-surface-high); color: var(--habib-on-surface);
-               border-radius: var(--habib-radius-l) var(--habib-radius-l) 0 0; box-shadow: var(--habib-elevation-2);
-               padding: var(--habib-space-3) var(--habib-space-3) calc(var(--habib-space-3) + env(safe-area-inset-bottom, 0px));
+      .panel { width: 100%; max-width: 640px; background: var(--habib-surface-container-low); color: var(--habib-on-surface-variant);
+               border-radius: var(--habib-radius-sheet) var(--habib-radius-sheet) 0 0;
+               padding: 0 var(--habib-space-3) calc(var(--habib-space-3) + env(safe-area-inset-bottom, 0px));
                font: var(--habib-type-body); }
+      .handle { width: 32px; height: 4px; margin: 22px auto; border-radius: 2px; background: currentColor; opacity: .4; }
       .head { display: flex; align-items: center; justify-content: space-between; gap: var(--habib-space-2);
               margin-bottom: var(--habib-space-2); }
-      .title { font: var(--habib-type-title); overflow-wrap: anywhere; }
-      .close { all: unset; box-sizing: border-box; min-width: 64px; min-height: 44px; padding: 0 var(--habib-space-2);
-               display: flex; align-items: center; justify-content: center; border-radius: var(--habib-radius-m);
-               background: var(--habib-accent); color: var(--habib-on-accent); font: var(--habib-type-label); cursor: pointer; }
-      .close:focus-visible { outline: 2px solid var(--habib-on-surface); outline-offset: 2px; }
+      .title { font: var(--habib-type-heading); color: var(--habib-on-surface); overflow-wrap: anywhere; }
+      .close { all: unset; box-sizing: border-box; min-width: 64px; min-height: 48px; padding: 0 var(--habib-space-2);
+               display: flex; align-items: center; justify-content: center; border-radius: 20px;
+               color: var(--habib-primary); font: var(--habib-type-label); cursor: pointer; }
+      .close:hover { background: color-mix(in srgb, var(--habib-primary) 8%, transparent); }
+      .close:focus-visible { outline: 2px solid var(--habib-primary); outline-offset: 2px; }
     </style>
     <div class="scrim">
       <div class="panel" role="dialog" aria-modal="true" aria-label="${escapeHtml(title)}">
+        <div class="handle"></div>
         <div class="head"><div class="title">${escapeHtml(title)}</div><button class="close" type="button">Done</button></div>
         <div class="content"></div>
       </div>
@@ -411,8 +371,8 @@ class HabibLightButton extends HabibCard {
         content.innerHTML = `
           <style>
             .row { display: flex; align-items: center; gap: var(--habib-space-2); }
-            input { flex: 1; min-height: 44px; accent-color: var(--habib-accent); }
-            output { min-width: 56px; text-align: right; font: var(--habib-type-title); }
+            input { flex: 1; min-height: 48px; accent-color: var(--habib-primary); }
+            output { min-width: 56px; text-align: right; font: var(--habib-type-heading); color: var(--habib-on-surface); }
           </style>
           <div class="row">
             <input type="range" min="${L.BRIGHTNESS_MIN}" max="${L.BRIGHTNESS_MAX}" step="1" value="${start}" aria-label="Brightness percent">
@@ -539,24 +499,28 @@ class HabibActionButton extends HabibCard {
 const STRIP_CSS = `
   :host { display: block; }
   * { box-sizing: border-box; }
-  .strip { display: flex; flex-wrap: wrap; gap: var(--habib-space-1); padding: var(--habib-space-1);
-           background: var(--habib-surface-container); border-radius: var(--habib-radius-m);
-           color: var(--habib-on-surface); font: var(--habib-type-body); }
-  .chip { all: unset; box-sizing: border-box; display: flex; align-items: center; gap: var(--habib-space-1);
-          min-height: 44px; padding: 0 var(--habib-space-2); border-radius: var(--habib-radius-l);
-          background: var(--habib-surface-high); color: var(--habib-on-surface); font: var(--habib-type-label);
-          -webkit-user-select: none; user-select: none; }
+  .strip { display: flex; flex-wrap: wrap; align-items: center; gap: var(--habib-space-1); color: var(--habib-on-surface);
+           font: var(--habib-type-body); }
+  .chip { all: unset; box-sizing: border-box; position: relative; display: flex; align-items: center; gap: var(--habib-space-1);
+          height: 32px; padding: 0 var(--habib-space-2); border-radius: var(--habib-radius-chip);
+          border: 1px solid var(--habib-outline-variant); background: transparent; color: var(--habib-on-surface-variant);
+          font: var(--habib-type-label); -webkit-user-select: none; user-select: none; }
+  .chip.ico { padding-left: var(--habib-space-1); }
+  /* 48px touch area around the 32px chip. */
   button.chip { cursor: pointer; touch-action: manipulation; transition: background-color .15s; }
-  button.chip:focus-visible { outline: 2px solid var(--habib-accent); outline-offset: 2px; }
-  .chip.ok { box-shadow: inset 0 0 0 2px var(--habib-accent); }
-  .chip.warn { box-shadow: inset 0 0 0 2px var(--habib-error); }
-  .chip.missing { color: var(--habib-error); }
-  .icon { flex: none; --mdc-icon-size: 20px; width: 20px; height: 20px; }
-  .lab { color: var(--habib-on-surface-muted); overflow-wrap: anywhere; }
+  button.chip::after { content: ""; position: absolute; inset: -8px 0; }
+  button.chip:hover { background: color-mix(in srgb, currentColor 8%, transparent); }
+  button.chip:active { background: color-mix(in srgb, currentColor 10%, transparent); }
+  button.chip:focus-visible { outline: 2px solid var(--habib-primary); outline-offset: 2px; }
+  .chip.ok { color: var(--habib-primary); border-color: var(--habib-primary); }
+  .chip.warn { color: var(--habib-error); border-color: var(--habib-error); }
+  .chip.missing { color: var(--habib-error); border-style: dashed; }
+  .icon { flex: none; --mdc-icon-size: 18px; width: 18px; height: 18px; }
+  .lab { color: var(--habib-on-surface-variant); overflow-wrap: anywhere; }
   .val { overflow-wrap: anywhere; }
-  .clock { display: flex; flex-direction: column; padding: 0 var(--habib-space-2); min-height: 44px; justify-content: center; }
-  .time { font: var(--habib-type-title); }
-  .date { font: var(--habib-type-label); color: var(--habib-on-surface-muted); }
+  .clock { display: flex; flex-direction: column; justify-content: center; min-height: 40px; padding: 0 var(--habib-space-1); }
+  .time { font: var(--habib-type-heading); color: var(--habib-on-surface); }
+  .date { font: var(--habib-type-support); color: var(--habib-on-surface-variant); }
 `;
 
 class HabibStatusStrip extends HabibCard {
@@ -631,7 +595,7 @@ class HabibStatusStrip extends HabibCard {
         const s = L.itemStatus(states, item);
         const label = item.label ? `<span class="lab">${escapeHtml(item.label)}</span>` : "";
         const body = `${iconHtml(item.icon)}${label}<span class="val">${escapeHtml(s.text)}</span>`;
-        const cls = s.kind === "missing" ? "missing" : s.tone;
+        const cls = (s.kind === "missing" ? "missing" : s.tone) + (item.icon ? " ico" : "");
         const tappable = item.tap !== "none" && s.kind !== "missing";
         return tappable
           ? `<button class="chip ${cls}" type="button" data-entity="${escapeHtml(item.entity)}">${body}</button>`
@@ -716,12 +680,11 @@ class HabibDiag extends HabibCard {
     this.shadowRoot.innerHTML = `
       <style>
         :host { display: block; }
-        .card { box-sizing: border-box; height: 100%; background: var(--habib-glass-fill); color: var(--habib-on-surface);
-                -webkit-backdrop-filter: blur(var(--habib-glass-blur)); backdrop-filter: blur(var(--habib-glass-blur));
-                border-radius: var(--habib-radius-m); padding: var(--habib-space-2); font: var(--habib-type-body); }
-        .title { font: var(--habib-type-title); margin: 0 0 var(--habib-space-1); }
+        .card { box-sizing: border-box; height: 100%; background: var(--habib-surface-container); color: var(--habib-on-surface);
+                border-radius: var(--habib-radius-card); padding: var(--habib-space-2); font: var(--habib-type-body); }
+        .title { font: var(--habib-type-heading); margin: 0 0 var(--habib-space-1); }
         .row { display: flex; justify-content: space-between; gap: var(--habib-space-1); padding: 2px 0; }
-        .muted { color: var(--habib-on-surface-muted); font: var(--habib-type-label); }
+        .muted { color: var(--habib-on-surface-variant); font: var(--habib-type-support); }
       </style>
       <div class="card">
         <div class="title">${escapeHtml(cfg.title || "Habib diagnostics")}</div>

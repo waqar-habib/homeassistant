@@ -1,0 +1,29 @@
+{
+  "url_path": "habib-mkh",
+  "title": "Habib MKH",
+  "icon": "mdi:cellphone",
+  "require_admin": true,
+  "show_in_sidebar": true,
+  "config_hash": "68b1be3ab4c236bc",
+  "config": {
+    "views": [
+      {
+        "title": "Home",
+        "path": "home",
+        "type": "sections",
+        "max_columns": 4,
+        "sections": [
+          {
+            "type": "grid",
+            "cards": [
+              {
+                "type": "custom:habib-diag",
+                "title": "Habib MKH diagnostics"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

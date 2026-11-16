@@ -46,7 +46,7 @@ The unused `3000/tcp` rule was deleted by the owner (2026-11-16). ufw now allows
 Per D72 (owner chose the recommendations on 2026-11-16):
 1. Owner: turn DNSSEC OFF in the AdGuard UI (Settings, DNS settings).
 2. Done: `3000/tcp` ufw rule deleted (owner, 2026-11-16).
-3. Owner: remove the sudo rule `sudo rm /etc/sudoers.d/claude-adguard`.
+3. Owner decision (2026-11-16): keep the sudo rule `/etc/sudoers.d/claude-adguard` until all AdGuard stages are done. Remove it then with `sudo rm /etc/sudoers.d/claude-adguard`. Later stages that need new root commands get their own reviewed rule lines, not a wider one.
 4. Owner: at the 24 h mark, check the journal: `sudo journalctl -u adguardhome --since "-24h" | grep -iE 'error|fatal|oom'`.
 5. Owner: confirm the statistics setting after a reload. Optionally run `dig @192.168.1.39 delta.com` from the Mac (read only).
 6. Done: `feat/networkpi-adguard` merged into main (`eb992c0`).

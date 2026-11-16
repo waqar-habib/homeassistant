@@ -2,6 +2,9 @@
 
 Last updated: 2026-11-15 (Pi 5, nursery lamp fix after the components run). Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
 
+## Material You evaluation done (2026-11-15, Pi 5, read only)
+Theme 5.0.15, Utilities 2.1.28 and Material Symbols are already installed (18:02 CST); Utilities is a dashboard resource only. No `pre-material-you` backup exists. Findings and owner questions: `docs/sessions/2026-11-15-material-you-evaluation.md`. Part 2 not run.
+
 ## Resume here (2026-11-15 late, garage arrival, D68)
 1. **Built, dry run:** garage arrival automation for Door A only (`packages/arrival_garage.yaml`, merge `3e35b28`). `input_boolean.arrival_garage_live` is OFF; owner-only switch. `zone.arrival_home` (150 m, passive) created in HA. Session note `docs/sessions/2026-11-15-arrival-garage.md`.
 2. **Owner next:** open both companion apps (Activity sensors, Maham's location). Then 3 real arrivals each in dry run; report back for radius tuning (I51). The 804 lock is a separate residence and a separate later build.

@@ -2,8 +2,8 @@
 
 Last updated: 2026-11-16 ~02:00 CST (Pi 5, dashboard fold). Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
 
-## Pi 5 DNS to 1.1.1.1 (2026-11-16, Pi 5, D74): step 0 done, waiting for GREEN LIGHT
-Read only. No change made. Current: IPv4 auto (DHCP), `192.168.1.36/24`, gateway `192.168.1.1`, nameserver `192.168.1.1` (router, which now points to AdGuard). AdGuard answers on `192.168.1.39`. Prayer sensors present, no DNS errors in core logs. **Owner next:** answer the three questions in the session note, then reply "GREEN LIGHT Pi5 DNS" to run steps 1 to 4 of `docs/prompts/pi5/2026-11-16-pi5-dns-public.md`. Note `docs/sessions/2026-11-16-pi5-dns-public.md`.
+## Pi 5 DNS to 1.1.1.1 (2026-11-16, Pi 5, D74): done, verified
+Owner GREEN LIGHT Pi5 DNS. Backup `pre-pi5-dns` (slug `91b983ed`). `end0` IPv4 DNS set to `1.1.1.1`, `9.9.9.9`; method `auto`, address `192.168.1.36/24`, gateway `192.168.1.1` unchanged. The router `192.168.1.1` is still appended by DHCP; a static switch would remove it. Verified: no AdGuard address, public lookup OK, core running, no DNS log errors, cloud connected. Open: `hassio.nameservers` in system health still shows the router; recheck. **Owner next:** decide whether to remove the router DNS (needs static method, a separate Tier 3 change). Note `docs/sessions/2026-11-16-pi5-dns-public.md`.
 
 ## Fold on habib-wh, no prayer on habib-mkh (2026-11-16 ~02:00 CST, Pi 5, D71)
 habib-wh: prayer, climate, HomePod and shopping list cards now fold to a 60 px summary bar (start folded, tap to open, choice remembered per device). habib-mkh: prayer card removed. Loader v8. Kiosk unchanged. Hashes wh `6f28c6e64b4b7e4a`, mkh `cdee379b6b4eda66`. Backup `pre-dashboard-fold` (cb385e06). Rollback: `-glass` exports plus loader `?v=7`. **Owner next:** refresh the app and try it. Note `docs/sessions/2026-11-16-dashboard-fold.md`.

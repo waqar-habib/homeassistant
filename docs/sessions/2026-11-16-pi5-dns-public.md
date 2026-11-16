@@ -44,3 +44,29 @@ Not checked:
 
 ## Resume point
 Step 1 (backup `pre-pi5-dns`), then step 2, after the owner's GREEN LIGHT.
+
+## Steps 1 to 3 (owner GREEN LIGHT Pi5 DNS, 2026-11-16)
+
+**Step 1 backup:** `ha backups new --name "pre-pi5-dns"`, slug `91b983ed`, listed by name.
+
+**Step 2 change:** `ha network update end0 --ipv4-method auto --ipv4-nameserver 1.1.1.1 --ipv4-nameserver 9.9.9.9`. Method, address and gateway unchanged (`auto`, `192.168.1.36/24`, `192.168.1.1`). Only the IPv4 DNS list changed.
+- Result, `ha network info`: nameservers `1.1.1.1`, `9.9.9.9`, `192.168.1.1`.
+- `192.168.1.1` is still there because `auto` keeps the DHCP-supplied DNS appended. The `ha network update` CLI has no switch to ignore DHCP DNS. Removing it needs `static` and an address, so I did not do it.
+- Supervisor `ha dns info`: locals `dns://1.1.1.1`, `dns://9.9.9.9`, `dns://192.168.1.1`. No AdGuard address.
+
+**Step 3 verify:**
+
+| Check | Result |
+|---|---|
+| Does not list `192.168.1.39` | Pass (Supervisor and network info) |
+| Shows `1.1.1.1` | Pass in Supervisor and network info. Container `/etc/resolv.conf` still shows only `127.0.0.11` (the Docker resolver), as before the change |
+| Public lookup | `nslookup example.com 1.1.1.1` returns AAAA `2606:4700:10::6814:179a` |
+| HA running | core 2026.11.1, `ha core check` passes |
+| Prayer sensor | `sensor.living_room_adhan_fajr_prayer` unchanged since 00:16 CST (same as step 0; normal for this entity) |
+| DNS errors in core logs | 0 matching lines |
+| Cloud | logged in, relayer and remote connected, IoT connected |
+| Host | host and supervisor connectivity true, NTP synced |
+
+**Open item:** `ha_get_system_health` still lists `hassio.nameservers` as `192.168.1.1, 2603:8082:d840:62::1`. It may be a cached value; check again on the next session.
+
+**Rollback (not used):** `ha network update end0 --ipv4-method auto` with the nameserver list cleared, or restore backup `pre-pi5-dns` (slug `91b983ed`).

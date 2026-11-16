@@ -70,6 +70,13 @@ const GLASS = `
   .mini .pb { position: absolute; left: 18px; right: 18px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: rgba(255,255,255,.10); overflow: hidden; }
   .mini .pb span { display: block; height: 100%; background: rgb(var(--g-warm)); box-shadow: 0 0 10px rgba(var(--g-warm), .8); }
   .mini:focus-visible { box-shadow: 0 0 0 2px rgba(var(--g-warm), .8); }
+  .mini.stack { padding: 0 8px 0 14px; gap: 6px; min-height: 52px; }
+  .mini.stack .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .mini.stack .ml { font-size: 10px; line-height: 12px; letter-spacing: .12em; }
+  .mini.stack .mv { text-align: left; font-size: 13px; line-height: 18px; }
+  .mini.stack .mv b { font-size: 15px; }
+  .mini.stack .fold { width: 26px; height: 26px; }
+  .mini .mv .ok { color: rgb(var(--g-mint)); } .mini .mv .bad { color: rgb(var(--g-rose)); }
 `;
 
 const CHEV = (up) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${up ? "M6 15l6-6 6 6" : "M6 9l6 6 6-6"}"/></svg>`;
@@ -105,11 +112,13 @@ class GlassCard extends HTMLElement {
     this._validate(config);
     // Opt-in fold (collapsible: true). Starts folded unless collapsed: false. The viewer's
     // last choice is remembered per dashboard in localStorage (a convenience only).
-    this._collapsible = config.collapsible === true;
+    // remember: false starts folded on every load (habib-mkh, so it opens without scrolling).
+    this._collapsible = config.collapsible === true || this._alwaysFoldable === true;
+    this._remember = config.remember !== false;
     if (this._collapsible) {
       this._foldKey = `habib_fold:${location.pathname}:${config.type}:${config.title || config.name || ""}`;
       let saved = null;
-      try { saved = localStorage.getItem(this._foldKey); } catch (e) { saved = null; }
+      if (this._remember) { try { saved = localStorage.getItem(this._foldKey); } catch (e) { saved = null; } }
       this._collapsed = saved === null ? config.collapsed !== false : saved === "1";
     } else {
       this._collapsed = false;
@@ -121,8 +130,10 @@ class GlassCard extends HTMLElement {
         if (!t || !this._collapsible) return false;
         haptic(this);
         this._collapsed = !this._collapsed;
-        try { localStorage.setItem(this._foldKey, this._collapsed ? "1" : "0"); } catch (err) { /* private mode */ }
+        if (this._remember) { try { localStorage.setItem(this._foldKey, this._collapsed ? "1" : "0"); } catch (err) { /* private mode */ } }
         this._maybeRender(true);
+        // A parent (habib-dock) widens an opened card to the full row.
+        this.dispatchEvent(new CustomEvent("habib-fold", { detail: { collapsed: this._collapsed }, bubbles: true, composed: true }));
         const next = this.shadowRoot.querySelector("[data-collapse]");
         if (next && e.type === "keydown") next.focus();
         return true;
@@ -165,9 +176,12 @@ class GlassCard extends HTMLElement {
   // Folded: one 60px glass bar with a label, a one-line summary and a chevron.
   _renderFolded() {
     const s = this._summary();
+    // fold_layout: stack puts the label above the value, for half-width bars (habib-dock).
+    const stack = this._config.fold_layout === "stack";
     this.shadowRoot.innerHTML = `<style>${GLASS}</style>
-      <div class="glass mini press" data-collapse role="button" tabindex="0" aria-expanded="false" aria-label="Show ${esc(s.label)}">
-        <span class="ml">${esc(s.label)}</span><span class="mv">${s.html}</span>
+      <div class="glass mini press ${stack ? "stack" : ""}" data-collapse role="button" tabindex="0" aria-expanded="false" aria-label="Show ${esc(s.label)}">
+        ${stack ? `<span class="tx"><span class="ml">${esc(s.label)}</span><span class="mv">${s.html}</span></span>`
+          : `<span class="ml">${esc(s.label)}</span><span class="mv">${s.html}</span>`}
         <span class="fold">${CHEV(false)}</span>${s.progress != null ? `<div class="pb"><span style="width:${Math.round(s.progress * 100)}%"></span></div>` : ""}
       </div>`;
   }
@@ -291,7 +305,9 @@ class HabibHero extends GlassCard {
     const [clock, ampm] = hm.split(/\s(?=[AP]M$)/i);
     const date = now.toLocaleDateString([], { weekday: "long", day: "numeric", month: "long" });
     let hijri = "";
-    try { hijri = now.toLocaleDateString("en-u-ca-islamic-umalqura", { day: "numeric", month: "long", year: "numeric" }); } catch (e) { hijri = ""; }
+    if (this._config.hijri !== false) {
+      try { hijri = now.toLocaleDateString("en-u-ca-islamic-umalqura", { day: "numeric", month: "long", year: "numeric" }); } catch (e) { hijri = ""; }
+    }
     const unit = (w && w.attributes.temperature_unit) || "°";
     const temp = w && typeof w.attributes.temperature === "number" ? Math.round(w.attributes.temperature) : "–";
     const feels = w && typeof w.attributes.apparent_temperature === "number" ? Math.round(w.attributes.apparent_temperature) : null;
@@ -312,6 +328,7 @@ class HabibHero extends GlassCard {
         ${pic ? `<img src="${esc(this._hass.hassUrl ? this._hass.hassUrl(pic) : pic)}" alt="">` : `<span>${initials}</span>`}
         <i></i></button>`;
     }).join("");
+    if (this._config.compact) { this._renderCompact({ part, clock, ampm, date, w, night, temp, pills }); return; }
     this.shadowRoot.innerHTML = `
       <style>${GLASS}${WX_CSS}
         .glass { padding: 22px 22px 20px; display: flex; flex-direction: column; gap: 14px; min-height: 260px; }
@@ -361,6 +378,43 @@ class HabibHero extends GlassCard {
         </div>
       </div>`;
     void unit;
+  }
+  // compact: true. Half the height (130px): clock and date on the left, the same weather
+  // (icon, temperature, condition, pills) on the right in smaller type. No people row.
+  _renderCompact({ part, clock, ampm, date, w, night, temp, pills }) {
+    this.shadowRoot.innerHTML = `
+      <style>${GLASS}${WX_CSS}
+        .glass { height: 130px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .tint { position: absolute; inset: 0; pointer-events: none; opacity: .9; }
+        .dawn .tint { background: radial-gradient(120% 80% at 10% 0%, rgba(255,170,120,.30), transparent 60%); }
+        .day .tint { background: radial-gradient(120% 80% at 90% 0%, rgba(255,230,160,.22), transparent 60%); }
+        .dusk .tint { background: radial-gradient(120% 80% at 90% 0%, rgba(255,128,96,.28), transparent 60%), radial-gradient(90% 60% at 0% 100%, rgba(140,90,200,.20), transparent 70%); }
+        .night .tint { background: radial-gradient(120% 80% at 80% 0%, rgba(120,150,255,.18), transparent 60%); }
+        .left { position: relative; flex: none; min-width: 0; }
+        .clock { font: 200 54px/.95 var(--g-display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .ampm { font: 300 15px/1 var(--g-display); color: var(--g-dim); margin-left: 4px; letter-spacing: .02em; }
+        .date { font: 500 13px/17px var(--g-display); margin-top: 6px; white-space: nowrap; }
+        .wxc { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; cursor: pointer; }
+        .wtop { display: flex; align-items: center; gap: 4px; }
+        .temp { font: 200 36px/1 var(--g-display); letter-spacing: -.04em; }
+        .temp sup { font-size: 17px; vertical-align: 16px; margin-left: 1px; }
+        .cname { font: 600 13px/16px var(--g-display); text-align: right; }
+        .pills { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 3px; }
+        .pill { font: 500 10px/1 var(--g-font); padding: 3px 6px; border-radius: 999px; background: rgba(255,255,255,.12);
+          border: 1px solid rgba(255,255,255,.12); color: var(--g-dim); white-space: nowrap; }
+      </style>
+      <div class="glass ${part}">
+        <div class="tint"></div>
+        <div class="left">
+          <div class="clock">${esc(clock)}${ampm ? `<span class="ampm">${esc(ampm)}</span>` : ""}</div>
+          <div class="date">${esc(date)}</div>
+        </div>
+        <div class="wxc" ${w ? `data-entity="${esc(this._config.weather)}"` : ""}>
+          <div class="wtop">${weatherSvg(w ? w.state : "cloudy", night, 46)}<div class="temp">${esc(temp)}<sup>°</sup></div></div>
+          <div class="cname">${esc(w ? G.WEATHER_LABELS[w.state] || w.state : "No weather")}</div>
+          <div class="pills">${pills}</div>
+        </div>
+      </div>`;
   }
   _setup() {
     this.shadowRoot.addEventListener("click", (e) => {
@@ -521,7 +575,13 @@ function lampArt(kind, on) {
   }
 }
 
-function lampSvg(kind, glow, groupLit) {
+// pfx makes the gradient ids unique when several lamps share one shadow root (habib-room chips).
+function lampSvg(kind, glow, groupLit, pfx) {
+  const svg = lampSvgRaw(kind, glow, groupLit);
+  return pfx ? svg.replace(/id="([A-Za-z0-9]+)"/g, `id="${pfx}$1"`).replace(/url\(#([A-Za-z0-9]+)\)/g, `url(#${pfx}$1)`) : svg;
+}
+
+function lampSvgRaw(kind, glow, groupLit) {
   const on = glow.on > 0;
   const c = rgbStr(G.glowRgb(glow.rgb));
   const a = glow.level;
@@ -835,7 +895,7 @@ class HabibClimate extends GlassCard {
       const s = this._st(it.entity);
       const cur = s && typeof s.attributes.current_temperature === "number" ? `${Math.round(s.attributes.current_temperature)}°` : "–";
       const heat = s && s.attributes.hvac_action === "heating", cool = s && s.attributes.hvac_action === "cooling";
-      return `<span class="d">${esc(it.name || (s && s.attributes.friendly_name) || it.entity)}</span> <b${heat ? ' style="color:#ffb36b"' : cool ? ' style="color:#8fc9ff"' : ""}>${cur}</b>`;
+      return `<span class="d">${esc(it.short || it.name || (s && s.attributes.friendly_name) || it.entity)}</span> <b${heat ? ' style="color:#ffb36b"' : cool ? ' style="color:#8fc9ff"' : ""}>${cur}</b>`;
     });
     return { label: this._config.title || "Climate", html: parts.join("&ensp;") };
   }
@@ -906,6 +966,19 @@ class HabibSecurity extends GlassCard {
         <div><div class="title">${alerts ? `${alerts} needs attention` : "All secure"}</div><div class="sub">${esc(this._config.subtitle || "Doors and garage")}</div></div></div>
       <div class="items">${rows}</div>
     </div>`;
+  }
+  _summary() {
+    const parts = this._items.map((it) => {
+      const s = this._st(it.entity);
+      const st = s ? s.state : "missing";
+      const ok = (it.ok_states || ["locked", "closed", "off"]).includes(st);
+      const dead = !s || ["unavailable", "unknown"].includes(st);
+      const text = !s ? "Not found" : dead ? "No response" : (it.states && it.states[st]) || st.charAt(0).toUpperCase() + st.slice(1).replace(/_/g, " ");
+      const nm = this._items.length > 1 ? `<span class="d">${esc(it.name || it.entity)}</span> ` : "";
+      return `${nm}<b class="${dead ? "d" : ok ? "ok" : "bad"}">${esc(text)}</b>`;
+    });
+    const label = this._config.title || (this._items.length === 1 ? this._items[0].name || "Security" : "Security");
+    return { label, html: parts.join("&ensp;") };
   }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-security", items: [] }; }
@@ -1141,7 +1214,188 @@ class HabibLabel extends GlassCard {
   static getStubConfig() { return { type: "custom:habib-label", label: "Living Room" }; }
 }
 
+// ---- I. habib-room: compact lamp chips that open into the full habib-light cards -------
+// Folded (default, every load): room header and one small chip per lamp; tap a chip to toggle.
+// Open (chevron or header tap): the full habib-light cards (slider, colours) inside this card.
+
+const usableState = (s) => s && !["unavailable", "unknown"].includes(s.state);
+
+class HabibRoom extends GlassCard {
+  constructor() {
+    super();
+    this._alwaysFoldable = true;
+    this._pending = new Set();
+    this._kids = null;
+  }
+  _validate(c) {
+    const lights = Array.isArray(c.lights) ? c.lights : [];
+    this._lights = lights.map((l) => ({ cfg: l, ids: (Array.isArray(l.entities) ? l.entities : l.entity ? [l.entity] : []).map(String) }));
+    if (!this._lights.length || this._lights.some((l) => !l.ids.length)) throw new Error("Set lights, each with entities");
+    this._allIds = [...new Set(this._lights.flatMap((l) => l.ids))];
+    this._kids = null;
+  }
+  set hass(h) {
+    super.hass = h;
+    if (!this._collapsed && this._kids) for (const k of this._kids) k.hass = h;
+  }
+  get hass() { return this._hass; }
+  _signature() {
+    if (!this._collapsed) return "open";
+    return this._sigOf(this._allIds, ["brightness", "rgb_color", "color_temp_kelvin", "color_mode"]) + `|${[...this._pending].join(",")}`;
+  }
+  _setup() {
+    this.shadowRoot.addEventListener("click", (e) => {
+      const b = e.target.closest && e.target.closest("[data-chip]");
+      if (b) this._toggleChip(Number(b.dataset.chip));
+    });
+  }
+  _toggleChip(i) {
+    const l = this._lights[i];
+    const usable = l && l.ids.filter((id) => usableState(this._st(id)));
+    if (!usable || !usable.length || !this._hass) return;
+    const anyOn = usable.some((id) => this._st(id).state === "on");
+    haptic(this);
+    this._pending.add(i);
+    this._maybeRender(true);
+    const done = () => { if (this._pending.delete(i)) this._maybeRender(true); };
+    this._later(done, 2500);
+    this._hass.callService("light", anyOn ? "turn_off" : "turn_on", {}, { entity_id: usable }).catch(() => {}).finally(done);
+  }
+  _css() {
+    return `${GLASS}
+      .glass { padding: 6px 8px 8px; display: flex; flex-direction: column; gap: 5px; }
+      .hd { display: flex; align-items: center; gap: 8px; min-height: 20px; padding-left: 5px; outline: none; }
+      .hd[data-collapse] { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+      .hd[data-collapse]:focus-visible { box-shadow: 0 0 0 2px rgba(var(--g-warm), .8); border-radius: 10px; }
+      .h { font: 600 12px/14px var(--g-display); letter-spacing: .2em; text-transform: uppercase; white-space: nowrap; }
+      .nt { flex: 1; min-width: 0; font: 500 11px var(--g-font); color: var(--g-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .cnt { font: 600 11px var(--g-font); color: rgb(var(--g-warm)); white-space: nowrap; }
+      .hd .fold { width: 22px; height: 22px; } .hd .fold svg { width: 13px; height: 13px; }`;
+  }
+  _head(open) {
+    const on = this._allIds.filter((id) => { const s = this._st(id); return s && s.state === "on"; }).length;
+    const name = this._config.name || "";
+    const cnt = !open && on ? `<span class="cnt">${on} on</span>` : "";
+    return open
+      ? `<div class="hd"><span class="h">${esc(name)}</span><span class="nt">${esc(this._config.note || "")}</span><span data-fold-slot></span></div>`
+      : `<div class="hd" data-collapse role="button" tabindex="0" aria-expanded="false" aria-label="Show all ${esc(name)} controls">
+          <span class="h">${esc(name)}</span><span class="nt">${esc(this._config.note || "")}</span>${cnt}<span class="fold">${CHEV(false)}</span></div>`;
+  }
+  _renderFolded() {
+    const n = this._lights.length;
+    const chips = this._lights.map((l, i) => {
+      const glow = G.lightGlow(this._hass.states, l.ids);
+      const usable = l.ids.filter((id) => usableState(this._st(id)));
+      const dead = !usable.length;
+      const on = glow.on > 0;
+      const group = l.ids.length > 1;
+      const kind = l.cfg.art || (group ? "group" : "table-lamp");
+      const groupLit = group ? Math.ceil((glow.on / Math.max(1, glow.total)) * 3) : 3;
+      const dim = usable.some((id) => { const m = this._st(id).attributes.supported_color_modes || []; return m.length && !(m.length === 1 && m[0] === "onoff"); });
+      const state = !l.ids.some((id) => this._st(id)) ? "Not found" : dead ? "No response" : this._pending.has(i) ? "…" :
+        group ? (on ? `${glow.on} of ${glow.total}` : "Off") : on ? (dim ? `${glow.pct}%` : "On") : "Off";
+      return `<button class="chip press ${on ? "on" : ""} ${dead ? "dead" : ""}" data-chip="${i}" style="--c: ${rgbStr(G.glowRgb(glow.rgb))}"
+          aria-pressed="${on}" aria-label="${esc(l.cfg.name || "Light")}: ${esc(state)}">
+          <span class="ca">${lampSvg(kind, glow, groupLit, `r${i}`)}</span>
+          <span class="cn">${esc(l.cfg.name || "")}</span><span class="cs">${esc(state)}</span></button>`;
+    }).join("");
+    this.shadowRoot.innerHTML = `<style>${this._css()}
+      .chips { display: grid; grid-template-columns: repeat(${Math.min(n, 4)}, minmax(0, 1fr)); gap: 6px; }
+      .chip { all: unset; box-sizing: border-box; position: relative; overflow: hidden; cursor: pointer; border-radius: 14px; padding: 4px 4px 5px;
+        display: flex; flex-direction: column; align-items: center; min-width: 0; background: rgba(0,0,0,.16); border: 1px solid rgba(255,255,255,.08);
+        -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; transition: border-color .3s, box-shadow .3s, background .3s; }
+      .chip.on { background: linear-gradient(180deg, rgba(var(--c), .24), rgba(255,255,255,.05)); border-color: rgba(var(--c), .5);
+        box-shadow: 0 8px 22px -12px rgba(var(--c), .9); }
+      .chip:focus-visible { box-shadow: 0 0 0 2px rgba(var(--g-warm), .8); }
+      .chip.dead { opacity: .5; cursor: default; }
+      .ca { height: 25px; width: 100%; display: flex; justify-content: center; }
+      .ca svg { height: 100%; width: auto; overflow: visible; }
+      .chip:not(.on) .ca svg { filter: saturate(.6) brightness(.9); }
+      .bloom { animation: breathe 5s ease-in-out infinite; transform-origin: 60px 50px; }
+      @keyframes breathe { 50% { opacity: .82; } }
+      .cn { font: 600 11px/13px var(--g-font); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
+      .cs { font: 600 10px/12px var(--g-font); color: var(--g-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .chip.on .cs { color: rgb(var(--c)); filter: brightness(1.25); }
+    </style>
+    <div class="glass">${this._head(false)}<div class="chips">${chips}</div></div>`;
+  }
+  _render() {
+    if (!this._kids) {
+      this._kids = this._lights.map((l) => {
+        const el = document.createElement("habib-light");
+        el.setConfig({ ...l.cfg, type: "custom:habib-light" });
+        return el;
+      });
+    }
+    this.shadowRoot.innerHTML = `<style>${this._css()}
+      .full { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+      .k { height: 248px; min-width: 0; } .k.wide { grid-column: 1 / -1; height: 184px; }
+    </style>
+    <div class="glass">${this._head(true)}<div class="full"></div></div>`;
+    const full = this.shadowRoot.querySelector(".full");
+    this._lights.forEach((l, i) => {
+      const cell = document.createElement("div");
+      cell.className = `k ${l.cfg.size === "wide" ? "wide" : ""}`;
+      cell.appendChild(this._kids[i]);
+      full.appendChild(cell);
+      if (this._hass) this._kids[i].hass = this._hass;
+    });
+  }
+  getCardSize() { return 2; }
+  getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
+  static getStubConfig() { return { type: "custom:habib-room", name: "Room", lights: [] }; }
+}
+
+// ---- J. habib-dock: folded glass cards two to a row; an opened card takes the full row ---
+
+const DOCK_TAGS = ["habib-security", "habib-climate", "habib-media", "habib-todo", "habib-prayer"];
+
+class HabibDock extends HTMLElement {
+  setConfig(config) {
+    const cards = config && Array.isArray(config.cards) ? config.cards : [];
+    if (!cards.length) throw new Error("Set cards");
+    const tags = cards.map((c) => String((c && c.type) || "").replace(/^custom:/, ""));
+    const bad = tags.find((t) => !DOCK_TAGS.includes(t));
+    if (bad !== undefined) throw new Error(`habib-dock takes ${DOCK_TAGS.join(", ")} (got ${bad || "no type"})`);
+    this._config = config;
+    if (!this.shadowRoot) {
+      this.attachShadow({ mode: "open" });
+      this.shadowRoot.addEventListener("habib-fold", (e) => {
+        const cell = e.target && e.target.parentElement;
+        if (cell && cell.classList.contains("cell")) cell.classList.toggle("open", !e.detail.collapsed);
+      });
+    }
+    injectGlobals();
+    this.shadowRoot.innerHTML = `<style>
+      :host { display: block; }
+      .dock { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; grid-auto-flow: row dense; }
+      .cell { min-width: 0; height: 52px; } .cell.open { grid-column: 1 / -1; height: auto; }
+    </style><div class="dock"></div>`;
+    const dock = this.shadowRoot.querySelector(".dock");
+    this._kids = cards.map((c, i) => {
+      const el = document.createElement(tags[i]);
+      el.setConfig({ ...c, collapsible: true, remember: false, fold_layout: "stack" });
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.appendChild(el);
+      dock.appendChild(cell);
+      if (this._hass) el.hass = this._hass;
+      return el;
+    });
+  }
+  set hass(h) {
+    this._hass = h;
+    for (const k of this._kids || []) k.hass = h;
+  }
+  get hass() { return this._hass; }
+  getCardSize() { return 2; }
+  getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
+  static getStubConfig() { return { type: "custom:habib-dock", cards: [] }; }
+}
+
 define("habib-hero", HabibHero);
+define("habib-room", HabibRoom);
+define("habib-dock", HabibDock);
 define("habib-prayer", HabibPrayer);
 define("habib-light", HabibLight);
 define("habib-climate", HabibClimate);
@@ -1157,5 +1411,7 @@ registerCard("habib-climate", "Habib climate (glass)", "Indoor temperature and s
 registerCard("habib-security", "Habib security (glass)", "Lock and garage status. Never calls a service.");
 registerCard("habib-media", "Habib media (glass)", "Speakers with album art or a spinning record, transport and volume.");
 registerCard("habib-todo", "Habib list (glass)", "A to-do list with quick add and tap to complete.");
-registerCard("habib-label", "Habib section label (glass)", "Small-caps label for a section.");
+registerCard("habib-room", "Habib room (glass)", "A room's lamps as small chips (tap toggles); the chevron opens the full lamp cards.");
+registerCard("habib-dock", "Habib dock (glass)", "Folded cards two to a row; tap one to open it across the row.");
+registerCard("habib-label","Habib section label (glass)", "Small-caps label for a section.");
 injectGlobals();

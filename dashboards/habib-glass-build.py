@@ -44,10 +44,22 @@ wh = view([sec(hero, fold(prayer)),
            sec(label("Home"), {"type": "custom:habib-security", "items": [lock, garage]}, fold(climate)),
            floors, living, bedroom, nursery, upstairs, outdoor,
            sec(label("Listen"), fold(media)), sec(label("Lists"), fold(todo))], 4)
-# Habib MKH has no prayer card (owner, 2026-11-16).
-mkh = view([sec(hero), floors, bedroom, nursery, living,
-            sec(label("Home"), {"type": "custom:habib-security", "items": [lock], "subtitle": "Front door"}, climate),
-            sec(label("Listen"), media), sec(label("Lists"), todo)], 3)
+# Habib MKH (owner, 2026-11-16): no prayer card (D71). Compact, one screen with no scroll on a 430x932 iPhone (D75):
+# a 130px hero with no Hijri date or people, each room as small lamp chips that open into the full lamp cards,
+# and a dock of folded cards (front door, climate, HomePods, list) two to a row. One section, because HA puts
+# 24px between sections and 8px between cards inside a section. Nothing remembers an open state (remember: false).
+def room(name, s, note=None):
+    c = {"type": "custom:habib-room", "name": name, "remember": False, "lights": [x for x in s["cards"] if x["type"] == "custom:habib-light"]}
+    if note: c["note"] = note
+    return c
+mkh_climate = {**climate, "entities": [{"entity": "climate.downstairs", "name": "Downstairs", "short": "Down"},
+                                       {"entity": "climate.upstairs", "name": "Upstairs", "short": "Up"}]}
+mkh_hero = {k: v for k, v in hero.items() if k != "persons"}
+mkh_hero.update({"compact": True, "hijri": False})
+mkh = view([sec(mkh_hero, room("Floors", floors, "Nursery not included"), room("Bedroom", bedroom), room("Nursery", nursery),
+                room("Living Room", living),
+                {"type": "custom:habib-dock", "cards": [{"type": "custom:habib-security", "items": [lock], "subtitle": "Front door"},
+                                                       mkh_climate, media, todo]})], 3)
 json.dump(wh, open("wh.json", "w"), indent=1); json.dump(mkh, open("mkh.json", "w"), indent=1)
 ids = set()
 def walk(o):

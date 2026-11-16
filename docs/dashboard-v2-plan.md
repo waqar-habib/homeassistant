@@ -25,7 +25,7 @@ Three purpose-built dashboards on one design system, easy to change:
 Rejected: button-card or mushroom stacks (templating-heavy, hard to enforce the lock rule; the earlier reason "manual installs since HACS is gone" no longer applies because HA 2026.11 has the built-in Marketplace, see D63); staying on Nuvio (I31, I34, one-tap unlock handler, and the editing pain).
 
 ## 4. Design language and performance budget
-1. Material 3 tonal surfaces. Dark default on the tablet; phones follow the system. Accent `#2EC4D6` (live Nuvio accent). Roboto, already shipped by HA. 8 px spacing. Touch targets at least 44 px (D47). A named control is at least 220 px wide; no truncated names.
+1. Material 3 tonal surfaces. Dark default on the tablet; phones follow the system. Colours come from the Material You theme's own scheme and variants (D64); the earlier teal `#2EC4D6` was a Claude carry-over from the Nuvio accent, never an owner choice, and is dropped. Roboto, already shipped by HA. 8 px spacing. Touch targets at least 44 px (D47). A named control is at least 220 px wide; no truncated names.
 2. Frosted glass: at most 4 blurred surfaces per screen (status bar, Ring card, two large panels). Tiles use a translucent fill with no blur. Blur 16 px on phones and 12 px on the tablet. One token (`data-glass="off"`) disables blur everywhere.
 3. Budget, verified at P6 on the real tablet: library at most 150 KB, no web fonts, no image backgrounds over 300 KB, no continuous animation (transitions under 200 ms), 24 h soak with no WebView reload and no downward trend in available RAM (Fully Kiosk exposes an available-RAM sensor; its accuracy on this tablet is unconfirmed). If the budget fails, glass is switched off, not redesigned.
 

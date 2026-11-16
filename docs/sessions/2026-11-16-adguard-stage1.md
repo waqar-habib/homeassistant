@@ -55,3 +55,7 @@ Per D72 (owner chose the recommendations on 2026-11-16):
 ## Rollback (not needed; stage 1 is running but has no clients)
 
 Per the prompt: `sudo systemctl disable --now adguardhome`; delete the `53`, `3000` and `3001` ufw rules; `sudo rm -rf /opt/adguardhome`; `sudo rm /etc/systemd/system/adguardhome.service`; `sudo userdel adguard`; `rm -rf /home/claude/adguard-stage1`.
+
+## Stage 2 started (2026-11-16, owner GREEN LIGHT, D73)
+
+Owner chose to skip the zero-list observation window and turn on the AdGuard DNS filter for the Mac only. Steps: enable the list in the AdGuard UI, then set the Mac's Wi-Fi DNS to `192.168.1.39`. Owner runs both steps. Rollback: Mac DNS to Automatic, list off. Stage 1 24 h journal check still pending.

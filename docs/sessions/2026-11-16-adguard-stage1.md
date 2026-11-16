@@ -65,3 +65,9 @@ Owner chose to skip the zero-list observation window and turn on the AdGuard DNS
 - `dig +short doubleclick.net` returns `0.0.0.0` (blocked).
 - `dig +short apple.com` returns real addresses (not blocked).
 - Still to do: weekend replay of the query log (plan 2a step 2) and the stage 1 24 h journal check.
+
+### Stage 4 router-wide (owner applied, 2026-11-16)
+- Owner changed both DNS fields in the MySpectrum router to AdGuard (primary `192.168.1.39`) and public (secondary). Owner applied this before the exact `GREEN LIGHT AdGuard stage 4` phrase was received; that phrase is still to be confirmed for the record.
+- Pi 5 (`192.168.1.36`) stays on public DNS (D74). Owner sets its DNS to `1.1.1.1` in HA OS network settings. Not yet verified.
+- networkpi (`192.168.1.39`) still shows the router `192.168.1.1` as resolver, and `doubleclick.net` resolved to a real address from there. Not yet explained.
+- Still to verify: iPhone's DNS shows `192.168.1.39` after reconnect, and the AdGuard query log shows the iPhone's queries.

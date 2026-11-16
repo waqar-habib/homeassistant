@@ -22,7 +22,7 @@ Three purpose-built dashboards on one design system, easy to change:
 - Best: pixel-exact cards, no third-party dependency, every change is a YAML edit.
 - Base: sections grid is less exact than a hand-built CSS shell; kiosk fit is proven by render tests.
 - Worst: the sections grid cannot hit the kiosk fit. Fallback: a `habib-layout` container card (CSS grid configured in YAML), still editable. Also worst: an HA frontend update changes a `hass` property; mitigation is to use only documented `hass` fields and keep Nuvio live until cutover.
-Rejected: button-card or mushroom stacks (manual installs since HACS is gone, templating-heavy, hard to enforce the lock rule); staying on Nuvio (I31, I34, one-tap unlock handler, and the editing pain).
+Rejected: button-card or mushroom stacks (templating-heavy, hard to enforce the lock rule; the earlier reason "manual installs since HACS is gone" no longer applies because HA 2026.11 has the built-in Marketplace, see D63); staying on Nuvio (I31, I34, one-tap unlock handler, and the editing pain).
 
 ## 4. Design language and performance budget
 1. Material 3 tonal surfaces. Dark default on the tablet; phones follow the system. Accent `#2EC4D6` (live Nuvio accent). Roboto, already shipped by HA. 8 px spacing. Touch targets at least 44 px (D47). A named control is at least 220 px wide; no truncated names.

@@ -2,6 +2,12 @@
 
 Last updated: 2026-11-15 (Pi 5, nursery lamp fix after the components run). Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
 
+## Resume here (2026-11-15 late, garage arrival, D68)
+1. **Built, dry run:** garage arrival automation for Door A only (`packages/arrival_garage.yaml`, merge `3e35b28`). `input_boolean.arrival_garage_live` is OFF; owner-only switch. `zone.arrival_home` (150 m, passive) created in HA. Session note `docs/sessions/2026-11-15-arrival-garage.md`.
+2. **Owner next:** open both companion apps (Activity sensors, Maham's location). Then 3 real arrivals each in dry run; report back for radius tuning (I51). The 804 lock is a separate residence and a separate later build.
+3. **Zones done (D65):** Home 100 m, Neighborhood 500 m, Leander 3000 m, Cedar Park 2700 m, Sasural 200 m. I27 closed. Near Home removed; M16 Cool Down needs a new trigger. Door B (shared home) disabled (D66, I50).
+4. **Backups (I24, I25 resolved):** nightly copy to networkpi verified, test backup deleted. M4 left: weekly copy (M6) and pruning (I49).
+
 ## Resume here (2026-11-15 evening, nursery lamp, I47)
 1. **Fixed:** Evening Away no longer touches the Nursery lamp (`e51a4e0`, on main; both evening packages now on main). Automations reloaded 19:33:44 CST. Verify at tomorrow's sunset (about 17:33 CST). Session note `docs/sessions/2026-11-15-nursery-lamp-evening-away.md`.
 2. **Why it fired with the owner home:** both persons were `Neighborhood`, not `home`, because `zone.home` is only 10 m (I27, I43). **Owner decision waiting:** GREEN LIGHT to widen the Home zone to about 100 m (recommended), or another option.

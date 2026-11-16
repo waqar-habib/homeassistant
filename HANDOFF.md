@@ -74,8 +74,8 @@ Theme 5.0.15, Utilities 2.1.28 and Material Symbols are already installed (18:02
 
 ## Networkpi
 **AdGuard Home stage 1 running (2026-11-16):** service active, DNS on `192.168.1.39:53`, admin UI on `http://192.168.1.39:3001` (port 3000 failed in the wizard, see the session note). Zero filter lists, DHCP off, no clients. Verified: DNS A and AAAA answers, RSS 47 MB, 224 MB available. Session note `docs/sessions/2026-11-16-adguard-stage1.md`.
-- **Owner next:** decide DNSSEC (on, not in the prompt) and the port (3001 or 3000). Remove the temporary sudo rule `sudo rm /etc/sudoers.d/claude-adguard`. Check the journal at 24 h (about 2026-11-17 11:30 CST). Stage 2 needs its own GREEN LIGHT.
-- Still open: unused `3000/tcp` ufw rule (delete on owner's go-ahead).
+- **Decided (D72):** admin port 3001 is standard. `3000/tcp` ufw rule deleted 2026-11-16.
+- **Owner next:** turn DNSSEC off in the AdGuard UI. Remove the temporary sudo rule `sudo rm /etc/sudoers.d/claude-adguard`. Check the journal at 24 h (about 2026-11-17 11:30 CST). Stage 2 needs its own GREEN LIGHT.
 
 Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB available, disk 15%, no OOM. Phase B (Remote Control, `claude-remote.service`) has run since 2026-10-30, so I12 is closed. Login as `networkpi` (admin), then `sudo -iu claude` for the repo and service.
 - **I24/I25 resolved 2026-11-15:** 7 nightly 03:00 backups confirmed (11-09 to 11-15), available memory 305 MB, no OOM, throttle 0x0. New I49: manual backups unpruned (13 files, about 3 GB) and `82cc58de` not found by slug in the share. Next: M6 install needs ntfy topic, healthchecks.io check, runner choice, GREEN LIGHT. Older note follows.

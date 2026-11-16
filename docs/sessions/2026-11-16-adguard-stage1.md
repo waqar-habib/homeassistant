@@ -18,7 +18,7 @@ Prompt: `docs/prompts/networkpi/2026-11-15-adguard-stage1.md` (GREEN LIGHT 2026-
 
 The wizard refused port 3000 with `address already in use`. The installer already listens on 3000 during setup, so the check conflicts with itself. The owner approved port 3001 (GREEN LIGHT given 2026-11-16) and added `ufw allow from 192.168.1.0/24 to any port 3001 proto tcp`. The prompt still says 3000. Decided (D72): 3001 is the standard port.
 
-Unused rule `3000/tcp` is still in ufw. Delete it (Tier 3, owner runs it, number from `ufw status numbered`).
+The unused `3000/tcp` rule was deleted by the owner (2026-11-16). ufw now allows 22, 445 (Pi 5 only), 53 tcp and udp, and 3001, all from the LAN.
 
 ## Verification (Step 5, 2026-11-16)
 
@@ -45,11 +45,11 @@ Unused rule `3000/tcp` is still in ufw. Delete it (Tier 3, owner runs it, number
 
 Per D72 (owner chose the recommendations on 2026-11-16):
 1. Owner: turn DNSSEC OFF in the AdGuard UI (Settings, DNS settings).
-2. Owner: delete the unused `3000/tcp` ufw rule (number from `sudo ufw status numbered`).
+2. Done: `3000/tcp` ufw rule deleted (owner, 2026-11-16).
 3. Owner: remove the sudo rule `sudo rm /etc/sudoers.d/claude-adguard`.
 4. Owner: at the 24 h mark, check the journal: `sudo journalctl -u adguardhome --since "-24h" | grep -iE 'error|fatal|oom'`.
 5. Owner: confirm the statistics setting after a reload. Optionally run `dig @192.168.1.39 delta.com` from the Mac (read only).
-6. Claude: merge `feat/networkpi-adguard` into main (done with this session's commit).
+6. Done: `feat/networkpi-adguard` merged into main (`eb992c0`).
 7. Stage 2 (clients) and later stages each need their own GREEN LIGHT. Not started.
 
 ## Rollback (not needed; stage 1 is running but has no clients)

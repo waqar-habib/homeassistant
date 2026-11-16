@@ -3,7 +3,7 @@
 Target: networkpi
 Date: 2026-11-15
 Tier: 3 (new DNS service, firewall rules). Step 0 is Tier 0.
-GREEN LIGHT: NOT YET GIVEN. Steps 1 onward wait for the owner to write "GREEN LIGHT AdGuard stage 1" in chat. Record the date here when given, and write nothing the owner did not say.
+GREEN LIGHT: yes (2026-11-15, owner: "GREEN LIGHT AdGuard stage 1"). Covers stage 1 only: install, LAN-only firewall rules, zero lists, no clients. Stages 2 to 4 each need their own GREEN LIGHT.
 
 Implements stage 1 of `docs/adguard-plan.md`. Zero filter lists (the plan's section 2a: observe first, no blocking). No client uses it yet, so nothing in the house can break. The monitor (M6) is tabled by the owner; stage 1 has no clients, so a DNS outage affects nobody.
 

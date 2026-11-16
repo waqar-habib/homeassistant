@@ -16,9 +16,9 @@ Prompt: `docs/prompts/networkpi/2026-11-15-adguard-stage1.md` (GREEN LIGHT 2026-
 
 ## Deviation: admin port 3001, not 3000
 
-The wizard refused port 3000 with `address already in use`. The installer already listens on 3000 during setup, so the check conflicts with itself. The owner approved port 3001 (GREEN LIGHT given 2026-11-16) and added `ufw allow from 192.168.1.0/24 to any port 3001 proto tcp`. The prompt and `docs/adguard-plan.md` still say 3000. Decision needed: keep 3001 as the standard port and update the plan, or move back to 3000 later.
+The wizard refused port 3000 with `address already in use`. The installer already listens on 3000 during setup, so the check conflicts with itself. The owner approved port 3001 (GREEN LIGHT given 2026-11-16) and added `ufw allow from 192.168.1.0/24 to any port 3001 proto tcp`. The prompt still says 3000. Decided (D72): 3001 is the standard port.
 
-Unused rule `3000/tcp` is still in ufw. Delete it once the owner agrees (Tier 3, rule numbers from `ufw status numbered`).
+Unused rule `3000/tcp` is still in ufw. Delete it (Tier 3, owner runs it, number from `ufw status numbered`).
 
 ## Verification (Step 5, 2026-11-16)
 
@@ -43,10 +43,14 @@ Unused rule `3000/tcp` is still in ufw. Delete it once the owner agrees (Tier 3,
 
 ## Resume point
 
-1. Owner: decide DNSSEC (keep or off) and the port (3001 standard, or back to 3000).
-2. Owner: remove the sudo rule, and check the journal at the 24 h mark: `sudo journalctl -u adguardhome --since "-24h" | grep -iE 'error|fatal|oom'`.
-3. Owner: confirm the statistics setting, and optionally run `dig @192.168.1.39 delta.com` from the Mac (needs DNS on the Mac; stage 1 has no clients, so this is a read-only check).
-4. Stage 2 (clients) and later stages each need their own GREEN LIGHT. Not started.
+Per D72 (owner chose the recommendations on 2026-11-16):
+1. Owner: turn DNSSEC OFF in the AdGuard UI (Settings, DNS settings).
+2. Owner: delete the unused `3000/tcp` ufw rule (number from `sudo ufw status numbered`).
+3. Owner: remove the sudo rule `sudo rm /etc/sudoers.d/claude-adguard`.
+4. Owner: at the 24 h mark, check the journal: `sudo journalctl -u adguardhome --since "-24h" | grep -iE 'error|fatal|oom'`.
+5. Owner: confirm the statistics setting after a reload. Optionally run `dig @192.168.1.39 delta.com` from the Mac (read only).
+6. Claude: merge `feat/networkpi-adguard` into main (done with this session's commit).
+7. Stage 2 (clients) and later stages each need their own GREEN LIGHT. Not started.
 
 ## Rollback (not needed; stage 1 is running but has no clients)
 

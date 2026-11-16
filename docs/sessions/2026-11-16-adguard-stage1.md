@@ -59,3 +59,9 @@ Per the prompt: `sudo systemctl disable --now adguardhome`; delete the `53`, `30
 ## Stage 2 started (2026-11-16, owner GREEN LIGHT, D73)
 
 Owner chose to skip the zero-list observation window and turn on the AdGuard DNS filter for the Mac only. Steps: enable the list in the AdGuard UI, then set the Mac's Wi-Fi DNS to `192.168.1.39`. Owner runs both steps. Rollback: Mac DNS to Automatic, list off. Stage 1 24 h journal check still pending.
+
+### Stage 2 verification (Mac, owner output, 2026-11-16)
+- `scutil --dns`: resolver `192.168.1.39` only. No IPv6 resolver listed.
+- `dig +short doubleclick.net` returns `0.0.0.0` (blocked).
+- `dig +short apple.com` returns real addresses (not blocked).
+- Still to do: weekend replay of the query log (plan 2a step 2) and the stage 1 24 h journal check.

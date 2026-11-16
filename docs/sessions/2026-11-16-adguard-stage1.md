@@ -44,7 +44,7 @@ The unused `3000/tcp` rule was deleted by the owner (2026-11-16). ufw now allows
 ## Resume point
 
 Per D72 (owner chose the recommendations on 2026-11-16):
-1. Owner: turn DNSSEC OFF in the AdGuard UI (Settings, DNS settings).
+1. Done: DNSSEC turned OFF in the AdGuard UI (owner, 2026-11-16).
 2. Done: `3000/tcp` ufw rule deleted (owner, 2026-11-16).
 3. Owner decision (2026-11-16): keep the sudo rule `/etc/sudoers.d/claude-adguard` until all AdGuard stages are done. Remove it then with `sudo rm /etc/sudoers.d/claude-adguard`. Later stages that need new root commands get their own reviewed rule lines, not a wider one.
 4. Owner: at the 24 h mark, check the journal: `sudo journalctl -u adguardhome --since "-24h" | grep -iE 'error|fatal|oom'`.

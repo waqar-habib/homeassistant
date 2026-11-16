@@ -28,3 +28,24 @@ Prompt: `docs/prompts/networkpi/2026-11-15-backup-memory-check.md` (commit 6cf0c
 ## Resume point
 - Step 1 (backup share) and the throttle and smbd checks: run by the owner with sudo, or via a Pi Connect shell. Record in a follow-up session note.
 - Then close or keep I24 and M4, and close or keep I25 per the recommendation above.
+
+## Follow-up: owner output from networkpi (sudo, same day)
+| Check | Result |
+|---|---|
+| `sudo ls -la /srv/ha-backups/daily` | **Empty.** Only `.` and `..`. The folder's own timestamp is 2026-10-23 23:33, so nothing has been written there since it was created. |
+| Parent `/srv/ha-backups` | Modified 2026-11-15 22:06 (the folder entry changed, contents not shown). |
+| `sudo vcgencmd get_throttled` | `throttled=0x0` (clean) |
+| `sudo journalctl -u smbd -p warning --since 2026-11-09` | No entries (clean) |
+
+### What this means
+1. **I25 (memory and stability): evidence now clean.** Throttle `0x0`, no smbd warnings, no OOM in dmesg, available memory above the 200 MB floor. Recommend closing I25, with the caveat that the owner should confirm `free -m` once more after the next 03:00 run.
+2. **I24 (backups): still open, and the daily folder is the concern.** No nightly file has landed in `daily/` since the folder was created on 2026-10-23. Either HA writes to the share root (the prompt's Step 1 expected the root, not `daily/`), or the nightly backup is not reaching the share. The 2026-11-11 HA listing of `06aa8ab1` on `networkpiBackups` is consistent with the root location. The next check is the share root and `weekly/`:
+   - `sudo ls -la --time-style=long-iso /srv/ha-backups`
+   - `sudo ls -la --time-style=long-iso /srv/ha-backups/weekly`
+   - `sudo du -sh /srv/ha-backups`
+   On the Pi 5, `ha backups list` shows whether the 2026-11-09 to 11-15 backups exist and where HA says they are.
+3. **Do not delete `2c9d3f0d.tar` yet.** Its location is unknown until the root listing comes back.
+
+### Resume point
+- Owner: paste the three root and weekly commands above, plus `ha backups list` from the Pi 5 (or the HA backup page).
+- Then decide I24 and M4 (close if nightly files appear in the root with retention 7), and close I25.

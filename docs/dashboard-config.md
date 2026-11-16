@@ -134,3 +134,10 @@ Do not use lock.804 or switch.804 as Ring or door entities.
 - Both views: theme `Habib Glass`, `max_columns` 4 (WH) and 3 (MKH), `dense_section_placement`. Generator: `dashboards/habib-glass-build.py`. Exports: `dashboards/habib-{wh,mkh}-2026-11-16-glass.json`. Hashes: habib-wh `7ecc07e2887a6c77`, habib-mkh `47794b40818dd448`.
 - Added entities (all verified live 2026-11-16 00:50): `weather.forecast_home`, `sun.sun`, `person.waqar_habib`, `person.maham_habib`, the six `sensor.living_room_adhan_*` times, `input_boolean.adhan_enabled` (display only), `media_player.living_room_living_room_homepod`, `media_player.master_bedroom_homepod`, `todo.shopping_list`.
 - Lamp art per light is a guess (`art:` key: table-lamp, floor-lamp, desk-lamp, pendant, shelf, nightlight, coach, group). Change it in the config, not in JavaScript.
+
+### 12.1 Fold (2026-11-16, D71, loader v8)
+- Any glass card except hero, lamp and label accepts `collapsible: true` (folded by default; `collapsed: false` starts it open). Folded = one 60 px bar: label, one-line summary, chevron. Tap the bar or the chevron in the card header to toggle.
+- Summaries: prayer = next prayer, time, countdown and a progress line; climate = each thermostat's current temperature (orange heating, blue cooling); media = playing title and speaker, or "Nothing playing"; list = open item count.
+- The fold choice is kept in the browser's localStorage under `habib_fold:<path>:<type>:<title>`; if storage is blocked the card just starts folded.
+- Used on habib-wh only (prayer, climate, media, list). habib-mkh has no prayer card. habib-kiosk is not on glass cards.
+- Toggling never calls a service (headless click test: 4 cards, 0 calls).

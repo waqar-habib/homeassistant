@@ -1,6 +1,9 @@
 # HANDOFF
 
-Last updated: 2026-11-16 00:55 CST (Pi 5, glass dashboards). Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
+Last updated: 2026-11-16 ~02:00 CST (Pi 5, dashboard fold). Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).
+
+## Fold on habib-wh, no prayer on habib-mkh (2026-11-16 ~02:00 CST, Pi 5, D71)
+habib-wh: prayer, climate, HomePod and shopping list cards now fold to a 60 px summary bar (start folded, tap to open, choice remembered per device). habib-mkh: prayer card removed. Loader v8. Kiosk unchanged. Hashes wh `6f28c6e64b4b7e4a`, mkh `cdee379b6b4eda66`. Backup `pre-dashboard-fold` (cb385e06). Rollback: `-glass` exports plus loader `?v=7`. **Owner next:** refresh the app and try it. Note `docs/sessions/2026-11-16-dashboard-fold.md`.
 
 ## Glass dashboards live (2026-11-16 00:55 CST, Pi 5, D70)
 habib-wh and habib-mkh redesigned to the owner's 2026 reference: glass panels on an evergreen wallpaper, drawn lamps that glow in their real colour with inline brightness, clock and weather hero, prayer countdown, climate dials, security status, HomePod player, shopping list. `habib-glass.js`, loader v7, theme "Habib Glass" per view, fonts self-hosted. Rendered in local Chromium with mock states; not yet seen in the real frontend. **Owner next:** refresh the app, open both dashboards, report issues. Rollback: `-iter1` exports plus loader `?v=6`; backup `pre-dashboard-glass` (c769dd3d). Note: `docs/sessions/2026-11-16-dashboard-glass.md`. Fajr 05:49 check (D69) still pending.

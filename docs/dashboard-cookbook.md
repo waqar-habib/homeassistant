@@ -121,7 +121,7 @@ Edit the card's `title` value. Example: rename the `habib-wh` card.
               - light.study_lamp
 ```
 
-Optional `columns: 6` sets the card's width in the section grid (1 to 12, default 6, half a section like Apple Home). Entity IDs come from `docs/dashboard-config.md`.
+The tile follows Material 3 (iteration 1, loader v6): 12 px card corner, secondary-container when on, surface-container when off, state layers (hover .08, focus and press .10), 64 px minimum height, icon and text only. Colours come from `--md-sys-color-*` theme tokens with HA variable fallbacks; there is no blur. Optional `columns: 6` sets the card's width in the section grid (1 to 12, default 6, half a section like Apple Home). Entity IDs come from `docs/dashboard-config.md`.
 
 ## Group of lights, change members (tested on habib-lab)
 
@@ -197,6 +197,36 @@ A room is a view with one section: a heading and that room's light buttons. Add 
             icon: mdi:lamp
             entities:
               - light.study_lamp
+```
+
+## Room section (iteration 1, live on habib-wh and habib-mkh)
+
+One `grid` section per room: a heading card, then one light button per lamp. Buttons default to 6 columns, so two sit side by side on a phone.
+
+```yaml
+      - type: grid
+        cards:
+          - type: heading
+            heading: Bedroom
+            heading_style: title
+          - type: custom:habib-light-button
+            name: Dresser
+            icon: mdi:dresser
+            entities: [light.dresser]
+```
+
+## Floors section (iteration 1)
+
+Two group buttons in a section headed "Floors". Downstairs: the 7 Living Room and Master lights. Upstairs: Game Room, Upstairs Guest, Study. The Nursery and both Hatch lights are in neither group (D68).
+
+## Thermostat card (iteration 1, habib-wh)
+
+A built-in `thermostat` card per climate entity inside a section headed "Climate". The theme styles it. Claude never calls a climate service from it; the owner changes setpoints.
+
+```yaml
+          - type: thermostat
+            entity: climate.downstairs
+            name: Downstairs
 ```
 
 ## What "No response" and "Not found" mean

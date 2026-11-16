@@ -121,3 +121,10 @@ Do not use lock.804 or switch.804 as Ring or door entities.
 
 - HA version 2026.11.1 (system_info). The HomeKit bridge firmware is recorded as 2026.10.2 in docs/entities.md; not re-verified.
 - No secrets, tokens, PINs or street addresses are recorded in this file.
+
+## 11. Entities used by the live dashboards (iteration 1, 2026-11-16)
+
+- `habib-mkh` (16 entity IDs): all lights except Game Room, Upstairs Guest, Study as tiles (Dresser, Maham's Lamp, Waqar's Lamp; Bookshelf, Changing Table, Nursery Floor Lamp; Buffet, Floor Lamp, Side Table, Console Lamp), the Upstairs and Downstairs groups (members in section 2), `climate.downstairs`, `climate.upstairs` (status chips, tap opens the dialog) and `lock.living_room_front_door` (status only).
+- `habib-wh` (18 entity IDs): the MKH set plus `light.game_room`, `light.upstairs_guest`, `light.study_lamp` (tile "Study"), `light.smart_wi_fi_light_switch` (Porch, on and off) and `cover.general_garage_door_garage_door` (status chip only), and two `thermostat` cards for the climate entities.
+- Not used on either: Hatch lights, Ring, calendar, media, scenes, any lock or garage control.
+- Live config hashes: habib-wh `b29a354a4958b891`, habib-mkh `5b147c2b63ec0fe5`. Exports: `dashboards/habib-wh-2026-11-16-iter1.json`, `dashboards/habib-mkh-2026-11-16-iter1.json`.

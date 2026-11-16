@@ -1,8 +1,9 @@
-// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=6
+// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=7
 // Dev loop: add ?dev to the dashboard URL (or set localStorage habib_dev to "1")
-// to load habib-ui.js with a fresh timestamp on every page load (no cache).
-// Production loads habib-ui.js pinned to VERSION. Bump VERSION on every JS change (CR6).
-const VERSION = 6;
+// to load the card files with a fresh timestamp on every page load (no cache).
+// Production loads them pinned to VERSION. Bump VERSION on every JS change (CR6).
+// v7: adds habib-glass.js (glass card set, D70). habib-ui.js stays for habib-lab and habib-kiosk.
+const VERSION = 7;
 
 const isDev = (() => {
   try {
@@ -13,10 +14,11 @@ const isDev = (() => {
   }
 })();
 
-const url = isDev
-  ? `/local/habib/habib-ui.js?t=${Date.now()}`
-  : `/local/habib/habib-ui.js?v=${VERSION}`;
+const q = isDev ? `t=${Date.now()}` : `v=${VERSION}`;
 
-import(url).catch((err) => {
-  console.error("habib-ui: failed to load", url, err);
-});
+for (const file of ["habib-ui.js", "habib-glass.js"]) {
+  const url = `/local/habib/${file}?${q}`;
+  import(url).catch((err) => {
+    console.error("habib: failed to load", url, err);
+  });
+}

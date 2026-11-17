@@ -1,6 +1,13 @@
 # HANDOFF
 
-Last updated: 2026-11-17 (Pi 5, habib-layout and defect fixes finished). Before that: 2026-11-16 ~21:50 CST (Mac, design guide audit and Draft v0.2).
+Last updated: 2026-11-17 ~09:20 CST (Pi 5, Adhan gate fix and component library v1). Before that: 2026-11-17 (Pi 5, habib-layout finished).
+
+## Adhan gate fix and component library v1 (2026-11-17, Pi 5, D80): merged, staging live
+1. **Adhan (I60):** gate was off since 03:05 CST (restart + `initial: off`); Fajr missed. Fixed (`2dcbc36`), gate ON, all 5 automations on, new `input_text.adhan_last_error`. **Claude next:** after Dhuhr 12:16 CST read the `automation.adhan_dhuhr` trace and the error helper.
+2. **Library v1** (loader v12, merge `5d5916b`): generic `ui-*` components (page, section, Large card, accordion, drawer incl. climate controls, badge). Docs `docs/design/library/` (Bootstrap 6 format, design guide Draft v0.3). Compact card Locked.
+3. **habib-wh-next** rebuilt with sections and Large cards (`15e78b49953621a1`); habib-mkh-next unchanged. Live habib-wh `95f4c477d92c3e07` and habib-mkh `c0d82737c4398684` unchanged; on v12 they measure the same as v11.
+4. **Owner next:** Reset frontend cache on the iPhone, check habib-wh-next (sections, Large cards, climate drawer, shade drawer, Adhan badge). Reply "lock Large card" or what to change. Confirm I61 (dashboards and resources missing from HA). Cutover on your word.
+5. Rollback: loader `?v=11` + `git revert -m 1 5d5916b`; Adhan `git revert -m 1 2dcbc36` or backup `pre-adhan-gate`. Note `docs/sessions/2026-11-17-library-v1.md`.
 
 ## habib-layout and defect fixes (2026-11-17, Pi 5, D78, D79): merged, staging live
 1. **Done:** prompt `docs/prompts/pi5/2026-11-16-habib-layout-and-defects.md` finished. Merge `4bba5e5` on main, loader v11 live. Defects I55 to I59 are fixed in the card code, so habib-wh and habib-mkh pick up the chip, dock, prayer, contrast and touch-target fixes now; their configs are unchanged (hashes wh `95f4c477d92c3e07`, mkh `c0d82737c4398684`).

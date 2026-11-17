@@ -1,6 +1,13 @@
 # HANDOFF
 
-Last updated: 2026-11-16 ~21:50 CST (Mac, design guide audit and Draft v0.2). Before that: late (networkpi, design guide draft), ~19:25 CST (Pi 5, habib-mkh responsive), 16:30 CST (Pi 5, habib-mkh compact).
+Last updated: 2026-11-17 (Pi 5, habib-layout and defect fixes finished). Before that: 2026-11-16 ~21:50 CST (Mac, design guide audit and Draft v0.2).
+
+## habib-layout and defect fixes (2026-11-17, Pi 5, D78, D79): merged, staging live
+1. **Done:** prompt `docs/prompts/pi5/2026-11-16-habib-layout-and-defects.md` finished. Merge `4bba5e5` on main, loader v11 live. Defects I55 to I59 are fixed in the card code, so habib-wh and habib-mkh pick up the chip, dock, prayer, contrast and touch-target fixes now; their configs are unchanged (hashes wh `95f4c477d92c3e07`, mkh `c0d82737c4398684`).
+2. **New admin-only dashboards:** `habib-wh-next` (`70f473df0f88e8de`) and `habib-mkh-next` (`902e2f306f8f7695`) on `custom:habib-layout`. All Part 5 criteria pass (measured): 0 broken words, dock bars 52 px one line, chip slack max 11 px, blank max 0.42%, mkh-next ends at 759 px at 430, contrast at least 4.6, 0 targets under 44 px.
+3. **Owner next:** Reset frontend cache on the iPhone, then check habib-wh-next and habib-mkh-next. Say the word for cutover. **Mac next:** read-only Chrome check of both staging dashboards.
+4. **Flag:** HA lists only 2 dashboards and 2 resources. `habib-home`, `habib-lab`, `habib-kiosk`, `nuvio-shared`, `nuvio.js` and Material Symbols are not listed, and the repo records no deletion. Owner to confirm.
+5. Rollback: loader `?v=10`, `git revert -m 1 4bba5e5`, delete the staging dashboards (Tier 3), or restore `pre-habib-layout`. Note `docs/sessions/2026-11-17-habib-layout.md`.
 
 ## Design guide Draft v0.2 (2026-11-16 ~21:50 CST, Mac, D77): docs only, awaiting owner review
 1. **Audit done, read only** (Chrome on the Mac, nothing tapped or changed): `docs/design/audit-2026-11-16.md` (commit `542f3a2`). Both dashboards at 12 viewports from 430 x 932 to 2560 x 1440, set with a same-origin frame because the Mac window could not reach most sizes. No overflow, clipped text or console error anywhere.

@@ -1,0 +1,232 @@
+# Habib Glass design tokens. Draft v0.1, 2026-11-16. Companion to docs/design-guide.md.
+# Machine-readable single source for every value an AI tool may use in a Habib dashboard.
+#
+# status: codified  = read from the live source on 2026-11-16 (file named in `source`).
+# status: proposed  = does not exist yet; needs the owner's approval before it is built.
+#
+# Rule: a value that is not in this file may not appear in card CSS. Add the token first.
+# Change a colour, font or radius HERE and in its `source`, never inside a component.
+
+meta:
+  version: 0.1-draft
+  system: Habib Glass
+  source:
+    theme: themes/habib_glass/habib_glass.yaml
+    cards: www/habib/habib-glass.js          # const GLASS = shared CSS, line 36
+    logic: www/habib/habib-glass-logic.js
+    wallpaper: www/habib/bg/evergreen.svg
+    fonts: www/habib/fonts/                  # Outfit.woff2, Inter.woff2 (variable 100-900, SIL OFL)
+    generator: dashboards/habib-glass-build.py
+  loader_version: 10
+  live_hashes: { habib-wh: 95f4c477d92c3e07, habib-mkh: c0d82737c4398684 }
+
+# ---------------------------------------------------------------- fonts (codified)
+font:
+  display: '"Habib Display", Outfit, "Habib Text", system-ui, sans-serif'   # --g-display
+  text: '"Habib Text", Inter, system-ui, -apple-system, "Segoe UI", sans-serif'  # --g-font
+  smoothing: antialiased
+  numerals: tabular-nums        # every clock, countdown, temperature, percentage
+
+# ---------------------------------------------------------------- type scale (codified)
+# [family, weight, size px, line-height, letter-spacing, transform]. lh "-" = normal.
+type:
+  clock:        [display, 200, "clamp(64px, 19vw, 104px)", 0.92, -0.04em, none]
+  clock-sm:     [display, 200, 54, 0.95, -0.04em, none]      # compact hero
+  metric-xl:    [display, 200, 56, 1, -0.04em, none]         # hero temperature
+  metric-lg:    [display, 200, 40, 1, -0.03em, none]         # climate dial
+  metric-md:    [display, 200, 36, 1, -0.04em, none]         # compact hero temperature
+  metric-sm:    [display, 300, 30, 1, -0.02em, none]         # prayer countdown
+  headline:     [display, 700, 22, 26, -0.01em, none]        # list title
+  ampm:         [display, 300, 20, 1, 0.02em, none]          # 15 px in compact hero
+  title-lg:     [display, 600, 18, 22, 0, none]              # weather condition, media title (lh 23)
+  title:        [display, 600, 17, 22, -0.01em, none]        # card title (.title), lamp name
+  title-alt:    [display, 500, 17, 22, 0, none]              # date, prayer time
+  title-sm:     [display, 600, 15, "-", -0.01em, none]       # climate tile name, fold-bar value
+  title-xs:     [display, 600, 13, 16, 0, none]              # compact hero condition; date 500 13/17
+  section:      [display, 600, 13, 16, 0.22em, uppercase]    # habib-label, "Prayer Times"
+  section-sm:   [display, 600, 12, 14, 0.20em, uppercase]    # habib-room header
+  body:         [text, 500, 15, "-", 0, none]                # prayer name, list item, fold-bar text
+  body-sm:      [text, 500, 14, "-", 0, none]                # input; buttons use 600
+  label:        [text, 500, 13, "-", 0, none]                # secondary lines; names use 600
+  sub:          [text, 500, 12, 16, 0, none]                 # .sub
+  state:        [text, 600, 12, 16, 0, none]                 # lamp state, tabs, slider value
+  eyebrow:      [text, 600, 11, 14, 0.14em, uppercase]       # .eyebrow, fold-bar label
+  caption:      [text, 600, 11, 13, 0, none]                 # chip name, pills use 500
+  micro:        [text, 600, 10, 12, 0, none]                 # chip state, compact pills
+  micro-caps:   [text, 600, 10, 12, 0.12em, uppercase]       # dock bar label
+  min_size_px: 10               # nothing smaller, ever
+  min_size_new_px: 12           # new components: 12 px floor (10 and 11 are codified legacy)
+
+# ---------------------------------------------------------------- colour
+color:
+  dark:                          # status: codified
+    text:        "#eef4ee"                    # --g-text
+    text-dim:    "rgba(238,244,238,.62)"      # --g-dim
+    text-faint:  "rgba(238,244,238,.38)"      # --g-faint (placeholders, notes only)
+    text-on-accent: "#16241b"
+    accent-warm: "255, 201, 120"              # --g-warm  #ffc978  active, next prayer, focus ring
+    accent-mint: "159, 214, 181"              # --g-mint  #9fd6b5  ok, secure, playing, home
+    accent-rose: "255, 138, 128"              # --g-rose  #ff8a80  alert, unlocked, open, error
+    heat:        "#ffb36b"
+    cool:        "#8fc9ff"
+    surface:     "linear-gradient(160deg, rgba(255,255,255,.13), rgba(255,255,255,.04) 55%, rgba(255,255,255,.07))"
+    surface-solid: "rgba(30,48,38,.92)"       # prefers-reduced-transparency fallback
+    border:      "rgba(255,255,255,.14)"
+    well:        "rgba(0,0,0,.14)"            # inset tile inside a card (.16 chip, .20 input, .22 slider)
+    well-border: "rgba(255,255,255,.08)"
+    raised:      "rgba(255,255,255,.10)"      # round buttons, pills (.07 idle tab, .12 pill, .18 selected)
+    track:       "rgba(255,255,255,.12)"      # progress and dial tracks
+    scrim:       "rgba(4,10,7,.45)"
+    sheet:       "linear-gradient(170deg, rgba(58,84,68,.88), rgba(24,38,30,.94))"
+    page:        "#12221a"
+    page-deep:   "#0f1c15"
+    dialog:      "#1c3126"
+    wallpaper:   "/local/habib/bg/evergreen.svg"   # stops #2c4636 > #1c3226 > #0d1a13
+    control-solid: "#ffffff"                  # play button, slider knob, dial dot
+    control-solid-ink: "#18241d"
+  light:                         # status: PROPOSED. Nothing light exists today. Contrast figures are estimates.
+    text:        "#16241b"
+    text-dim:    "rgba(22,36,27,.68)"
+    text-faint:  "rgba(22,36,27,.45)"
+    text-on-accent: "#ffffff"
+    accent-warm: "138, 82, 0"                 # #8a5200, about 5:1 on the light surface
+    accent-mint: "27, 110, 69"                # #1b6e45
+    accent-rose: "179, 38, 30"                # #b3261e
+    heat:        "#b85c00"
+    cool:        "#1f6fb5"
+    surface:     "linear-gradient(160deg, rgba(255,255,255,.72), rgba(255,255,255,.46) 55%, rgba(255,255,255,.58))"
+    surface-solid: "rgba(244,248,244,.96)"
+    border:      "rgba(255,255,255,.75)"
+    well:        "rgba(22,36,27,.06)"
+    well-border: "rgba(22,36,27,.08)"
+    raised:      "rgba(22,36,27,.08)"
+    track:       "rgba(22,36,27,.12)"
+    scrim:       "rgba(22,36,27,.30)"
+    sheet:       "linear-gradient(170deg, rgba(250,252,250,.92), rgba(232,240,234,.96))"
+    page:        "#e6efe8"
+    page-deep:   "#d7e4da"
+    dialog:      "#f4f8f4"
+    wallpaper:   "/local/habib/bg/evergreen-light.svg"   # to be drawn: stops #f1f6f1 > #dfeae1 > #c9dccf
+    control-solid: "#16241b"
+    control-solid-ink: "#ffffff"
+  data:                          # status: codified. Driven by entity state, identical in both modes.
+    lamp-default-glow: "255, 196, 120"        # logic.js WARM (differs from accent-warm by 5 in G; keep as is)
+    lamp-glow-soften: "0.85 * rgb + 0.15 * 255"
+    lamp-level: "0.35 + 0.65 * brightness/255"
+    swatch-kelvin: [2200, 2700, 4000, 6000]
+    swatch-rgb: ["255,120,90", "255,190,70", "120,220,140", "90,160,255", "190,120,255", "255,110,190"]
+    list-bars: ["120,170,255", "255,120,170", "255,196,90", "120,220,150", "190,140,255"]
+    list-title-gradient: ["#c9d8ff", "#f3c8ff"]
+    list-add-gradient: ["#8d9dff", "#c58cff"]   # the only purple control; do not reuse elsewhere
+    daypart-tint: { dawn: "255,170,120 @.30", day: "255,230,160 @.22", dusk: "255,128,96 @.28 + 140,90,200 @.20", night: "120,150,255 @.18" }
+  alpha-on-accent:               # how an accent or lamp colour is mixed (codified)
+    fill: [.20, .24]             # tinted background
+    border: [.25, .50]
+    glow-shadow: [.50, .90]
+    focus-ring: .80
+
+# ---------------------------------------------------------------- shape, elevation, blur (codified)
+radius:
+  card: 26          # --g-radius, theme ha-card-border-radius
+  sheet: 30         # top corners only
+  tile: 20          # climate tile
+  panel: 18         # prayer "next" panel, album art
+  item: 16          # security item
+  chip: 14          # lamp chip, list row, input, shield
+  control: 12       # slider, prayer row
+  small: 8          # ... button
+  pill: 999
+  round: "50%"
+border_width: 1
+elevation:
+  card: "inset 0 1px 0 rgba(255,255,255,.18), 0 18px 40px -18px rgba(0,0,0,.55)"
+  card-active: "inset 0 1px 0 rgba(255,255,255,.22), 0 18px 46px -16px rgba(<lamp>, .55)"
+  chip-active: "0 8px 22px -12px rgba(<lamp>, .9)"
+  float: "0 14px 30px -10px rgba(0,0,0,.7)"       # album art, record
+  focus: "0 0 0 2px rgba(<accent-warm>, .8)"
+blur:
+  card: "blur(22px) saturate(150%)"
+  sheet: "blur(30px) saturate(160%)"
+
+# ---------------------------------------------------------------- spacing and size (codified)
+space:
+  scale_new: [4, 8, 12, 16, 24]             # use these for anything new
+  scale_dense: [2, 6, 10, 14, 18, 22]       # exist today; allowed only inside compact components
+  card-pad: { hero: "22 22 20", prayer: "18 18 14", standard: 16, lamp: "14 14 12", compact: "14 16", room: "6 8 8", bar: "0 12 0 18" }
+  gap: { card-inner: 12, tile-grid: 10, chip-grid: 6, dock: 8, pill: 5 }
+  ha_grid: { section-columns: 12, row-height: 56, card-gap: 8, section-gap: 24 }   # section-gap from the build notes, unmeasured
+size:
+  hero-min-height: 260
+  hero-compact-height: 130
+  lamp-min-height: 232          # 4 rows = 248
+  lamp-wide-height: 184         # 3 rows
+  fold-bar: 60
+  dock-bar: 52
+  chip-min-height: 46
+  slider-height: 34
+  icon: { xs: 14, sm: 16, md: 18, lg: 20, xl: 22, xxl: 24, bar: 26 }
+  avatar: 38
+  shield: 44
+  media-art: 112
+  dial-max: 132
+  sheet-max-width: 560
+  touch:
+    min_new: 44                 # every new control, 48 preferred
+    legacy_below_min: { fold-button: 30, fold-button-compact: 22, more-button: 26, slider: 34, media-button: 40, lamp-chip: 46 }
+
+# ---------------------------------------------------------------- icons (codified)
+icon:
+  style: inline SVG, viewBox 24, fill none, stroke currentColor, round caps and joins
+  stroke: { default: 1.8, chevron: 2.2, add: 2.4, sun: 2.0 }
+  filled: [play, pause, next, prev, more-dots]
+  lamp-art: { viewBox: "120x150", kinds: [table-lamp, floor-lamp, desk-lamp, pendant, shelf, nightlight, coach, group] }
+  weather-art: { viewBox: "110x100", sizes: [78, 46] }
+  mdi: not used in glass cards
+
+# ---------------------------------------------------------------- motion (codified)
+motion:
+  press: "transform .18s cubic-bezier(.3,1.6,.4,1); :active scale(.97)"   # .92 round buttons, .90 swatches
+  state: ".3s to .4s on border-color, box-shadow, background, filter"
+  sheet-in: ".32s cubic-bezier(.2,1.2,.3,1)"
+  scrim-in: ".2s ease"
+  ambient: { lamp-breathe: 5s, sun-rays: 40s, cloud-drift: 7s, rain: 1.1s, bolt: 3.2s, record: 3.2s }
+  pending-timeout-ms: 2500
+  reduced-motion: all animation and transition off
+
+# ---------------------------------------------------------------- layout (codified unless marked)
+layout:
+  view: { type: sections, max_columns: 4, dense_section_placement: true, theme: Habib Glass }
+  phone-query: "(max-width: 699px)"
+  wide-query: "(min-width: 700px)"
+  columns_observed: { 430: 1, 1024: 2, 1440: 4 }     # mock renders 2026-11-16
+  columns_unverified: [744, 820, 1180, 1280, 1512, 1728, 1920, 2560]
+  card_columns: { lamp: 6, lamp-wide: 12, everything-else: 12 }   # of a section's 12; min 4 (lamp), 6 (others)
+
+# ---------------------------------------------------------------- proposed theme keys (status: proposed)
+# Home Assistant turns every theme key into a CSS variable (--<key>) that crosses shadow roots.
+# Target: the theme file carries the semantic tokens under modes.light / modes.dark, and
+# GLASS reads them with the codified dark value as fallback, e.g.
+#   --g-text: var(--habib-text, #eef4ee);
+theme_keys:
+  habib-text: color.text
+  habib-text-dim: color.text-dim
+  habib-text-faint: color.text-faint
+  habib-accent-warm: color.accent-warm
+  habib-accent-mint: color.accent-mint
+  habib-accent-rose: color.accent-rose
+  habib-heat: color.heat
+  habib-cool: color.cool
+  habib-surface: color.surface
+  habib-surface-solid: color.surface-solid
+  habib-border: color.border
+  habib-well: color.well
+  habib-well-border: color.well-border
+  habib-raised: color.raised
+  habib-track: color.track
+  habib-scrim: color.scrim
+  habib-sheet: color.sheet
+  habib-control-solid: color.control-solid
+  habib-control-solid-ink: color.control-solid-ink
+  habib-radius-card: radius.card
+  habib-font-display: font.display
+  habib-font-text: font.text

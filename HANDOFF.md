@@ -1,6 +1,13 @@
 # HANDOFF
 
-Last updated: 2026-11-16 ~19:25 CST (Pi 5, habib-mkh responsive). Before that: 16:30 CST (Pi 5, habib-mkh compact).
+Last updated: 2026-11-16 late (networkpi, design guide draft). Before that: ~19:25 CST (Pi 5, habib-mkh responsive), 16:30 CST (Pi 5, habib-mkh compact).
+
+## Design guide Draft v0.1 (2026-11-16, networkpi, D77): docs only, awaiting audit and owner review
+1. New: `docs/design-guide.md` (Habib Glass, written for AI tools) and `docs/design/habib-tokens.yaml` (dark values codified from `habib-glass.js` and the theme; light values proposed only). Nothing in HA changed.
+2. Validated live: Nuvio is not used on habib-wh or habib-mkh (only `custom:habib-*` cards). Leftovers: `nuvio-shared`, the `nuvio.js` resource, and the stale "Dashboard: Nuvio" line in `CLAUDE.md`.
+3. Not done: Chrome browsing at the target devices (no Chrome tools on networkpi) and reference "URL 1" (Medium refused the request). Both are in the Mac prompt `docs/prompts/mac/2026-11-16-design-guide-audit.md` (Tier 0).
+4. Open: I54 (no light mode, colours hard-coded in the cards), I55 (contrast and touch-target estimates).
+5. **Owner next:** on the Mac type `git pull; read docs/prompts/mac/2026-11-16-design-guide-audit.md; run it`. Review the guide. **Claude next:** v0.2 from the audit and the owner's notes; v1.0 only on "GREEN LIGHT". Note `docs/sessions/2026-11-16-design-guide.md`.
 
 ## habib-mkh responsive, plug lamps, garage (2026-11-16 ~19:25 CST, Pi 5, D76): live, mock verified
 1. habib-mkh: phones (<700 px) keep the compact one-screen layout; tablets and laptops get expanded sections like habib-wh. Room chips and dock bars put the icon in the left third and wrapped text in the right two thirds. Shopping list replaced by Garage. Front door and Garage bars open HA's own dialog in one tap; the card never calls lock or cover services (no "GREEN LIGHT outdoor controls").

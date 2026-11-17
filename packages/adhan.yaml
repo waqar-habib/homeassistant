@@ -10,7 +10,15 @@ input_boolean:
   adhan_enabled:
     name: Adhan enabled
     icon: mdi:mosque
-    initial: off
+    # No "initial": the gate keeps its last state across restarts (2026-11-17 fix:
+    # "initial: off" turned the Adhan off on every core update or restart).
+
+input_text:
+  # Last playback failure reason; empty after a successful run. The dashboard shows "Adhan error" when set.
+  adhan_last_error:
+    name: Adhan last error
+    icon: mdi:alert-circle-outline
+    max: 255
 
 input_number:
   adhan_saved_volume:
@@ -237,12 +245,22 @@ script:
                   entity_id: input_number.adhan_saved_volume
                 data:
                   value: 0
+              - action: input_text.set_value
+                target:
+                  entity_id: input_text.adhan_last_error
+                data:
+                  value: ""
               - action: notify.send_message
                 target:
                   entity_id: notify.waqars_iphone
                 data:
                   message: "Adhan {{ media_file }} ran on {{ speakers | join(', ') }}, volume restored"
         default:
+          - action: input_text.set_value
+            target:
+              entity_id: input_text.adhan_last_error
+            data:
+              value: "{{ (now().strftime('%Y-%m-%d %H:%M') ~ ' ' ~ media_file ~ ': ' ~ fail_reason)[:255] }}"
           - action: notify.send_message
             target:
               entity_id: notify.waqars_iphone

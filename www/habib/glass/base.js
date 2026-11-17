@@ -71,6 +71,8 @@ const SIZE = {
   "i-13": 13, "i-14": 14, "i-16": 16, "i-18": 18, "i-20": 20, "i-22": 22, "i-24": 24, "i-26": 26,
   // habib-layout
   "page-pad": 16, "page-pad-compact": 8, "gap-col": 32, "gap-group": 24, "gap-card": 8, "header": 56,
+  // library v1 (2026-11-17): heading gap, large card, section, drawer steppers
+  "label-gap": 10, "card-lg-art": 56, "card-lg-min": 120, "section-pad": 10, "stepper": 44, "setpoint": 72,
 };
 
 // Container-query breakpoints of the chip primitive (px of the chip's own box). @container
@@ -78,7 +80,7 @@ const SIZE = {
 export const BP = { chipWide: 150, chipNarrow: 100 };
 
 // Timings used by JavaScript (the CSS durations are tokens below).
-export const TIME = { pendingMs: 2500, noResponseMs: 4000 };
+export const TIME = { pendingMs: 2500, noResponseMs: 4000, debounceMs: 800 };
 
 const u = (n) => `calc(${n}px * var(--g-u))`;
 const fontToken = ([fam, weight, size, line]) =>
@@ -289,6 +291,36 @@ const PRIMS = `
       padding: var(--s-6) var(--s-4); row-gap: var(--s-2); }
     .chip .cn, .chip .cs { align-self: center; }
   }
+
+  /* Badge: a small status pill. Text always names the state; colour only repeats it.
+     .badge-on (mint), .badge-off (dim), .badge-error (rose). */
+  .badge { font: var(--t-caption); padding: var(--s-6) var(--s-10); border-radius: var(--r-pill); display: inline-flex; gap: var(--s-6); align-items: center;
+    background: var(--g-raised); color: var(--g-dim); white-space: nowrap; }
+  .badge .dot { --c: var(--g-mint); }
+  .badge-on { color: rgb(var(--g-mint)); } .badge-on .dot { background: rgb(var(--c)); box-shadow: var(--g-glow-dot) rgb(var(--c)); }
+  .badge-error { color: rgb(var(--g-rose)); background: rgba(var(--g-rose), .14); } .badge-error .dot { --c: var(--g-rose); background: rgb(var(--c)); }
+
+  /* Heading: the small-caps label of a section or group. */
+  .heading { font: var(--t-section); letter-spacing: var(--ls-section); text-transform: uppercase; white-space: nowrap; }
+`;
+
+// Drawer: the pull-up panel for detail controls (shade picker, climate). It lives in <body>
+// (outside the themed view), so the theme keys are carried over with carryTheme().
+export const DRAWER_CSS = `
+  .scrim { position: fixed; inset: 0; z-index: 9999; background: var(--g-scrim); display: flex; align-items: flex-end; justify-content: center;
+    animation: fade var(--m-fast) ease; }
+  .drawer { width: 100%; max-width: var(--z-sheet-max); max-height: 92vh; overflow-y: auto; padding: var(--s-10) var(--s-22) calc(var(--s-24) + env(safe-area-inset-bottom, 0px));
+    border-radius: var(--r-sheet) var(--r-sheet) 0 0; color: var(--g-text); font-family: var(--g-font);
+    background: var(--g-sheet); border: var(--g-hair) solid var(--g-border);
+    -webkit-backdrop-filter: var(--g-blur-sheet); backdrop-filter: var(--g-blur-sheet); animation: up var(--m-sheet); }
+  .drawer-handle { width: var(--z-handle-w); height: var(--z-handle-h); border-radius: var(--r-bar); background: var(--g-idle); margin: 0 auto var(--s-16); }
+  .drawer-header { display: flex; justify-content: space-between; align-items: center; gap: var(--s-12); margin-bottom: var(--s-14); }
+  .drawer-done { cursor: pointer; min-height: var(--z-touch); box-sizing: border-box; display: grid; place-items: center; padding: 0 var(--s-16);
+    border-radius: var(--r-pill); background: var(--g-raised-hi); font: var(--t-body-sm-b); }
+  .drawer-link { cursor: pointer; min-height: var(--z-touch); display: grid; place-items: center; font: var(--t-label); color: var(--g-dim); margin-top: var(--s-12); width: 100%; }
+  .drawer-done:focus-visible, .drawer-link:focus-visible { box-shadow: var(--g-ring); }
+  .drawer-label { margin: var(--s-18) 0 var(--s-10); }
+  @keyframes up { from { transform: translateY(100%); } } @keyframes fade { from { opacity: 0; } }
 `;
 
 // ---- 3. The shared sheet -----------------------------------------------------------------
@@ -400,6 +432,33 @@ const THEME_VARS = ["--habib-base", "--habib-scale"];
 export function carryTheme(from, to) {
   const cs = getComputedStyle(from);
   for (const k of THEME_VARS) { const v = cs.getPropertyValue(k).trim(); if (v) to.style.setProperty(k, v); }
+}
+
+// Open a drawer. opts: { title, sub, body (HTML), css (extra CSS), link (text of the bottom
+// link, or null), onLink(), onMount(root, close) }. Returns close(). Escape and a tap on the
+// scrim close it.
+export function openDrawer(from, { title = "", sub = "", body = "", css = "", link = "Open full controls", onLink = null, onMount = null } = {}) {
+  const host = document.createElement("div");
+  carryTheme(from, host);
+  const root = host.attachShadow({ mode: "open" });
+  adopt(root, DRAWER_CSS + css);
+  paint(root, `<div class="scrim"><div class="drawer" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+    <div class="drawer-handle"></div>
+    <div class="drawer-header"><span><span class="title">${esc(title)}</span>${sub ? `<span class="sub" style="display:block">${esc(sub)}</span>` : ""}</span>
+      <button class="drawer-done">Done</button></div>
+    ${body}
+    ${link && onLink ? `<button class="drawer-link">${esc(link)}</button>` : ""}
+  </div></div>`);
+  const close = () => { host.remove(); document.removeEventListener("keydown", onKey, true); };
+  const onKey = (e) => { if (e.key === "Escape") close(); };
+  document.addEventListener("keydown", onKey, true);
+  root.querySelector(".scrim").addEventListener("click", (e) => { if (e.target.classList.contains("scrim")) close(); });
+  root.querySelector(".drawer-done").addEventListener("click", close);
+  const l = root.querySelector(".drawer-link");
+  if (l) l.addEventListener("click", () => { close(); onLink(); });
+  document.body.appendChild(host);
+  if (onMount) onMount(root, close);
+  return close;
 }
 
 // ---- 4. Base card ------------------------------------------------------------------------

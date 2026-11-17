@@ -30,7 +30,12 @@ export function makeHass(RealDate, fixed, scenario = "default") {
     "light.smart_wi_fi_light_switch": { state: "off", attributes: { supported_color_modes: ["onoff"] } },
     "scene.movie": { state: "2026-11-16T20:00:00+00:00", attributes: {} }, "script.good_night": { state: "off", attributes: {} },
     "input_boolean.adhan_demo": { state: "on", attributes: {} },
+    "input_text.adhan_last_error": { state: "", attributes: {} },
+    ...Object.fromEntries(["fajr", "dhuhr", "asr", "maghrib", "isha"].map((k) => [`automation.adhan_${k}`, { state: "on", attributes: {} }])),
   };
+  for (const id of ["climate.downstairs", "climate.upstairs"]) Object.assign(states[id].attributes, { hvac_modes: ["off", "heat", "cool", "heat_cool"], target_temp_step: 1 });
+  if (scenario === "adhan-error") states["input_text.adhan_last_error"].state = "2026-11-17 12:16 Adhan.mp3: playback did not start";
+  if (scenario === "adhan-off") states["input_boolean.adhan_enabled"].state = "off";
   if (scenario === "after-isha") { /* same sensors; the page time is set after Isha */ }
   if (scenario === "prayer-missing") states[P + "asr_prayer"].state = "unavailable";
   if (scenario === "playing") {

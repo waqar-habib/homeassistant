@@ -23,7 +23,7 @@ const RULES = [
 ];
 
 test("the card set is split: base, art and one file per card", () => {
-  for (const f of ["index.js", "hero.js", "prayer.js", "light.js", "climate.js", "security.js", "media.js", "todo.js", "label.js", "room.js", "dock.js", "button.js", "layout.js"]) assert.ok(files.includes(f), f);
+  for (const f of ["index.js", "hero.js", "prayer.js", "light.js", "climate.js", "security.js", "media.js", "todo.js", "label.js", "room.js", "dock.js", "button.js", "layout.js", "section.js", "accordion.js"]) assert.ok(files.includes(f), f);
 });
 
 for (const f of files) {

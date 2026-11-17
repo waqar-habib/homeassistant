@@ -1,0 +1,112 @@
+{
+ "date": "2026-11-17",
+ "configs": "habib-wh hash 95f4c477d92c3e07, habib-mkh hash c0d82737c4398684",
+ "old": "www/habib at 5969323 (loader v10)",
+ "new": "www/habib at ff5650b (loader v11)",
+ "results": [
+  {
+   "name": "live-wh-430-new",
+   "w": 430,
+   "h": 932,
+   "pageHeight": 4094,
+   "hScroll": false,
+   "broken": 0,
+   "clipped": 0,
+   "hitsUnder44": 0,
+   "contrastLowest": 5.01,
+   "contrastUnder45": 0,
+   "errors": []
+  },
+  {
+   "name": "live-wh-430-old",
+   "w": 430,
+   "h": 932,
+   "pageHeight": 4089,
+   "hScroll": false,
+   "broken": 0,
+   "clipped": 0,
+   "hitsUnder44": 32,
+   "contrastLowest": null,
+   "contrastUnder45": null,
+   "errors": []
+  },
+  {
+   "name": "live-wh-1184-new",
+   "w": 1184,
+   "h": 900,
+   "pageHeight": 1970,
+   "hScroll": false,
+   "broken": 0,
+   "clipped": 0,
+   "hitsUnder44": 0,
+   "contrastLowest": 4.67,
+   "contrastUnder45": 0,
+   "errors": []
+  },
+  {
+   "name": "live-wh-1184-old",
+   "w": 1184,
+   "h": 900,
+   "pageHeight": 1999,
+   "hScroll": false,
+   "broken": 0,
+   "clipped": 0,
+   "hitsUnder44": 32,
+   "contrastLowest": null,
+   "contrastUnder45": null,
+   "errors": []
+  },
+  {
+   "name": "live-mkh-430-new",
+   "w": 430,
+   "h": 932,
+   "pageHeight": 932,
+   "hScroll": false,
+   "broken": 0,
+   "clipped": 0,
+   "hitsUnder44": 0,
+   "contrastLowest": 5.22,
+   "contrastUnder45": 0,
+   "errors": []
+  },
+  {
+   "name": "live-mkh-430-old",
+   "w": 430,
+   "h": 932,
+   "pageHeight": 932,
+   "hScroll": false,
+   "broken": 0,
+   "clipped": 0,
+   "hitsUnder44": 4,
+   "contrastLowest": null,
+   "contrastUnder45": null,
+   "errors": []
+  },
+  {
+   "name": "live-mkh-1184-new",
+   "w": 1184,
+   "h": 900,
+   "pageHeight": 1956,
+   "hScroll": false,
+   "broken": 0,
+   "clipped": 0,
+   "hitsUnder44": 0,
+   "contrastLowest": 4.55,
+   "contrastUnder45": 0,
+   "errors": []
+  },
+  {
+   "name": "live-mkh-1184-old",
+   "w": 1184,
+   "h": 900,
+   "pageHeight": 1957,
+   "hScroll": false,
+   "broken": 0,
+   "clipped": 0,
+   "hitsUnder44": 35,
+   "contrastLowest": null,
+   "contrastUnder45": null,
+   "errors": []
+  }
+ ]
+}

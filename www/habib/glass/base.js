@@ -77,10 +77,10 @@ const SIZE = {
 
 // Container-query breakpoints of the chip primitive (px of the chip's own box). @container
 // conditions cannot read variables, so they are constants here and nowhere else.
-export const BP = { chipWide: 150, chipNarrow: 100 };
+export const BP = { chipWide: 150, chipNarrow: 100, stepperNarrow: 210 };
 
 // Timings used by JavaScript (the CSS durations are tokens below).
-export const TIME = { pendingMs: 2500, noResponseMs: 4000, debounceMs: 800 };
+export const TIME = { pendingMs: 2500, noResponseMs: 4000, debounceMs: 800, settleMs: 1500 };
 
 const u = (n) => `calc(${n}px * var(--g-u))`;
 const fontToken = ([fam, weight, size, line]) =>

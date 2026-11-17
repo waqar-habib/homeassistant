@@ -3,7 +3,7 @@
 // controls 2026-11-17): mode and setpoints, sent through climate.set_hvac_mode and
 // climate.set_temperature. habib-climate keeps controls: false (HA's own dialog) until cutover.
 const B = await import(new URL("./base.js", import.meta.url).href.split("?")[0] + new URL(import.meta.url).search);
-const { G, GlassCard, esc, moreInfo, haptic, openDrawer, ICONS, TIME } = B;
+const { G, GlassCard, esc, moreInfo, haptic, openDrawer, ICONS, TIME, BP } = B;
 
 const DRAWER = `
   .now { display: flex; align-items: baseline; gap: var(--s-10); margin-bottom: var(--s-6); }
@@ -14,15 +14,20 @@ const DRAWER = `
   .mode.sel { background: var(--g-raised-hi); color: var(--g-text); box-shadow: inset 0 0 0 var(--g-hair) var(--g-line); }
   .mode:focus-visible, .step:focus-visible { box-shadow: var(--g-ring); }
   .sets { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: var(--s-12); }
-  .set { border-radius: var(--r-panel); padding: var(--s-12); display: flex; flex-direction: column; align-items: center; gap: var(--s-8); }
+  .set { min-width: 0; container-type: inline-size; border-radius: var(--r-panel); padding: var(--s-12) var(--s-14) var(--s-14); display: flex; flex-direction: column; align-items: center; gap: var(--s-8); }
   .set.heat { box-shadow: inset 0 0 0 var(--g-hair) var(--g-heat); } .set.cool { box-shadow: inset 0 0 0 var(--g-hair) var(--g-cool); }
   .set .eyebrow { color: var(--g-dim); }
   .set.heat .eyebrow { color: var(--g-heat); } .set.cool .eyebrow { color: var(--g-cool); }
-  .ctl { display: flex; align-items: center; gap: var(--s-10); }
+  /* The stepper row always fits the box: two fixed buttons and a flexible value between them. */
+  .ctl { width: 100%; display: grid; grid-template: "dn val up" auto / var(--z-stepper) minmax(0, 1fr) var(--z-stepper); align-items: center; gap: var(--s-6); }
+  .ctl [data-dir="-1"] { grid-area: dn; } .ctl [data-dir="1"] { grid-area: up; } .ctl .val { grid-area: val; }
+  /* A narrow box (phone): value on its own line, the two buttons under it. */
+  @container (max-width: ${BP.stepperNarrow - 0.02}px) {
+    .ctl { grid-template: "val val" auto "dn up" auto / 1fr 1fr; justify-items: center; row-gap: var(--s-8); } }
   .step { cursor: pointer; width: var(--z-stepper); height: var(--z-stepper); border-radius: var(--r-round); display: grid; place-items: center;
     background: var(--g-raised); color: var(--g-text); font: var(--t-title); }
   .step:active { transform: scale(var(--k-press-btn)); }
-  .val { min-width: var(--z-setpoint); text-align: center; font: var(--t-metric-md); letter-spacing: var(--ls-metric-md); }
+  .val { min-width: 0; text-align: center; white-space: nowrap; font: var(--t-metric-md); letter-spacing: var(--ls-metric-md); }
   .msg { min-height: var(--z-i-18); font: var(--t-caption); color: var(--g-dim); text-align: center; margin-top: var(--s-10); }
 `;
 

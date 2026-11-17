@@ -7,8 +7,12 @@
 //     DOM order always equals config order (keyboard, screen readers).
 //   - Inside a group: optional label, then the cards on a 12-column grid from getGridOptions.
 //   - It paints the wallpaper from the theme key habib-base (single-hex colour, D78).
-// Config: groups[] { id, label, note, cards[], compact_cards[] }, max_columns (4), min_column (320),
-// max_column (500), compact_below (700), wallpaper (true).
+// Config: groups[] { id, label, note, cards[], compact_cards[], with, column }, max_columns (4),
+// min_column (320), max_column (500), compact_below (700), wallpaper (true), packing ("order" | "fluid").
+//   packing: fluid (library v1 fluid rule, logic fluidPack): `with: <group id>` keeps a group directly
+//   under another; `column: 1` pins left, `column: -1` pins right; the rest go tallest first into
+//   the shortest column; columns are fixed once settled, so opening a section never moves another
+//   section sideways. Phones (compact mode) always use config order.
 //   compact_cards absent = the group shows `cards` on a phone too; compact_cards: [] = hidden on a
 //   phone; cards: [] = hidden on wide screens.
 const B = await import(new URL("./base.js", import.meta.url).href.split("?")[0] + new URL(import.meta.url).search);
@@ -214,7 +218,7 @@ export class HabibLayout extends HTMLElement {
     } else {
       // Heights in packing rows; hidden groups take no room.
       const heights = this._groups.map((g) => (g.el.hidden ? 0 : Math.ceil(g.inner.getBoundingClientRect().height / UNIT)));
-      const packed = G.packGroups(heights, n, 0);
+      const packed = this._config.packing === "fluid" ? this._fluid(heights, n) : G.packGroups(heights, n, 0);
       this._groups.forEach((g, i) => {
         const p = packed.place[i];
         if (!p) return;
@@ -224,6 +228,23 @@ export class HabibLayout extends HTMLElement {
       this._placed = { cols: n, place: packed.place, heights, colHeights: packed.colHeights };
     }
     this._root.classList.add("ready");
+  }
+  // Fluid rule: assign columns fresh while the page settles (first 1.5 s after the column count
+  // changes, while cards render), then keep the assignment and only restack the tops.
+  _fluid(heights, n) {
+    const ids = this._groups.map((g) => g.el.dataset.id);
+    const meta = this._groups.map((g) => ({ with: g.cfg.with != null && ids.includes(String(g.cfg.with)) ? ids.indexOf(String(g.cfg.with)) : null,
+      column: Number.isFinite(Number(g.cfg.column)) && g.cfg.column != null ? Number(g.cfg.column) : null }));
+    const now = (typeof performance !== "undefined" ? performance : Date).now();
+    const f = this._fluidState;
+    if (!f || f.cols !== n) this._fluidState = { cols: n, until: now + B.TIME.settleMs, assign: null };
+    const st = this._fluidState;
+    const missing = st.assign && heights.some((h, i) => h > 0 && st.assign[i] == null);
+    const keep = st.assign && now >= st.until && !missing;
+    const out = G.fluidPack(heights, n, meta, keep ? st.assign : null);
+    if (!keep) st.assign = out.assign;
+    if (!keep && now < st.until) this._settle = this._settle || setTimeout(() => { this._settle = null; this._layout(); }, Math.max(0, st.until - now) + 50);
+    return out;
   }
   getCardSize() { return 12; }
   getGridOptions() { return { columns: "full", rows: "auto" }; }

@@ -3,7 +3,10 @@
 //   Open:      header (heading, note, "n on", chevron) over the child cards.
 //   Collapsed: collapsed_view "none" (default) = the header alone with a summary;
 //              collapsed_view "compact" = the header plus a Compact card (chip) per light child.
-// Config: title, note, cards[], collapsed (false = starts open), collapsed_view, remember (true).
+// Config: title, note, cards[], collapsed (false = starts open), collapsed_view, remember (true),
+// collapsible (true; false = always open, no chevron).
+// A section may hold sections one level deep (e.g. "Lights" holding one collapsed section per
+// room); its summary then counts the lights of the sections inside it.
 // The summary counts lights that are on; a section without lights joins its children's own
 // one-line summaries (the same text their accordion bar shows).
 const B = await import(new URL("./base.js", import.meta.url).href.split("?")[0] + new URL(import.meta.url).search);
@@ -22,6 +25,7 @@ export class UiSection extends GlassCard {
       border-radius: var(--r-small); outline: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
     .section-header::after { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: var(--z-touch); transform: translateY(-50%); }
     .section-header:focus-visible { box-shadow: var(--g-ring); }
+    .section-header.fixed { cursor: default; } .section-header.fixed::after { content: none; }
     .heading { font: var(--t-section-sm); letter-spacing: var(--ls-section-sm); }
     .section-note { flex: 1; min-width: 0; font: var(--t-caption); color: var(--g-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .section-sum { font: var(--t-caption); color: var(--g-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }
@@ -38,13 +42,19 @@ export class UiSection extends GlassCard {
   constructor() { super(); this._alwaysFoldable = true; this._kids = null; }
   setConfig(config) {
     // A section starts open unless collapsed: true (the base class starts folded).
-    super.setConfig({ ...config, collapsed: config && config.collapsed === true });
+    // collapsible: false = always open: no toggle, no chevron, nothing remembered.
+    this._fixed = !!config && config.collapsible === false;
+    this._alwaysFoldable = !this._fixed;
+    super.setConfig({ ...config, collapsible: !this._fixed, collapsed: !this._fixed && config && config.collapsed === true });
   }
   _validate(c) {
     if (!Array.isArray(c.cards) || !c.cards.length) throw new Error("Set cards");
     this._lights = c.cards.filter((k) => LIGHT_TYPES.includes(k.type) && idsOf(k).length && k.variant !== "control")
       .map((k) => ({ cfg: k, ids: idsOf(k) }));
-    this._allIds = [...new Set(this._lights.flatMap((l) => l.ids))];
+    // Lights of nested sections count in the summary (no chips for them).
+    const nested = c.cards.filter((k) => k.type === "custom:ui-section" && Array.isArray(k.cards))
+      .flatMap((k) => k.cards.filter((x) => LIGHT_TYPES.includes(x.type)).flatMap(idsOf));
+    this._allIds = [...new Set([...this._lights.flatMap((l) => l.ids), ...nested])];
     this._compact = c.collapsed_view === "compact";
     this._kids = null;
   }
@@ -53,6 +63,8 @@ export class UiSection extends GlassCard {
     if (this._kids) for (const k of this._kids) if (k.el.setConfig) k.el.hass = h;
   }
   get hass() { return this._hass; }
+  // One line for a parent section or an accordion bar: "2 on", "All off", or the children's summaries.
+  _summary() { const s = this._summaryText(); return { label: this._config.title || "", html: esc(s.text) }; }
   _signature() {
     const kidsSig = this._kids && !this._lights.length ? this._kids.map((k) => (k.el._summary ? G.plainText(k.el._summary().html) : "")).join("|") : "";
     return (this._collapsed ? "c" : "o") + this._sigOf(this._allIds, this._collapsed ? ["brightness", "rgb_color", "color_temp_kelvin", "color_mode"] : []) + kidsSig;
@@ -81,7 +93,7 @@ export class UiSection extends GlassCard {
     });
   }
   _summaryText() {
-    if (this._lights.length) {
+    if (this._allIds.length) {
       const on = this._allIds.filter((id) => { const s = this._st(id); return s && s.state === "on"; }).length;
       return { text: on ? `${on} on` : "All off", on: on > 0 };
     }
@@ -93,10 +105,11 @@ export class UiSection extends GlassCard {
     const name = this._config.title || this._config.name || "";
     const sum = this._summaryText();
     const open = !this._collapsed;
-    return `<div class="section-header" data-collapse role="button" tabindex="0" aria-expanded="${open}" aria-label="${esc(name)}${sum.text ? `, ${esc(sum.text)}` : ""}, ${open ? "collapse" : "expand"}">
+    const toggle = this._fixed ? `role="heading" aria-level="2"` : `data-collapse role="button" tabindex="0" aria-expanded="${open}" aria-label="${esc(name)}${sum.text ? `, ${esc(sum.text)}` : ""}, ${open ? "collapse" : "expand"}"`;
+    return `<div class="section-header ${this._fixed ? "fixed" : ""}" ${toggle}>
       <span class="heading">${esc(name)}</span><span class="section-note">${esc(this._config.note || "")}</span>
-      ${sum.text && (this._collapsed || this._lights.length) ? `<span class="section-sum ${sum.on ? "on" : ""}">${esc(sum.text)}</span>` : ""}
-      <span class="fold">${CHEV(open)}</span></div>`;
+      ${sum.text && (this._collapsed || this._allIds.length) ? `<span class="section-sum ${sum.on ? "on" : ""}">${esc(sum.text)}</span>` : ""}
+      ${this._fixed ? "" : `<span class="fold">${CHEV(open)}</span>`}</div>`;
   }
   _toggleChip(i) {
     const l = this._lights[i];

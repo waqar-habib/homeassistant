@@ -218,3 +218,29 @@ test("climate targets and steps keep the range gap and the limits", () => {
   assert.deepEqual(G.targetData({ kind: "range", low: 68, high: 77 }), { target_temp_low: 68, target_temp_high: 77 });
   assert.deepEqual(G.targetData({ kind: "single", value: 71 }), { temperature: 71 });
 });
+
+test("fluidPack: pins, chains, tallest-first balance, config order inside a column", () => {
+  // hero(pinned left) home floors(with home) lights(pinned right) media lists
+  const h = [1040, 430, 300, 450, 80, 80];
+  const meta = [{ column: 1 }, {}, { with: 1 }, { column: -1 }, {}, {}];
+  const three = G.fluidPack(h, 3, meta);
+  assert.deepEqual(three.assign, [0, 1, 1, 2, 2, 2]);
+  assert.equal(three.place[2].top, 430); // floors directly under home
+  assert.equal(three.place[4].top, 450); // media under lights
+  const four = G.fluidPack(h, 4, meta);
+  assert.deepEqual(four.assign, [0, 1, 1, 3, 2, 2]); // lights stays rightmost
+  const one = G.fluidPack(h, 1, meta);
+  assert.ok(one.assign.every((c) => c === 0));
+  assert.deepEqual(one.place.map((p) => p.top), [0, 1040, 1470, 1770, 2220, 2300]);
+});
+
+test("fluidPack: a kept assignment only moves tops; hidden groups take no room", () => {
+  const meta = [{ column: 1 }, {}, { with: 1 }, { column: -1 }, {}, {}];
+  const first = G.fluidPack([1040, 430, 300, 450, 80, 80], 3, meta);
+  const after = G.fluidPack([1040, 430, 300, 900, 80, 80], 3, meta, first.assign); // a room opened in Lights
+  assert.deepEqual(after.assign, first.assign);
+  assert.equal(after.place[4].top, 900);
+  const hidden = G.fluidPack([1040, 0, 300, 450, 80, 80], 3, meta);
+  assert.equal(hidden.place[1], null);
+  assert.ok(hidden.place[2]); // the follower of a hidden anchor still shows
+});

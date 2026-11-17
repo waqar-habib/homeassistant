@@ -15,6 +15,7 @@ Format: modelled on the Bootstrap 6 docs (getbootstrap.com/docs/6.0, v6.0.0-alph
 | Layout | [Page](layout/page.md) | `custom:ui-page` | Draft |
 | Layout | [Section](layout/section.md) | `custom:ui-section` | Draft |
 | Layout | [Grid](layout/grid.md) | (inside page and section) | Draft |
+| Layout | [Fluid rule](layout/fluid.md) | `ui-page` `packing: fluid` | Draft |
 | Content | [Heading](content/heading.md) | `custom:ui-heading` | Draft |
 | Content | [Art](content/art.md) | (lamp, weather, prayer drawings) | Draft |
 | Components | [Card: Large card](components/card.md#large-card) | `custom:ui-card` | Draft |

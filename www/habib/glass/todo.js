@@ -12,7 +12,7 @@ export class HabibTodo extends GlassCard {
     .big { font: var(--t-headline); letter-spacing: var(--ls-headline); background: var(--g-list-title); -webkit-background-clip: text; background-clip: text; color: transparent; }
     .open { position: relative; font: var(--t-state); color: var(--g-dim); padding: var(--s-6) var(--s-10); border-radius: var(--r-pill); background: var(--g-well-border); }
     .list { display: flex; flex-direction: column; gap: var(--s-6); }
-    .it { display: flex; align-items: center; gap: var(--s-12); padding: var(--s-10) var(--s-12); border-radius: var(--r-chip); position: relative; overflow: hidden;
+    .it { display: flex; align-items: center; gap: var(--s-12); min-height: var(--z-touch); padding: var(--s-10) var(--s-12); border-radius: var(--r-chip); position: relative; overflow: hidden;
       background: linear-gradient(90deg, rgba(var(--c), .20), var(--g-raised-lo) 60%); border: var(--g-hair) solid rgba(var(--c), .25); }
     .it::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: var(--z-stripe); background: rgb(var(--c)); }
     .ck { position: relative; width: var(--z-check); height: var(--z-check); border-radius: var(--r-round); border: var(--g-edge) solid rgba(var(--c), .9); flex: none; transition: background var(--m-fast); }

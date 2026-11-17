@@ -12,9 +12,6 @@ export class HabibPrayer extends GlassCard {
     .glass { padding: var(--s-18) var(--s-18) var(--s-14); display: flex; flex-direction: column; gap: var(--s-12); }
     .right { display: flex; align-items: center; gap: var(--s-8); }
     .label { font: var(--t-section); letter-spacing: var(--ls-section); text-transform: uppercase; }
-    .adhan { font: var(--t-caption); padding: var(--s-6) var(--s-10); border-radius: var(--r-pill); display: flex; gap: var(--s-6); align-items: center;
-      background: var(--g-raised); color: var(--g-dim); }
-    .adhan.on { color: rgb(var(--g-mint)); }
     .next { border-radius: var(--r-panel); padding: var(--s-12) var(--s-14); background: linear-gradient(135deg, rgba(var(--g-warm), .22), var(--g-raised-lo));
       border: var(--g-hair) solid rgba(var(--g-warm), .28); }
     .hrow { display: flex; justify-content: space-between; align-items: baseline; }
@@ -39,7 +36,8 @@ export class HabibPrayer extends GlassCard {
     this._keys = G.PRAYERS.filter((k) => c.prayers[k]);
   }
   _signature() {
-    return this._sigOf([...this._keys.map((k) => this._config.prayers[k]), this._config.adhan].filter(Boolean)) + "#" + Math.floor(Date.now() / 30000);
+    const c = this._config;
+    return this._sigOf([...this._keys.map((k) => c.prayers[k]), c.adhan, c.adhan_error, ...(c.adhan_automations || [])].filter(Boolean)) + "#" + Math.floor(Date.now() / 30000);
   }
   _connected() { this._tick(); }
   _tick() { this._later(() => { this._maybeRender(false); this._tick(); }, 30000); }
@@ -65,7 +63,6 @@ export class HabibPrayer extends GlassCard {
   _render() {
     const plan = this._plan();
     const status = G.prayerStatus(plan);
-    const adhan = this._config.adhan ? this._st(this._config.adhan) : null;
     const fmt = (d) => d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     const rows = plan.rows.map((r) => {
       const t = r.at ? fmt(r.at) : "–";
@@ -75,16 +72,25 @@ export class HabibPrayer extends GlassCard {
           <span class="tm num">${esc(hm)}${ap ? `<small>${esc(ap)}</small>` : ""}</span></div>`;
     }).join("");
     const next = plan.next;
-    const on = adhan && adhan.state === "on";
     this._paint(`<div class="glass">
         <div class="hd"><span class="label">Prayer Times</span>
-          <span class="right" data-fold-slot>${adhan ? `<span class="adhan ${on ? "on" : ""}"><i class="dot ok ${on ? "on" : ""}"></i>Adhan ${on ? "on" : "off"}</span>` : ""}</span></div>
+          <span class="right" data-fold-slot>${this._badge()}</span></div>
         ${next ? `<div class="next"><div class="hrow"><span class="nx">Next · <b>${PRAYER_NAMES[next.key]}</b></span>
           <span class="cd num">${esc(G.formatCountdown(plan.msLeft))}</span></div>
           <div class="bar"><span style="width:${Math.round(plan.progress * 100)}%"></span></div></div>`
           : `<div class="sub">${esc(STATUS_TEXT[status])}</div>`}
         <div class="list">${rows}</div>
       </div>`);
+  }
+  // Adhan badge: on, off or error (logic G.adhanStatus). Shown, never changed.
+  _badge() {
+    const c = this._config;
+    if (!c.adhan) return "";
+    const st = (id) => { const s = this._st(id); return s ? s.state : null; };
+    const status = G.adhanStatus({ gate: st(c.adhan), error: c.adhan_error ? st(c.adhan_error) : null, automations: (c.adhan_automations || []).map(st) });
+    const text = { on: "Adhan on", off: "Adhan off", error: "Adhan error" }[status];
+    const why = status === "error" && c.adhan_error ? st(c.adhan_error) : "";
+    return `<span class="badge badge-${status}" role="status"${why ? ` title="${esc(why)}"` : ""}><i class="dot"></i>${text}</span>`;
   }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-prayer", prayers: {} }; }

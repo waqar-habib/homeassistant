@@ -2,7 +2,7 @@
 // Tap toggles, the slider dims, the three dots open the colour sheet.
 const B = await import(new URL("./base.js", import.meta.url).href.split("?")[0] + new URL(import.meta.url).search);
 const A = await B.load("./art.js");
-const { G, GlassCard, esc, rgbStr, usableState, switchLamps, haptic, moreInfo, adopt, paint, carryTheme, ICONS } = B;
+const { G, GlassCard, esc, rgbStr, usableState, switchLamps, haptic, moreInfo, openDrawer, ICONS } = B;
 
 const SWATCHES = [
   { k: 2200, label: "Candle" }, { k: 2700, label: "Warm" }, { k: 4000, label: "Neutral" }, { k: 6000, label: "Daylight" },
@@ -22,27 +22,14 @@ export function lampState({ ids, st, glow, pending, noResponse, short }) {
   return { text, on, dim, dead: !usable.length, missing: ids.filter((id) => !st(id)), usable, group };
 }
 
-const SHEET_CSS = `
-  .scrim { position: fixed; inset: 0; z-index: 9999; background: var(--g-scrim); display: flex; align-items: flex-end; justify-content: center;
-    animation: fade var(--m-fast) ease; }
-  .sheet { width: 100%; max-width: var(--z-sheet-max); padding: var(--s-10) var(--s-22) calc(var(--s-24) + env(safe-area-inset-bottom, 0px));
-    border-radius: var(--r-sheet) var(--r-sheet) 0 0; color: var(--g-text); font-family: var(--g-font);
-    background: var(--g-sheet); border: var(--g-hair) solid var(--g-border);
-    -webkit-backdrop-filter: var(--g-blur-sheet); backdrop-filter: var(--g-blur-sheet); animation: up var(--m-sheet); }
-  .handle { width: var(--z-handle-w); height: var(--z-handle-h); border-radius: var(--r-bar); background: var(--g-idle); margin: 0 auto var(--s-16); }
-  .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--s-14); }
+// Swatch grid inside the shared drawer (base.js openDrawer).
+const SWATCH_CSS = `
   .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--s-12); }
   .sw { aspect-ratio: 1; min-width: var(--z-touch); border-radius: var(--r-round); cursor: pointer;
     background: radial-gradient(circle at 35% 30%, var(--g-solid), rgb(var(--c)) 60%);
     box-shadow: var(--g-glow-swatch) rgba(var(--c), .8), inset 0 0 0 var(--g-hair) var(--g-idle); transition: transform var(--m-fast); }
   .sw:active { transform: scale(var(--k-press-sw)); }
   .sw:focus-visible { box-shadow: var(--g-ring); }
-  .lab { margin: var(--s-18) 0 var(--s-10); }
-  .done { cursor: pointer; min-height: var(--z-touch); box-sizing: border-box; display: grid; place-items: center; padding: 0 var(--s-16);
-    border-radius: var(--r-pill); background: var(--g-raised-hi); font: var(--t-body-sm-b); }
-  .info { cursor: pointer; min-height: var(--z-touch); display: grid; place-items: center; font: var(--t-label); color: var(--g-dim); margin-top: var(--s-12); }
-  .done:focus-visible, .info:focus-visible { box-shadow: var(--g-ring); }
-  @keyframes up { from { transform: translateY(100%); } } @keyframes fade { from { opacity: 0; } }
 `;
 
 export class HabibLight extends GlassCard {
@@ -79,12 +66,30 @@ export class HabibLight extends GlassCard {
     .wide .body { display: grid; grid-template-columns: 40% 1fr; gap: var(--s-14); flex: 1; min-height: 0; }
     .wide .stage { min-height: 0; height: 100%; margin: 0; }
     .wide .right { display: flex; flex-direction: column; justify-content: space-between; gap: var(--s-10); min-width: 0; }
+    /* Large card (layout: row): art beside the title and state, control pill below. */
+    .glass.lg { min-height: var(--z-card-lg-min); padding: var(--s-12) var(--s-12) var(--s-10); gap: var(--s-8); }
+    .lg .top { display: grid; grid-template-columns: var(--z-card-lg-art) minmax(0, 1fr); gap: var(--s-12); align-items: center; flex: 1; }
+    .lg .stage { height: var(--z-card-lg-art); min-height: 0; margin: 0; align-items: center; }
+    .lg .head { min-width: 0; }
+    .lg .title { font: var(--t-title-sm); letter-spacing: var(--ls-title-sm); }
+    .glass.lg.is-on::before { background: radial-gradient(60% 90% at 14% 40%, rgba(var(--c), calc(.24 * var(--lv, 1))), transparent 70%); }
+    /* Control pill (variant: control): the pill alone, for a switch or light without art. */
+    .glass.ctl { min-height: 0; padding: var(--s-8); flex-direction: row; align-items: center; gap: var(--s-10); }
+    .ctl .ctl-name { font: var(--t-label-b); padding-left: var(--s-6); flex: none; max-width: 40%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ctl .slider, .ctl .sw-pill { flex: 1; min-width: 0; }
+    .sw-pill { position: relative; height: var(--z-slider); border-radius: var(--r-control); background: var(--g-well-deep); border: var(--g-hair) solid var(--g-raised);
+      display: flex; align-items: center; padding: 0 var(--s-12); gap: var(--s-6); font: var(--t-state); }
+    .is-on .sw-pill { background: rgba(var(--c), .22); border-color: rgba(var(--c), .5); }
+    .sw-pill svg { width: var(--z-i-14); height: var(--z-i-14); }
   `;
   _validate(c) {
     const ids = Array.isArray(c.entities) ? c.entities : c.entity ? [c.entity] : [];
     if (!ids.length) throw new Error("Set entities");
     this._ids = ids.map(String);
     this._wide = c.size === "wide";
+    // layout: "row" = Large card (art beside the text). variant: "control" = Control pill only.
+    this._row = (c.layout || this.constructor.defaultLayout) === "row";
+    this._ctl = c.variant === "control";
   }
   _signature() { return this._sigOf(this._ids, ["brightness", "rgb_color", "color_temp_kelvin", "color_mode"]); }
   _snap() { return this._ids.map((id) => { const s = this._st(id); return s ? s.state : "-"; }).join(","); }
@@ -105,11 +110,20 @@ export class HabibLight extends GlassCard {
     const head = `<div class="head"><div class="title">${esc(cfg.name || "")}</div>
       <span class="state"><i class="dot ${s.on ? "on" : ""}"></i>${esc(s.text)}${cfg.room ? ` · ${esc(cfg.room)}` : ""}</span>
       ${s.missing.length && s.missing.length < this._ids.length ? `<div class="note-bad">Missing: ${esc(s.missing.join(", "))}</div>` : ""}</div>`;
-    const slider = s.dim ? this._sliderHtml(glow) : "";
-    this._paint(`<div class="glass press ${s.on ? "is-on" : "is-off"} ${s.dead ? "is-dead" : ""} ${this._wide ? "wide" : ""}" role="button" tabindex="0"
+    // The control pill: a brightness slider for a dimmable light, an on/off pill otherwise. The
+    // three dots appear when there is something more to set (colour), or always on a Large card.
+    const slider = s.dim ? this._sliderHtml(glow) : (this._row || this._ctl) ? this._switchPill(s) : "";
+    const kind2 = this._ctl ? "ctl" : this._row ? "lg" : this._wide ? "wide" : "";
+    const body = this._ctl ? `<span class="ctl-name">${esc(cfg.name || "")}</span>${slider}`
+      : this._row ? `<div class="top">${art}${head}</div>${slider}`
+      : this._wide ? `<div class="body">${art}<div class="right">${head}${slider}</div></div>` : `${head}${art}${slider}`;
+    this._paint(`<div class="glass press ${s.on ? "is-on" : "is-off"} ${s.dead ? "is-dead" : ""} ${kind2}" role="button" tabindex="0"
         style="--c: ${rgbStr(G.glowRgb(glow.rgb))}; --lv: ${glow.level}" aria-pressed="${s.on}" aria-label="${esc(cfg.name || "Light")}: ${esc(s.text)}">
-        ${this._wide ? `<div class="body">${art}<div class="right">${head}${slider}</div></div>` : `${head}${art}${slider}`}
+        ${body}
       </div>`);
+  }
+  _switchPill(s) {
+    return `<div class="sw-pill">${ICONS.power}<span>${esc(s.on ? "On" : s.text === "No response" ? "No response" : "Off")}</span></div>`;
   }
   _sliderHtml(glow) {
     const pct = glow.on ? glow.pct : 0;
@@ -205,41 +219,31 @@ export class HabibLight extends GlassCard {
   _openSheet() {
     const colorIds = this._colorable();
     const ids = this._dimmable();
-    const host = document.createElement("div");
-    carryTheme(this, host);
-    const root = host.attachShadow({ mode: "open" });
-    adopt(root, SHEET_CSS);
-    const list = SWATCHES.filter((s) => s.k || colorIds.length);
-    const sw = list.map((s, i) => `<button class="sw" data-i="${i}" style="--c: ${rgbStr(s.k ? G.kelvinToRgb(s.k) : s.rgb)}" aria-label="${esc(s.label)}"></button>`).join("");
-    paint(root, `<div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(this._config.name || "Light")}">
-      <div class="handle"></div>
-      <div class="row"><span><span class="title">${esc(this._config.name || "Light")}</span>
-        <span class="sub" style="display:block">${esc(this._usable().map((id) => G.colorLabel(this._st(id).attributes)).find(Boolean) || "")}</span></span>
-        <button class="done">Done</button></div>
-      <div class="lab eyebrow">${colorIds.length ? "White and colour" : "White"}</div>
-      <div class="grid">${sw}</div>
-      <button class="info">Open full controls</button>
-    </div></div>`);
-    const close = () => { host.remove(); document.removeEventListener("keydown", onKey, true); };
-    const onKey = (e) => { if (e.key === "Escape") close(); };
-    document.addEventListener("keydown", onKey, true);
-    root.querySelector(".scrim").addEventListener("click", (e) => { if (e.target.classList.contains("scrim")) close(); });
-    root.querySelector(".done").addEventListener("click", close);
-    root.querySelector(".info").addEventListener("click", () => { close(); moreInfo(this, this._ids[0]); });
-    root.querySelectorAll(".sw").forEach((b) => b.addEventListener("click", () => {
-      const s = list[Number(b.dataset.i)];
-      haptic(this);
-      if (s.k) {
-        const temps = ids.filter((id) => (this._st(id).attributes.supported_color_modes || []).includes("color_temp"));
-        if (temps.length) this._hass.callService("light", "turn_on", { color_temp_kelvin: s.k }, { entity_id: temps });
-      } else {
-        this._hass.callService("light", "turn_on", { rgb_color: s.rgb }, { entity_id: colorIds });
-      }
-    }));
-    document.body.appendChild(host);
+    const list = SWATCHES.filter((sw) => sw.k || colorIds.length);
+    if (!list.length || !ids.length) { moreInfo(this, this._ids[0]); return; }
+    const sw = list.map((x, i) => `<button class="sw" data-i="${i}" style="--c: ${rgbStr(x.k ? G.kelvinToRgb(x.k) : x.rgb)}" aria-label="${esc(x.label)}"></button>`).join("");
+    openDrawer(this, {
+      title: this._config.name || "Light",
+      sub: this._usable().map((id) => G.colorLabel(this._st(id).attributes)).find(Boolean) || "",
+      css: SWATCH_CSS,
+      body: `<div class="drawer-label eyebrow">${colorIds.length ? "White and colour" : "White"}</div><div class="grid">${sw}</div>`,
+      onLink: () => moreInfo(this, this._ids[0]),
+      onMount: (root) => root.querySelectorAll(".sw").forEach((b) => b.addEventListener("click", () => {
+        const x = list[Number(b.dataset.i)];
+        haptic(this);
+        if (x.k) {
+          const temps = ids.filter((id) => (this._st(id).attributes.supported_color_modes || []).includes("color_temp"));
+          if (temps.length) this._hass.callService("light", "turn_on", { color_temp_kelvin: x.k }, { entity_id: temps });
+        } else {
+          this._hass.callService("light", "turn_on", { rgb_color: x.rgb }, { entity_id: colorIds });
+        }
+      })),
+    });
   }
   getCardSize() { return 4; }
   getGridOptions() {
+    if (this._ctl) return { columns: 12, rows: 1, min_columns: 6 };
+    if (this._row) return { columns: this._wide ? 12 : 6, rows: 2, min_columns: 6, min_rows: 2 };
     return this._wide ? { columns: 12, rows: 3, min_columns: 6, min_rows: 3 } : { columns: 6, rows: 4, min_columns: 4, min_rows: 3 };
   }
   static getStubConfig(hass, entities) {

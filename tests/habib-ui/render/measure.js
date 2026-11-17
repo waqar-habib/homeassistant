@@ -4,7 +4,7 @@
   const roots = [];
   const walk = (root) => { roots.push(root); for (const el of root.querySelectorAll("*")) if (el.shadowRoot) walk(el.shadowRoot); };
   walk(document);
-  const habibRoots = roots.filter((r) => r.host && /^habib-/i.test(r.host.localName));
+  const habibRoots = roots.filter((r) => r.host && /^(habib|ui)-/i.test(r.host.localName));
   const all = (sel) => habibRoots.flatMap((r) => [...r.querySelectorAll(sel)]);
   const hostOf = (el) => { const r = el.getRootNode(); return r.host ? r.host.localName : "document"; };
   const visible = (el) => { const r = el.getBoundingClientRect(); const cs = getComputedStyle(el); return r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none"; };
@@ -69,7 +69,7 @@
   });
 
   // ---- layout: columns, blank space between groups, ragged bottom
-  const layout = roots.map((r) => r.host).find((h) => h && h.localName === "habib-layout");
+  const layout = roots.map((r) => r.host).find((h) => h && (h.localName === "habib-layout" || h.localName === "ui-page"));
   if (layout) {
     const groups = [...layout.shadowRoot.querySelectorAll(".group")].filter((g) => !g.hidden).map((g) => ({ id: g.dataset.id, ...page(g.getBoundingClientRect()) }));
     const colsX = [...new Set(groups.map((g) => Math.round(g.x)))].sort((a, b) => a - b);

@@ -1,6 +1,30 @@
-// glass/climate.js: habib-climate. A dial per thermostat. A tap opens HA's own dialog; no setpoint call from here.
+// glass/climate.js: habib-climate / ui-climate. A dial per thermostat.
+// A tap opens the climate drawer (controls: true, the ui-climate default; owner GREEN LIGHT climate
+// controls 2026-11-17): mode and setpoints, sent through climate.set_hvac_mode and
+// climate.set_temperature. habib-climate keeps controls: false (HA's own dialog) until cutover.
 const B = await import(new URL("./base.js", import.meta.url).href.split("?")[0] + new URL(import.meta.url).search);
-const { GlassCard, esc, moreInfo, ICONS } = B;
+const { G, GlassCard, esc, moreInfo, haptic, openDrawer, ICONS, TIME } = B;
+
+const DRAWER = `
+  .now { display: flex; align-items: baseline; gap: var(--s-10); margin-bottom: var(--s-6); }
+  .now .cur { font: var(--t-metric-xl); letter-spacing: var(--ls-metric-xl); }
+  .modes { display: flex; flex-wrap: wrap; gap: var(--s-8); }
+  .mode { cursor: pointer; min-height: var(--z-touch); padding: 0 var(--s-16); border-radius: var(--r-pill); display: inline-grid; place-items: center;
+    background: var(--g-raised); color: var(--g-dim); font: var(--t-label-b); }
+  .mode.sel { background: var(--g-raised-hi); color: var(--g-text); box-shadow: inset 0 0 0 var(--g-hair) var(--g-line); }
+  .mode:focus-visible, .step:focus-visible { box-shadow: var(--g-ring); }
+  .sets { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: var(--s-12); }
+  .set { border-radius: var(--r-panel); padding: var(--s-12); display: flex; flex-direction: column; align-items: center; gap: var(--s-8); }
+  .set.heat { box-shadow: inset 0 0 0 var(--g-hair) var(--g-heat); } .set.cool { box-shadow: inset 0 0 0 var(--g-hair) var(--g-cool); }
+  .set .eyebrow { color: var(--g-dim); }
+  .set.heat .eyebrow { color: var(--g-heat); } .set.cool .eyebrow { color: var(--g-cool); }
+  .ctl { display: flex; align-items: center; gap: var(--s-10); }
+  .step { cursor: pointer; width: var(--z-stepper); height: var(--z-stepper); border-radius: var(--r-round); display: grid; place-items: center;
+    background: var(--g-raised); color: var(--g-text); font: var(--t-title); }
+  .step:active { transform: scale(var(--k-press-btn)); }
+  .val { min-width: var(--z-setpoint); text-align: center; font: var(--t-metric-md); letter-spacing: var(--ls-metric-md); }
+  .msg { min-height: var(--z-i-18); font: var(--t-caption); color: var(--g-dim); text-align: center; margin-top: var(--s-10); }
+`;
 
 const MODE = { heat_cool: "Auto", heat: "Heating", cool: "Cooling", off: "Off", auto: "Auto", dry: "Dry", fan_only: "Fan" };
 const ACTION = { heating: "Heating now", cooling: "Cooling now", idle: "Idle", off: "Off" };
@@ -29,8 +53,81 @@ export class HabibClimate extends GlassCard {
   _setup() {
     this.shadowRoot.addEventListener("click", (e) => {
       const t = e.target.closest && e.target.closest("[data-entity]");
-      if (t) moreInfo(this, t.getAttribute("data-entity"));
+      if (!t) return;
+      const id = t.getAttribute("data-entity");
+      const it = this._items.find((i) => i.entity === id) || { entity: id };
+      if (this._controls()) this._openDrawer(it); else moreInfo(this, id);
     });
+  }
+  _controls() { return (this._config.controls ?? this.constructor.defaultControls) === true; }
+  set hass(h) { super.hass = h; if (this._drawer) this._drawer.update(); }
+  get hass() { return this._hass; }
+
+  // Climate drawer: current temperature, mode buttons, one stepper per setpoint.
+  // Steps change the shown value at once and are sent 0.8 s after the last tap (one call per burst).
+  _openDrawer(it) {
+    const id = it.entity;
+    const s0 = this._st(id);
+    if (!s0 || !B.usableState(s0)) { moreInfo(this, id); return; }
+    let local = null, timer = null, sentAt = 0, msg = "";
+    const lim = () => { const a = this._st(id).attributes; return { step: a.target_temp_step || 1, min: a.min_temp ?? 50, max: a.max_temp ?? 90, gap: 3 }; };
+    const shown = () => local || G.climateTargets(this._st(id).state, this._st(id).attributes);
+    const draw = (root) => {
+      const s = this._st(id); const a = s.attributes; const t = shown();
+      const modes = (a.hvac_modes || []).map((m) => `<button class="mode ${s.state === m ? "sel" : ""}" data-mode="${esc(m)}" aria-pressed="${s.state === m}">${esc(MODE[m] || m)}</button>`).join("");
+      const one = (which, label, v, tone) => `<div class="set well ${tone}"><span class="eyebrow">${label}</span>
+          <div class="ctl"><button class="step" data-step="${which}" data-dir="-1" aria-label="${label} down">−</button>
+          <span class="val num" aria-live="polite">${Math.round(v)}<span class="unit">°</span></span>
+          <button class="step" data-step="${which}" data-dir="1" aria-label="${label} up">+</button></div></div>`;
+      const sets = t.kind === "range" ? one("low", "Heat to", t.low, "heat") + one("high", "Cool to", t.high, "cool")
+        : t.kind === "single" ? one("value", s.state === "cool" ? "Cool to" : "Heat to", t.value, s.state === "cool" ? "cool" : "heat") : "";
+      const action = a.hvac_action ? ACTION[a.hvac_action] || a.hvac_action : MODE[s.state] || s.state;
+      root.querySelector(".body").innerHTML = `
+        <div class="now"><span class="cur num">${typeof a.current_temperature === "number" ? Math.round(a.current_temperature) : "–"}<span class="unit">°</span></span><span class="sub">${esc(action)}</span></div>
+        <div class="drawer-label eyebrow">Mode</div><div class="modes">${modes}</div>
+        ${sets ? `<div class="drawer-label eyebrow">Target</div><div class="sets" style="--n: ${t.kind === "range" ? 2 : 1}">${sets}</div>` : ""}
+        <div class="msg" role="status">${esc(msg)}</div>`;
+    };
+    const send = () => {
+      const data = G.targetData(local);
+      if (!data) return;
+      sentAt = Date.now(); msg = "Sending…"; this._drawer.update();
+      this._hass.callService("climate", "set_temperature", data, { entity_id: id }).catch(() => { msg = "Not accepted"; local = null; this._drawer.update(); });
+      this._later(() => { if (local && sentAt && Date.now() - sentAt >= TIME.noResponseMs) { msg = "No response"; local = null; this._drawer.update(); } }, TIME.noResponseMs);
+    };
+    const close = openDrawer(this, {
+      title: it.name || s0.attributes.friendly_name || id, sub: "Climate", css: DRAWER, body: `<div class="body"></div>`,
+      onLink: () => moreInfo(this, id),
+      onMount: (root) => {
+        draw(root);
+        root.addEventListener("click", (e) => {
+          const m = e.target.closest && e.target.closest("[data-mode]");
+          if (m) {
+            haptic(this); msg = "Sending…"; local = null; draw(root);
+            this._hass.callService("climate", "set_hvac_mode", { hvac_mode: m.dataset.mode }, { entity_id: id }).catch(() => { msg = "Not accepted"; draw(root); });
+            return;
+          }
+          const b = e.target.closest && e.target.closest("[data-step]");
+          if (!b) return;
+          haptic(this);
+          local = G.stepTarget(shown(), b.dataset.step, Number(b.dataset.dir), lim());
+          msg = ""; draw(root);
+          clearTimeout(timer); timer = setTimeout(send, TIME.debounceMs);
+        });
+        this._drawer = {
+          update: () => {
+            // Drop the local value once Home Assistant reports it (or the mode changed).
+            const real = G.climateTargets(this._st(id).state, this._st(id).attributes);
+            if (local && JSON.stringify(real) === JSON.stringify(local)) { local = null; msg = ""; sentAt = 0; }
+            if (msg === "Sending…" && !local && !sentAt) msg = "";
+            if (root.isConnected || root.host.isConnected) draw(root);
+          },
+        };
+        const obs = new MutationObserver(() => { if (!root.host.isConnected) { this._drawer = null; clearTimeout(timer); obs.disconnect(); } });
+        obs.observe(document.body, { childList: true });
+      },
+    });
+    return close;
   }
   _render() {
     const tiles = this._items.map((it) => {
@@ -81,5 +178,6 @@ export class HabibClimate extends GlassCard {
   }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-climate", entities: [] }; }
+  static defaultControls = false;
 }
 export const card = { tag: "habib-climate", cls: HabibClimate, name: "Habib climate (glass)", description: "Indoor temperature and setpoint range per thermostat. Tap opens Home Assistant's dialog." };

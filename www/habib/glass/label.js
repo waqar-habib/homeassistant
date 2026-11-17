@@ -4,7 +4,7 @@ const { GlassCard, esc } = B;
 
 export class HabibLabel extends GlassCard {
   static css = `
-    .l { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-8); padding: var(--z-label-pad) var(--s-6) 0; color: var(--g-text); font-family: var(--g-font); }
+    .l { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s-8); padding: var(--z-label-pad) var(--s-6) var(--z-label-gap); color: var(--g-text); font-family: var(--g-font); }
     .h { font: var(--t-section); letter-spacing: var(--ls-section); text-transform: uppercase; text-shadow: var(--g-text-shadow); }
     .s { font: var(--t-sub); color: var(--g-dim); text-shadow: var(--g-text-shadow); }
   `;

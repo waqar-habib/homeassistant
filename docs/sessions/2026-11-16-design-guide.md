@@ -20,5 +20,10 @@ A full design guide for the Home Assistant dashboards, written for AI tools: mob
 2. Estimated contrast of dim text at 10 to 12 px is about 4:1 on the lightest glass; several controls are under 44 px (I55). Both are estimates from the source and need the Mac measurements.
 3. Column counts are known only at 430, 1024 and 1440. The 1920x1080 tablet's layout depends on its pixel ratio (I5).
 
+## Owner follow-up (same day)
+1. Move the whole process to the Mac so Chrome is available for live testing.
+2. Fix the stale Nuvio line in `CLAUDE.md`: done.
+3. v0.2 scope (measurements only, or also step 1 of the light-mode path): TBD until the Mac session.
+
 ## Resume point
-Owner: run the Mac audit (`git pull; read docs/prompts/mac/2026-11-16-design-guide-audit.md; run it`), then review the guide. Next revision (v0.2) folds in the audit and the owner's notes. v1.0 only on "GREEN LIGHT".
+Mac session: `git pull; read docs/prompts/mac/2026-11-16-design-guide-resume.md; run it`. It runs the read-only audit, writes v0.2 from the measurements and asks the owner about the light-mode path. Nothing in HA may change before that answer. v1.0 only on "GREEN LIGHT".

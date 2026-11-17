@@ -1,6 +1,14 @@
 # HANDOFF
 
-Last updated: 2026-11-17 ~09:20 CST (Pi 5, Adhan gate fix and component library v1). Before that: 2026-11-17 (Pi 5, habib-layout finished).
+Last updated: 2026-11-17 ~10:00 CST (Pi 5, fluid rule and Mac layout). Before that: ~09:20 CST (Adhan gate fix, library v1).
+
+## Fluid rule and Mac layout (2026-11-17, Pi 5, D81): merged, staging live
+1. **Climate drawer padding fixed:** each target box sizes from its own width (one row from 210 px, stacked on phones); the row never touches the edge.
+2. **Fluid rule** (`ui-page` `packing: fluid`, logic `fluidPack`, tests): chains (`with`), pins (`column: 1` / `-1`), tallest-first balance, config order inside a column, no sideways jumps after the page settles. Docs `docs/design/library/layout/fluid.md`.
+3. **habib-wh-next wide** (`290750ff8d00113b`): hero and prayer / Home and Floors (always open) / Lights (rooms collapsed until clicked) on the right; Lists and Media placed by the rule (1184: Lists under prayer, Media under Lights). **habib-mkh-next wide** (`5491a6568bf3240c`): same pattern without prayer and lists. **Phones unchanged:** same cards, same order, same positions (measured).
+4. Loader v13, merge `95bcc40`. Live habib-wh `95f4c477d92c3e07` and habib-mkh `c0d82737c4398684` unchanged and measure the same.
+5. **Owner next:** on the Mac, hard refresh (Cmd+Shift+R) and check both staging dashboards; on the iPhone, Reset frontend cache, check the climate drawer. **Claude next:** after Dhuhr 12:16 CST read the `automation.adhan_dhuhr` trace and `input_text.adhan_last_error` (I60).
+6. Rollback: loader `?v=12` + `git revert -m 1 95bcc40`. Note `docs/sessions/2026-11-17-library-v1.md` (part 2).
 
 ## Adhan gate fix and component library v1 (2026-11-17, Pi 5, D80): merged, staging live
 1. **Adhan (I60):** gate was off since 03:05 CST (restart + `initial: off`); Fajr missed. Fixed (`2dcbc36`), gate ON, all 5 automations on, new `input_text.adhan_last_error`. **Claude next:** after Dhuhr 12:16 CST read the `automation.adhan_dhuhr` trace and the error helper.

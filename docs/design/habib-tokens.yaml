@@ -1,14 +1,18 @@
-# Habib Glass design tokens. Draft v0.1, 2026-11-16. Companion to docs/design-guide.md.
+# Habib Glass design tokens. Draft v0.2, 2026-11-16. Companion to docs/design-guide.md.
 # Machine-readable single source for every value an AI tool may use in a Habib dashboard.
 #
 # status: codified  = read from the live source on 2026-11-16 (file named in `source`).
+# status: measured  = also confirmed in the live frontend (computed style or rendered size), docs/design/audit-2026-11-16.md.
 # status: proposed  = does not exist yet; needs the owner's approval before it is built.
 #
 # Rule: a value that is not in this file may not appear in card CSS. Add the token first.
 # Change a colour, font or radius HERE and in its `source`, never inside a component.
 
 meta:
-  version: 0.1-draft
+  version: 0.2-draft
+  measured: "2026-11-16, Chrome on macOS, HA core 2026.11.1, 12 viewports, docs/design/audit-2026-11-16.md"
+  fonts_loaded: { "Habib Display": true, "Habib Text": true }   # document.fonts.check
+  profile_theme: Material You      # Habib Glass is applied per view; it has 41 keys and no modes
   system: Habib Glass
   source:
     theme: themes/habib_glass/habib_glass.yaml
@@ -27,7 +31,7 @@ font:
   smoothing: antialiased
   numerals: tabular-nums        # every clock, countdown, temperature, percentage
 
-# ---------------------------------------------------------------- type scale (codified)
+# ---------------------------------------------------------------- type scale (codified and measured)
 # [family, weight, size px, line-height, letter-spacing, transform]. lh "-" = normal.
 type:
   clock:        [display, 200, "clamp(64px, 19vw, 104px)", 0.92, -0.04em, none]
@@ -41,19 +45,23 @@ type:
   title-lg:     [display, 600, 18, 22, 0, none]              # weather condition, media title (lh 23)
   title:        [display, 600, 17, 22, -0.01em, none]        # card title (.title), lamp name
   title-alt:    [display, 500, 17, 22, 0, none]              # date, prayer time
-  title-sm:     [display, 600, 15, "-", -0.01em, none]       # climate tile name, fold-bar value
+  bar-value:    [display, 600, 17, "-", 0, none]             # fold-bar value ("71°"); measured, was listed as 15 in v0.1
+  title-sm:     [display, 600, 15, "-", -0.01em, none]       # climate tile name (lh 22), dock-bar value
   title-xs:     [display, 600, 13, 16, 0, none]              # compact hero condition; date 500 13/17
   section:      [display, 600, 13, 16, 0.22em, uppercase]    # habib-label, "Prayer Times"
   section-sm:   [display, 600, 12, 14, 0.20em, uppercase]    # habib-room header
-  body:         [text, 500, 15, "-", 0, none]                # prayer name, list item, fold-bar text
+  body:         [text, 500, 15, "-", 0, none]                # prayer name, list item
   body-sm:      [text, 500, 14, "-", 0, none]                # input; buttons use 600
-  label:        [text, 500, 13, "-", 0, none]                # secondary lines; names use 600
+  label:        [text, 500, 13, "-", 0, none]                # secondary lines, fold-bar text (dim); names use 600
   sub:          [text, 500, 12, 16, 0, none]                 # .sub
-  state:        [text, 600, 12, 16, 0, none]                 # lamp state, tabs, slider value
+  hijri:        [text, 500, 12, 16, 0.02em, none]            # Hijri date, text-dim
+  state:        [text, 600, 12, 16, 0, none]                 # lamp state, tabs, slider value (slider value colour: color.dark.slider-value)
   eyebrow:      [text, 600, 11, 14, 0.14em, uppercase]       # .eyebrow, fold-bar label
-  caption:      [text, 600, 11, 13, 0, none]                 # chip name, pills use 500
+  caption:      [text, 600, 11, 13, 0, none]                 # chip name, room counter (accent-warm), dial range (dim); pills use 500 (10 px in the compact hero)
   micro:        [text, 600, 10, 12, 0, none]                 # chip state, compact pills
   micro-caps:   [text, 600, 10, 12, 0.12em, uppercase]       # dock bar label
+  unit:         "degree sign: half the number's size, same colour as the number (28/56, 18/40, 17/36). AM/PM: text-dim"
+  clock_basis:  "19vw of the viewport, not of the card: 81.7 px at 430, 104 px from 548 px upward"
   min_size_px: 10               # nothing smaller, ever
   min_size_new_px: 12           # new components: 12 px floor (10 and 11 are codified legacy)
 
@@ -84,6 +92,7 @@ color:
     wallpaper:   "/local/habib/bg/evergreen.svg"   # stops #2c4636 > #1c3226 > #0d1a13
     control-solid: "#ffffff"                  # play button, slider knob, dial dot
     control-solid-ink: "#18241d"
+    slider-value: "rgba(255,255,255,.9)"      # measured literal on the lamp slider; new work uses text
   light:                         # status: PROPOSED. Nothing light exists today. Contrast figures are estimates.
     text:        "#16241b"
     text-dim:    "rgba(22,36,27,.68)"
@@ -119,6 +128,17 @@ color:
     list-title-gradient: ["#c9d8ff", "#f3c8ff"]
     list-add-gradient: ["#8d9dff", "#c58cff"]   # the only purple control; do not reuse elsewhere
     daypart-tint: { dawn: "255,170,120 @.30", day: "255,230,160 @.22", dusk: "255,128,96 @.28 + 140,90,200 @.20", night: "120,150,255 @.18" }
+  measured-backgrounds:          # status: measured. Card pixels behind text, sampled from screenshots (±0.3 on ratios)
+    darkest: "27, 55, 40"
+    typical: ["57, 94, 77", "68, 104, 78", "64, 107, 88"]
+    dock-bar: "40, 81, 63"
+    hero: "76, 123, 91"
+    lamp-on: "107, 112, 80"
+  measured-contrast:             # text #eef4ee at the given opacity; WCAG AA needs 4.5 (3.0 for large text)
+    text:       { darkest: 11.6, typical: [5.4, 6.5], hero: 4.4, lamp-on: 4.6 }
+    text-dim:   { darkest: 5.5, typical: [3.2, 3.6], dock-bar: 4.2, hero: 2.7, lamp-on: 2.8 }
+    text-faint: { darkest: 3.0, typical: [2.1, 2.3], hero: 1.9 }
+    note: "dim at .72 gives 3.8 on a typical card; 4.5 needs about .84. On the hero no opacity reaches 4.5."
   alpha-on-accent:               # how an accent or lamp colour is mixed (codified)
     fill: [.20, .24]             # tinted background
     border: [.25, .50]
@@ -152,9 +172,9 @@ blur:
 space:
   scale_new: [4, 8, 12, 16, 24]             # use these for anything new
   scale_dense: [2, 6, 10, 14, 18, 22]       # exist today; allowed only inside compact components
-  card-pad: { hero: "22 22 20", prayer: "18 18 14", standard: 16, lamp: "14 14 12", compact: "14 16", room: "6 8 8", bar: "0 12 0 18" }
+  card-pad: { hero: "22 22 20", prayer: "18 18 14", standard: 16, lamp: "14 14 12", compact: "14 16", room: "6 8 8", bar: "0 12 0 18", dock-bar: "0 6 0 2" }   # measured, except prayer (folded during the audit)
   gap: { card-inner: 12, tile-grid: 10, chip-grid: 6, dock: 8, pill: 5 }
-  ha_grid: { section-columns: 12, row-height: 56, card-gap: 8, section-gap: 24 }   # section-gap from the build notes, unmeasured
+  ha_grid: { section-columns: 12, row-height: 56, card-gap: 8, column-gap: 32, section-min-width: 320, section-max-width: 500, view-padding: 32 }   # column-gap, widths and padding measured; view-padding is 18 at 430
 size:
   hero-min-height: 260
   hero-compact-height: 130
@@ -162,17 +182,22 @@ size:
   lamp-wide-height: 184         # 3 rows
   fold-bar: 60
   dock-bar: 52
-  chip-min-height: 46
+  chip-min-height: 46           # measured 46 with a one-line name, 50.8 with a two-line name
+  chip-width-at-430: { 2-per-row: 185, 3-per-row: 121, 4-per-row: 90 }
+  security-item-height: 52
+  mkh-compact-bottom-at-430x932: 740   # last card's bottom edge, measured
   slider-height: 34
   icon: { xs: 14, sm: 16, md: 18, lg: 20, xl: 22, xxl: 24, bar: 26 }
-  avatar: 38
+  avatar: 38                    # 39.8 rendered with its border
   shield: 44
   media-art: 112
   dial-max: 132
   sheet-max-width: 560
   touch:
     min_new: 44                 # every new control, 48 preferred
-    legacy_below_min: { fold-button: 30, fold-button-compact: 22, more-button: 26, slider: 34, media-button: 40, lamp-chip: 46 }
+    # measured. The fold bar (60) and dock bar (52) are whole-bar targets; their 24 px chevron is not a target.
+    legacy_below_min: { media-volume: 6, room-header: 22, more-button: 26, media-tab: 28.5, slider: 34, avatar: 39.8, media-button: 40 }
+    at_or_above_min: { lamp-chip: 46, dock-bar: 52, media-play: 52, security-item: 52, fold-bar: 60, climate-tile: 188, lamp-card: 248 }
 
 # ---------------------------------------------------------------- icons (codified)
 icon:
@@ -198,8 +223,13 @@ layout:
   view: { type: sections, max_columns: 4, dense_section_placement: true, theme: Habib Glass }
   phone-query: "(max-width: 699px)"
   wide-query: "(min-width: 700px)"
-  columns_observed: { 430: 1, 1024: 2, 1440: 4 }     # mock renders 2026-11-16
-  columns_unverified: [744, 820, 1180, 1280, 1512, 1728, 1920, 2560]
+  query_gap: "widths between 699 and 700 px match neither query; habib-mkh rendered blank at 699.09 px (measured)"
+  phone-query-proposed: "(max-width: 699.98px)"      # status: proposed
+  column_rule: "min(max_columns, floor((view_width - 32) / 352)); view_width = viewport - 256 when the sidebar is docked"
+  column_thresholds_view_px: { 2: 736, 3: 1088, 4: 1440 }
+  sidebar: { width: 256, hidden_by_ha_at: [430, 744, 820], docked_at: [1024, 1180, 960, 1280, 1440, 1512, 1728, 1920, 2560] }
+  columns_measured_sidebar_docked: { 430: 1, 744: 2, 820: 2, 1024: 2, 1180: 2, 960: 1, 1280: 2, 1440: 3, 1512: 3, 1728: 4, 1920: 4, 2560: 4 }   # viewport width: columns; 430 to 820 have no sidebar
+  columns_by_rule_sidebar_hidden: { 960: 2, 1024: 2, 1180: 3, 1280: 3, 1440: 4, 1512: 4, 1728: 4, 1920: 4, 2560: 4 }   # derived, not seen (1440 seen in the v0.1 mock)
   card_columns: { lamp: 6, lamp-wide: 12, everything-else: 12 }   # of a section's 12; min 4 (lamp), 6 (others)
 
 # ---------------------------------------------------------------- proposed theme keys (status: proposed)

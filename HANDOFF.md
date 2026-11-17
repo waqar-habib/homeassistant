@@ -1,14 +1,14 @@
 # HANDOFF
 
-Last updated: 2026-11-16 late (networkpi, design guide draft). Before that: ~19:25 CST (Pi 5, habib-mkh responsive), 16:30 CST (Pi 5, habib-mkh compact).
+Last updated: 2026-11-16 ~21:50 CST (Mac, design guide audit and Draft v0.2). Before that: late (networkpi, design guide draft), ~19:25 CST (Pi 5, habib-mkh responsive), 16:30 CST (Pi 5, habib-mkh compact).
 
-## Design guide Draft v0.1 (2026-11-16, networkpi, D77): docs only, awaiting audit and owner review
-1. New: `docs/design-guide.md` (Habib Glass, written for AI tools) and `docs/design/habib-tokens.yaml` (dark values codified from `habib-glass.js` and the theme; light values proposed only). Nothing in HA changed.
-2. Validated live: Nuvio is not used on habib-wh or habib-mkh (only `custom:habib-*` cards). Leftovers: `nuvio-shared`, the `nuvio.js` resource, and the stale "Dashboard: Nuvio" line in `CLAUDE.md`.
-3. Not done: Chrome browsing at the target devices (no Chrome tools on networkpi) and reference "URL 1" (Medium refused the request). Both are in the Mac prompt `docs/prompts/mac/2026-11-16-design-guide-audit.md` (Tier 0).
-4. Open: I54 (no light mode, colours hard-coded in the cards), I55 (contrast and touch-target estimates).
-5. **Moved to the Mac (owner, 2026-11-16):** the whole design guide process continues there so Chrome is available. **Owner next:** on the Mac type `git pull; read docs/prompts/mac/2026-11-16-design-guide-resume.md; run it` (audit, then v0.2). Light-mode path: owner decision TBD until the Mac session; nothing may be built before it. v1.0 only on "GREEN LIGHT". Note `docs/sessions/2026-11-16-design-guide.md`.
-6. `CLAUDE.md` Dashboard line fixed (owner approved): Habib Glass, Nuvio no longer used.
+## Design guide Draft v0.2 (2026-11-16 ~21:50 CST, Mac, D77): docs only, awaiting owner review
+1. **Audit done, read only** (Chrome on the Mac, nothing tapped or changed): `docs/design/audit-2026-11-16.md` (commit `542f3a2`). Both dashboards at 12 viewports from 430 x 932 to 2560 x 1440, set with a same-origin frame because the Mac window could not reach most sizes. No overflow, clipped text or console error anywhere.
+2. **Draft v0.2 written:** `docs/design-guide.md` and `docs/design/habib-tokens.yaml` now carry measured values. Dark values equal what is live; light values stay proposed. Nothing in HA, the theme, the card code or the dashboards changed.
+3. **Main findings:** (a) text contrast is below AA: dim text 2.7 to 5.5, typically 3.2 to 3.6, hero text 4.4 (I55); (b) columns follow min(4, floor((view width - 32) / 352)); 1440 gives 3 columns with the docked sidebar and 4 without; (c) habib-mkh is blank between 699 and 700 px wide (I56); (d) the Prayer bar says "Times unavailable" every evening after Isha although the sensors are fine (I57); (e) seven controls under 44 px, the smallest the media volume slider at 6 px; (f) habib-mkh dock bars wrap at 430, and three unused resources still load (I58).
+4. **Not done:** light-mode emulation (not available in this Chrome session; "no change in light" is inferred from the computed styles). Real iPhone, iPad and wall tablet checks stay with the owner. Sidebar-hidden column counts are derived from the rule, not seen.
+5. **Owner decision waiting:** v0.2 holds measurements only. Should the next step be step 1 of the light-mode path (guide section 8: move the tokens into the theme under `modes`; a config change that needs the owner's go-ahead), or stay with measurements and review first? Also open: which of the gaps in guide section 10 to fix (each is an owner call).
+6. v1.0 only on "GREEN LIGHT". Notes: `docs/sessions/2026-11-16-design-guide-v02.md`, earlier `docs/sessions/2026-11-16-design-guide.md`. Screenshots were sent to the owner and are not in the repo (public until D25).
 
 ## habib-mkh responsive, plug lamps, garage (2026-11-16 ~19:25 CST, Pi 5, D76): live, mock verified
 1. habib-mkh: phones (<700 px) keep the compact one-screen layout; tablets and laptops get expanded sections like habib-wh. Room chips and dock bars put the icon in the left third and wrapped text in the right two thirds. Shopping list replaced by Garage. Front door and Garage bars open HA's own dialog in one tap; the card never calls lock or cover services (no "GREEN LIGHT outdoor controls").

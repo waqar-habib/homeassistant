@@ -1,4 +1,4 @@
-// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=10
+// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=11
 // Dev loop: add ?dev to the dashboard URL (or set localStorage habib_dev to "1")
 // to load the card files with a fresh timestamp on every page load (no cache).
 // Production loads them pinned to VERSION. Bump VERSION on every JS change (CR6).
@@ -6,7 +6,9 @@
 // v8: opt-in fold for large glass cards (collapsible: true), used on habib-wh only.
 // v9: habib-room, habib-dock, compact hero; habib-mkh fits one iPhone screen (D75).
 // v10: plug lamps in groups, scroll-safe sliders, stricter lamp colour, 1/3 icon chips and dock bars, direct door and garage bars.
-const VERSION = 10;
+// v11: glass cards split into www/habib/glass/ (one token file, one shared stylesheet, one file per card), habib-layout,
+//      habib-button, single-hex colour (habib-base), defect fixes I55 to I59.
+const VERSION = 11;
 
 const isDev = (() => {
   try {

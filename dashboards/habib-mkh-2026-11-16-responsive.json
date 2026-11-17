@@ -1,0 +1,563 @@
+{
+ "views": [
+  {
+   "title": "Home",
+   "path": "home",
+   "type": "sections",
+   "max_columns": 4,
+   "theme": "Habib Glass",
+   "dense_section_placement": true,
+   "sections": [
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "custom:habib-hero",
+       "weather": "weather.forecast_home",
+       "sun": "sun.sun",
+       "compact": true,
+       "hijri": false
+      },
+      {
+       "type": "custom:habib-room",
+       "name": "Floors",
+       "remember": false,
+       "lights": [
+        {
+         "type": "custom:habib-light",
+         "name": "Downstairs",
+         "art": "group",
+         "entities": [
+          "light.buffet",
+          "light.floor_lamp",
+          "light.side_table",
+          "light.console_lamp",
+          "light.dresser",
+          "light.mahams_lamp",
+          "light.waqars_lamp"
+         ]
+        },
+        {
+         "type": "custom:habib-light",
+         "name": "Upstairs",
+         "art": "group",
+         "entities": [
+          "light.game_room",
+          "light.upstairs_guest",
+          "switch.upstairs_guest_guest_nightstand",
+          "light.study_lamp",
+          "switch.study_study_floor_lamp"
+         ]
+        }
+       ],
+       "note": "Nursery not included"
+      },
+      {
+       "type": "custom:habib-room",
+       "name": "Bedroom",
+       "remember": false,
+       "lights": [
+        {
+         "type": "custom:habib-light",
+         "name": "Dresser",
+         "art": "table-lamp",
+         "entities": [
+          "light.dresser"
+         ],
+         "size": "wide"
+        },
+        {
+         "type": "custom:habib-light",
+         "name": "Maham's Lamp",
+         "art": "table-lamp",
+         "entities": [
+          "light.mahams_lamp"
+         ]
+        },
+        {
+         "type": "custom:habib-light",
+         "name": "Waqar's Lamp",
+         "art": "table-lamp",
+         "entities": [
+          "light.waqars_lamp"
+         ]
+        }
+       ]
+      },
+      {
+       "type": "custom:habib-room",
+       "name": "Nursery",
+       "remember": false,
+       "lights": [
+        {
+         "type": "custom:habib-light",
+         "name": "Bookshelf",
+         "art": "shelf",
+         "entities": [
+          "light.bookshelf"
+         ],
+         "size": "wide"
+        },
+        {
+         "type": "custom:habib-light",
+         "name": "Changing Table",
+         "art": "nightlight",
+         "entities": [
+          "light.changing_table"
+         ]
+        },
+        {
+         "type": "custom:habib-light",
+         "name": "Floor Lamp",
+         "art": "floor-lamp",
+         "entities": [
+          "light.nursery_floor_lamp"
+         ]
+        }
+       ]
+      },
+      {
+       "type": "custom:habib-room",
+       "name": "Living Room",
+       "remember": false,
+       "lights": [
+        {
+         "type": "custom:habib-light",
+         "name": "Floor Lamp",
+         "art": "floor-lamp",
+         "entities": [
+          "light.floor_lamp"
+         ]
+        },
+        {
+         "type": "custom:habib-light",
+         "name": "Buffet",
+         "art": "table-lamp",
+         "entities": [
+          "light.buffet"
+         ]
+        },
+        {
+         "type": "custom:habib-light",
+         "name": "Side Table",
+         "art": "table-lamp",
+         "entities": [
+          "light.side_table"
+         ]
+        },
+        {
+         "type": "custom:habib-light",
+         "name": "Console Lamp",
+         "art": "desk-lamp",
+         "entities": [
+          "light.console_lamp"
+         ]
+        }
+       ]
+      },
+      {
+       "type": "custom:habib-dock",
+       "cards": [
+        {
+         "type": "custom:habib-security",
+         "items": [
+          {
+           "entity": "lock.living_room_front_door",
+           "name": "Front door",
+           "kind": "lock",
+           "states": {
+            "locked": "Locked",
+            "unlocked": "Unlocked",
+            "jammed": "Jammed"
+           }
+          }
+         ],
+         "subtitle": "Front door",
+         "direct": true
+        },
+        {
+         "type": "custom:habib-security",
+         "items": [
+          {
+           "entity": "cover.general_garage_door_garage_door",
+           "name": "Garage",
+           "kind": "garage",
+           "states": {
+            "closed": "Closed",
+            "open": "Open",
+            "opening": "Opening",
+            "closing": "Closing"
+           }
+          }
+         ],
+         "subtitle": "Garage",
+         "direct": true
+        },
+        {
+         "type": "custom:habib-climate",
+         "entities": [
+          {
+           "entity": "climate.downstairs",
+           "name": "Downstairs",
+           "short": "Down"
+          },
+          {
+           "entity": "climate.upstairs",
+           "name": "Upstairs",
+           "short": "Up"
+          }
+         ]
+        },
+        {
+         "type": "custom:habib-media",
+         "players": [
+          {
+           "entity": "media_player.living_room_living_room_homepod",
+           "name": "Living Room"
+          },
+          {
+           "entity": "media_player.master_bedroom_homepod",
+           "name": "Bedroom"
+          }
+         ]
+        }
+       ]
+      }
+     ],
+     "visibility": [
+      {
+       "condition": "screen",
+       "media_query": "(max-width: 699px)"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "custom:habib-hero",
+       "weather": "weather.forecast_home",
+       "sun": "sun.sun",
+       "hijri": false
+      }
+     ],
+     "visibility": [
+      {
+       "condition": "screen",
+       "media_query": "(min-width: 700px)"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "custom:habib-label",
+       "label": "Home"
+      },
+      {
+       "type": "custom:habib-security",
+       "items": [
+        {
+         "entity": "lock.living_room_front_door",
+         "name": "Front door",
+         "kind": "lock",
+         "states": {
+          "locked": "Locked",
+          "unlocked": "Unlocked",
+          "jammed": "Jammed"
+         },
+         "tap": "more-info"
+        },
+        {
+         "entity": "cover.general_garage_door_garage_door",
+         "name": "Garage",
+         "kind": "garage",
+         "states": {
+          "closed": "Closed",
+          "open": "Open",
+          "opening": "Opening",
+          "closing": "Closing"
+         },
+         "tap": "more-info"
+        }
+       ]
+      },
+      {
+       "type": "custom:habib-climate",
+       "entities": [
+        {
+         "entity": "climate.downstairs",
+         "name": "Downstairs"
+        },
+        {
+         "entity": "climate.upstairs",
+         "name": "Upstairs"
+        }
+       ]
+      }
+     ],
+     "visibility": [
+      {
+       "condition": "screen",
+       "media_query": "(min-width: 700px)"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "custom:habib-label",
+       "label": "Floors",
+       "note": "Nursery not included"
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Downstairs",
+       "art": "group",
+       "entities": [
+        "light.buffet",
+        "light.floor_lamp",
+        "light.side_table",
+        "light.console_lamp",
+        "light.dresser",
+        "light.mahams_lamp",
+        "light.waqars_lamp"
+       ]
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Upstairs",
+       "art": "group",
+       "entities": [
+        "light.game_room",
+        "light.upstairs_guest",
+        "switch.upstairs_guest_guest_nightstand",
+        "light.study_lamp",
+        "switch.study_study_floor_lamp"
+       ]
+      }
+     ],
+     "visibility": [
+      {
+       "condition": "screen",
+       "media_query": "(min-width: 700px)"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "custom:habib-label",
+       "label": "Living Room"
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Floor Lamp",
+       "art": "floor-lamp",
+       "entities": [
+        "light.floor_lamp"
+       ]
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Buffet",
+       "art": "table-lamp",
+       "entities": [
+        "light.buffet"
+       ]
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Side Table",
+       "art": "table-lamp",
+       "entities": [
+        "light.side_table"
+       ]
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Console Lamp",
+       "art": "desk-lamp",
+       "entities": [
+        "light.console_lamp"
+       ]
+      }
+     ],
+     "visibility": [
+      {
+       "condition": "screen",
+       "media_query": "(min-width: 700px)"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "custom:habib-label",
+       "label": "Bedroom"
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Dresser",
+       "art": "table-lamp",
+       "entities": [
+        "light.dresser"
+       ],
+       "size": "wide"
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Maham's Lamp",
+       "art": "table-lamp",
+       "entities": [
+        "light.mahams_lamp"
+       ]
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Waqar's Lamp",
+       "art": "table-lamp",
+       "entities": [
+        "light.waqars_lamp"
+       ]
+      }
+     ],
+     "visibility": [
+      {
+       "condition": "screen",
+       "media_query": "(min-width: 700px)"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "custom:habib-label",
+       "label": "Nursery"
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Bookshelf",
+       "art": "shelf",
+       "entities": [
+        "light.bookshelf"
+       ],
+       "size": "wide"
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Changing Table",
+       "art": "nightlight",
+       "entities": [
+        "light.changing_table"
+       ]
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Floor Lamp",
+       "art": "floor-lamp",
+       "entities": [
+        "light.nursery_floor_lamp"
+       ]
+      }
+     ],
+     "visibility": [
+      {
+       "condition": "screen",
+       "media_query": "(min-width: 700px)"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "custom:habib-label",
+       "label": "Upstairs"
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Game Room",
+       "art": "pendant",
+       "entities": [
+        "light.game_room"
+       ],
+       "size": "wide"
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Guest Room",
+       "art": "pendant",
+       "entities": [
+        "light.upstairs_guest"
+       ]
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Guest Nightstand",
+       "art": "table-lamp",
+       "entities": [
+        "switch.upstairs_guest_guest_nightstand"
+       ]
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Study Lamp",
+       "art": "desk-lamp",
+       "entities": [
+        "light.study_lamp"
+       ]
+      },
+      {
+       "type": "custom:habib-light",
+       "name": "Study Floor Lamp",
+       "art": "floor-lamp",
+       "entities": [
+        "switch.study_study_floor_lamp"
+       ]
+      }
+     ],
+     "visibility": [
+      {
+       "condition": "screen",
+       "media_query": "(min-width: 700px)"
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "custom:habib-label",
+       "label": "Listen"
+      },
+      {
+       "type": "custom:habib-media",
+       "players": [
+        {
+         "entity": "media_player.living_room_living_room_homepod",
+         "name": "Living Room"
+        },
+        {
+         "entity": "media_player.master_bedroom_homepod",
+         "name": "Bedroom"
+        }
+       ]
+      }
+     ],
+     "visibility": [
+      {
+       "condition": "screen",
+       "media_query": "(min-width: 700px)"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

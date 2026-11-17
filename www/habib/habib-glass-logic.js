@@ -63,14 +63,50 @@ export function lightGlow(states, ids) {
   const live = ids.map((id) => states[id]).filter(Boolean);
   const on = live.filter((s) => s.state === "on");
   if (!on.length) return { on: 0, total: live.length, rgb: WARM, level: 0, pct: 0 };
-  const first = on[0].attributes || {};
+  // Colour comes from the first lit lamp that reports one (plugs and on/off lights report none).
   let rgb = WARM;
-  if (first.color_mode === "color_temp" && first.color_temp_kelvin) rgb = kelvinToRgb(first.color_temp_kelvin);
-  else if (Array.isArray(first.rgb_color)) rgb = first.rgb_color;
-  const bri = on.map((s) => (s.attributes && typeof s.attributes.brightness === "number" ? s.attributes.brightness : 255));
-  const avg = bri.reduce((a, b) => a + b, 0) / bri.length;
+  for (const s of on) {
+    const c = glowColor(s.attributes || {});
+    if (c) { rgb = c; break; }
+  }
+  // Brightness averages the dimmable lamps only; plugs and on/off lights do not pull it to 100%.
+  const bri = on.map((s) => s.attributes && s.attributes.brightness).filter((b) => typeof b === "number");
+  const avg = bri.length ? bri.reduce((a, b) => a + b, 0) / bri.length : 255;
   const pct = Math.max(1, Math.round((avg / 255) * 100));
   return { on: on.length, total: live.length, rgb, level: 0.35 + 0.65 * (avg / 255), pct };
+}
+
+const COLOR_MODES = ["hs", "rgb", "rgbw", "rgbww", "xy"];
+
+// The colour one light shows, or null when it reports none. White (colour temperature)
+// wins unless HA says the light is in a colour mode; an RGBW colour whose white channel
+// dominates is drawn as warm white, because that is what the lamp emits.
+export function glowColor(a) {
+  const k = typeof a.color_temp_kelvin === "number" ? a.color_temp_kelvin : null;
+  const mode = a.color_mode;
+  if (mode === "color_temp" && k) return kelvinToRgb(k);
+  if (COLOR_MODES.includes(mode) && Array.isArray(a.rgb_color)) {
+    const w = Array.isArray(a.rgbw_color) ? a.rgbw_color[3] : Array.isArray(a.rgbww_color) ? Math.max(a.rgbww_color[3], a.rgbww_color[4]) : 0;
+    if (w && w >= Math.max(...a.rgb_color.slice(0, 3)) * 0.5) return k ? kelvinToRgb(k) : WARM;
+    return a.rgb_color;
+  }
+  if (k) return kelvinToRgb(k);
+  return null;
+}
+
+// A short text of what HA reports, shown in the lamp sheet (helps check the colour).
+export function colorLabel(a) {
+  if (!a || !a.color_mode) return "";
+  if (a.color_mode === "color_temp" && a.color_temp_kelvin) return `White ${a.color_temp_kelvin} K`;
+  if (COLOR_MODES.includes(a.color_mode) && Array.isArray(a.rgb_color)) return `Colour (${a.color_mode}) rgb ${a.rgb_color.join(", ")}`;
+  return a.color_mode === "onoff" ? "" : a.color_mode;
+}
+
+// Split entity ids by domain, for turn_on/turn_off on mixed groups (lights and plug switches).
+export function byDomain(ids) {
+  const out = {};
+  for (const id of ids) { const d = String(id).split(".")[0]; (out[d] = out[d] || []).push(id); }
+  return out;
 }
 
 // Soften a glow colour so saturated colours still read as light, not paint.

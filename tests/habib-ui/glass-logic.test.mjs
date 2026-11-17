@@ -62,6 +62,28 @@ test("lightGlow counts on lights and averages brightness", () => {
   assert.equal(G.lightGlow(states, ["light.c"]).level, 0);
 });
 
+test("glowColor prefers white unless HA reports a colour mode", () => {
+  const amber = G.kelvinToRgb(3000);
+  assert.deepEqual(G.glowColor({ color_mode: "color_temp", color_temp_kelvin: 3000, rgb_color: [255, 0, 0] }), amber);
+  assert.deepEqual(G.glowColor({ color_mode: null, color_temp_kelvin: 3000, rgb_color: [255, 0, 0] }), amber);
+  assert.deepEqual(G.glowColor({ color_mode: "rgbw", color_temp_kelvin: 3000, rgb_color: [255, 0, 0], rgbw_color: [255, 0, 0, 255] }), amber);
+  assert.deepEqual(G.glowColor({ color_mode: "rgbw", rgb_color: [255, 0, 0], rgbw_color: [255, 0, 0, 0] }), [255, 0, 0]);
+  assert.equal(G.glowColor({}), null);
+  assert.equal(G.colorLabel({ color_mode: "color_temp", color_temp_kelvin: 2700 }), "White 2700 K");
+});
+
+test("lightGlow: plugs count as on but not in brightness or colour", () => {
+  const states = {
+    "switch.plug": { state: "on", attributes: {} },
+    "light.a": { state: "on", attributes: { brightness: 128, color_mode: "color_temp", color_temp_kelvin: 2700 } },
+  };
+  const g = G.lightGlow(states, ["switch.plug", "light.a"]);
+  assert.equal(g.on, 2);
+  assert.equal(g.pct, 50);
+  assert.deepEqual(g.rgb, G.kelvinToRgb(2700));
+  assert.deepEqual(G.byDomain(["light.a", "switch.b", "light.c"]), { light: ["light.a", "light.c"], switch: ["switch.b"] });
+});
+
 test("weatherLayers", () => {
   assert.equal(G.weatherLayers("sunny", true).orb, "moon");
   assert.equal(G.weatherLayers("cloudy", false).orb, null);

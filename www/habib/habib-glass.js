@@ -4,8 +4,9 @@
 // Rules kept from habib-ui: no entity IDs in JavaScript (CR1), every card registers in
 // window.customCards (CR2), sizes via getGridOptions (CR3), render only when the states a
 // card uses change (I44). Version lives in loader.js (CR6).
-// Safety rules kept: lock and garage are status only (D48, D60); climate opens HA's own
-// dialog (no setpoint calls here); Adhan helpers are shown, never changed (D34).
+// Safety rules kept: lock and garage never call a service (D48, D60): status, or a tap that
+// opens HA's own dialog; climate opens HA's own dialog (no setpoint calls here); Adhan helpers
+// are shown, never changed (D34). Lamp groups may mix lights and smart-plug switches.
 
 const search = new URL(import.meta.url).search;
 const G = await import(new URL("./habib-glass-logic.js", import.meta.url).href.split("?")[0] + search);
@@ -70,12 +71,17 @@ const GLASS = `
   .mini .pb { position: absolute; left: 18px; right: 18px; bottom: 0; height: 3px; border-radius: 3px 3px 0 0; background: rgba(255,255,255,.10); overflow: hidden; }
   .mini .pb span { display: block; height: 100%; background: rgb(var(--g-warm)); box-shadow: 0 0 10px rgba(var(--g-warm), .8); }
   .mini:focus-visible { box-shadow: 0 0 0 2px rgba(var(--g-warm), .8); }
-  .mini.stack { padding: 0 8px 0 14px; gap: 6px; min-height: 52px; }
-  .mini.stack .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+  .mini.stack { display: grid; grid-template-columns: 1fr 2fr; padding: 0 6px 0 2px; gap: 2px; min-height: 52px; }
+  .mini.stack .mi { display: flex; justify-content: center; align-items: center; min-width: 0; color: var(--g-dim); }
+  .mini.stack .mi svg { width: 26px; height: 26px; }
+  .mini.stack.ok .mi { color: rgb(var(--g-mint)); } .mini.stack.bad .mi { color: rgb(var(--g-rose)); }
+  .mini.stack .rt { display: flex; align-items: center; gap: 4px; min-width: 0; }
+  .mini.stack .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .mini.stack .ml { font-size: 10px; line-height: 12px; letter-spacing: .12em; }
-  .mini.stack .mv { text-align: left; font-size: 13px; line-height: 18px; }
+  .mini.stack .mv { text-align: left; font-size: 13px; line-height: 16px; white-space: normal;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
   .mini.stack .mv b { font-size: 15px; }
-  .mini.stack .fold { width: 26px; height: 26px; }
+  .mini.stack .fold { width: 24px; height: 24px; } .mini .fold.go svg { transform: rotate(-90deg); }
   .mini .mv .ok { color: rgb(var(--g-mint)); } .mini .mv .bad { color: rgb(var(--g-rose)); }
 `;
 
@@ -92,6 +98,13 @@ function define(tag, cls) {
 
 function moreInfo(el, entityId) {
   el.dispatchEvent(new CustomEvent("hass-more-info", { detail: { entityId }, bubbles: true, composed: true }));
+}
+
+// Turn a set of lamps on or off. Groups can mix lights and smart-plug switches, so each
+// domain gets its own call (light.turn_on would skip the switch.* lamps).
+function switchLamps(hass, ids, on) {
+  return Promise.all(Object.entries(G.byDomain(ids)).map(([d, list]) =>
+    hass.callService(d === "switch" ? "switch" : "light", on ? "turn_on" : "turn_off", {}, { entity_id: list })));
 }
 
 function haptic(el) {
@@ -177,12 +190,17 @@ class GlassCard extends HTMLElement {
   _renderFolded() {
     const s = this._summary();
     // fold_layout: stack puts the label above the value, for half-width bars (habib-dock).
+    // In stack layout the icon takes the left third and the text the right two thirds.
+    // direct: true (single entity) opens HA's own dialog for that entity instead of unfolding.
     const stack = this._config.fold_layout === "stack";
+    const direct = this._config.direct === true && s.entity;
+    const act = direct ? `data-entity="${esc(s.entity)}" aria-label="${esc(s.label)}: open controls"` : `data-collapse aria-expanded="false" aria-label="Show ${esc(s.label)}"`;
+    const tail = direct ? `<span class="fold go">${CHEV(false)}</span>` : `<span class="fold">${CHEV(false)}</span>`;
     this.shadowRoot.innerHTML = `<style>${GLASS}</style>
-      <div class="glass mini press ${stack ? "stack" : ""}" data-collapse role="button" tabindex="0" aria-expanded="false" aria-label="Show ${esc(s.label)}">
-        ${stack ? `<span class="tx"><span class="ml">${esc(s.label)}</span><span class="mv">${s.html}</span></span>`
-          : `<span class="ml">${esc(s.label)}</span><span class="mv">${s.html}</span>`}
-        <span class="fold">${CHEV(false)}</span>${s.progress != null ? `<div class="pb"><span style="width:${Math.round(s.progress * 100)}%"></span></div>` : ""}
+      <div class="glass mini press ${stack ? "stack" : ""} ${s.tone || ""}" ${act} role="button" tabindex="0">
+        ${stack ? `<span class="mi">${s.icon || ""}</span><span class="rt"><span class="tx"><span class="ml">${esc(s.label)}</span><span class="mv">${s.html}</span></span>${tail}</span>`
+          : `<span class="ml">${esc(s.label)}</span><span class="mv">${s.html}</span>${tail}`}
+        ${s.progress != null ? `<div class="pb"><span style="width:${Math.round(s.progress * 100)}%"></span></div>` : ""}
       </div>`;
   }
   // Expanded: put the fold button in the card's [data-fold-slot] if it has one, else top right.
@@ -663,7 +681,7 @@ class HabibLight extends GlassCard {
         .bloom { animation: breathe 5s ease-in-out infinite; transform-origin: 60px 50px; }
         @keyframes breathe { 50% { opacity: .82; } }
         .slider { position: relative; height: 34px; border-radius: 12px; background: rgba(0,0,0,.22);
-          border: 1px solid rgba(255,255,255,.10); overflow: hidden; touch-action: none; cursor: ew-resize; z-index: 1; }
+          border: 1px solid rgba(255,255,255,.10); overflow: hidden; touch-action: pan-y; cursor: ew-resize; z-index: 1; }
         .fill { position: absolute; inset: 0 auto 0 0; border-radius: 12px;
           background: linear-gradient(90deg, rgba(${c}, .35), rgba(${c}, .9)); box-shadow: 0 0 18px rgba(${c}, .5); }
         .glass:not(.on) .fill { background: rgba(255,255,255,.08); box-shadow: none; }
@@ -716,16 +734,19 @@ class HabibLight extends GlassCard {
     root.addEventListener("pointerdown", (e) => {
       const slider = e.target.closest && e.target.closest("[data-slider]");
       if (!slider || (e.target.closest && e.target.closest("[data-more]"))) return;
+      // A page scroll that starts on the slider must not change brightness: the slider allows
+      // vertical panning (touch-action: pan-y), a vertical gesture is ignored, and the browser's
+      // pointercancel (it took over the scroll) sends nothing.
       e.stopPropagation();
-      slider.setPointerCapture(e.pointerId);
       this._hold = true;
       this._dragged = false;
-      const startX = e.clientX;
+      const startX = e.clientX, startY = e.clientY;
       const rect = slider.getBoundingClientRect();
       const fill = slider.querySelector(".fill");
       const knob = slider.querySelector(".knob");
       const label = slider.querySelector("[data-pct]");
       let pct = null;
+      let mode = "wait"; // wait -> drag (horizontal) or scroll (vertical)
       const set = (x) => {
         pct = Math.round(Math.min(100, Math.max(1, ((x - rect.left) / rect.width) * 100)));
         fill.style.width = `${pct}%`;
@@ -733,16 +754,24 @@ class HabibLight extends GlassCard {
         knob.style.opacity = ".9";
         label.textContent = `${pct}%`;
       };
-      const move = (ev) => { if (Math.abs(ev.clientX - startX) > 3) this._dragged = true; set(ev.clientX); };
+      const move = (ev) => {
+        const dx = Math.abs(ev.clientX - startX), dy = Math.abs(ev.clientY - startY);
+        if (mode === "wait" && (dx > 6 || dy > 6)) {
+          mode = dx > dy ? "drag" : "scroll";
+          if (mode === "drag") { try { slider.setPointerCapture(ev.pointerId); } catch (err) { /* released */ } }
+        }
+        if (mode === "drag") { this._dragged = true; set(ev.clientX); }
+      };
       const up = (ev) => {
         slider.removeEventListener("pointermove", move);
         slider.removeEventListener("pointerup", up);
         slider.removeEventListener("pointercancel", up);
-        if (ev.type === "pointerup") set(ev.clientX);
-        this._dragged = true;
         this._hold = false;
-        if (pct !== null) this._setBrightness(pct);
+        this._dragged = true;
         this._later(() => { this._dragged = false; }, 50);
+        // Send only a horizontal drag, or a tap (no movement) that sets the level where tapped.
+        if (ev.type === "pointerup" && mode !== "scroll") { set(ev.clientX); this._setBrightness(pct); }
+        else this._maybeRender(true);
       };
       slider.addEventListener("pointermove", move);
       slider.addEventListener("pointerup", up);
@@ -757,7 +786,7 @@ class HabibLight extends GlassCard {
     this._pending = true;
     this._maybeRender(true);
     this._later(() => { this._pending = false; this._maybeRender(true); }, 2500);
-    this._hass.callService("light", anyOn ? "turn_off" : "turn_on", {}, { entity_id: usable })
+    switchLamps(this._hass, usable, !anyOn)
       .catch(() => {}).finally(() => { this._pending = false; this._maybeRender(true); });
   }
   _setBrightness(pct) {
@@ -796,7 +825,9 @@ class HabibLight extends GlassCard {
     </style>
     <div class="scrim"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(this._config.name || "Light")}">
       <div class="handle"></div>
-      <div class="row"><span class="title">${esc(this._config.name || "Light")}</span><button class="done">Done</button></div>
+      <div class="row"><span><span class="title">${esc(this._config.name || "Light")}</span>
+        <span class="sub" style="display:block">${esc(this._usable().map((id) => G.colorLabel(this._st(id).attributes)).find(Boolean) || "")}</span></span>
+        <button class="done">Done</button></div>
       <div class="lab">${colorIds.length ? "White and colour" : "White"}</div>
       <div class="grid">${sw}</div>
       <button class="info">Open full controls</button>
@@ -897,7 +928,8 @@ class HabibClimate extends GlassCard {
       const heat = s && s.attributes.hvac_action === "heating", cool = s && s.attributes.hvac_action === "cooling";
       return `<span class="d">${esc(it.short || it.name || (s && s.attributes.friendly_name) || it.entity)}</span> <b${heat ? ' style="color:#ffb36b"' : cool ? ' style="color:#8fc9ff"' : ""}>${cur}</b>`;
     });
-    return { label: this._config.title || "Climate", html: parts.join("&ensp;") };
+    return { label: this._config.title || "Climate", html: parts.join("&ensp;"),
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M10 4a2 2 0 0 1 4 0v9.5a4 4 0 1 1-4 0z"/><path d="M12 9v6.5"/></svg>` };
   }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-climate", entities: [] }; }
@@ -925,7 +957,11 @@ class HabibSecurity extends GlassCard {
   _setup() {
     this.shadowRoot.addEventListener("click", (e) => {
       const t = e.target.closest && e.target.closest("[data-entity]");
-      if (t) moreInfo(this, t.getAttribute("data-entity"));
+      if (t) { haptic(this); moreInfo(this, t.getAttribute("data-entity")); }
+    });
+    this.shadowRoot.addEventListener("keydown", (e) => {
+      const t = (e.key === "Enter" || e.key === " ") && e.target.closest && e.target.closest("[data-entity]");
+      if (t) { e.preventDefault(); moreInfo(this, t.getAttribute("data-entity")); }
     });
   }
   _render() {
@@ -978,7 +1014,12 @@ class HabibSecurity extends GlassCard {
       return `${nm}<b class="${dead ? "d" : ok ? "ok" : "bad"}">${esc(text)}</b>`;
     });
     const label = this._config.title || (this._items.length === 1 ? this._items[0].name || "Security" : "Security");
-    return { label, html: parts.join("&ensp;") };
+    const one = this._items.length === 1 ? this._items[0] : null;
+    if (!one) return { label, html: parts.join("&ensp;") };
+    const s = this._st(one.entity);
+    const ok = s && (one.ok_states || ["locked", "closed", "off"]).includes(s.state);
+    const kind = one.kind || (one.entity.startsWith("lock.") ? "lock" : one.entity.startsWith("cover.") ? "garage" : "door");
+    return { label, html: parts.join("&ensp;"), icon: secIcon(kind, ok), tone: ok ? "ok" : s && usableState(s) ? "bad" : "", entity: one.entity };
   }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-security", items: [] }; }
@@ -1092,10 +1133,11 @@ class HabibMedia extends GlassCard {
   }
   _summary() {
     const playing = this._players.find((p) => { const s = this._st(p.entity); return s && s.state === "playing"; });
-    if (!playing) return { label: "Listen", html: `<span class="d">Nothing playing</span>` };
+    const icon = ICON.vol;
+    if (!playing) return { label: "Listen", html: `<span class="d">Nothing playing</span>`, icon };
     const s = this._st(playing.entity);
     const t = s.attributes.media_title || "Playing";
-    return { label: "Listen", html: `<i class="dot"></i><b>${esc(t)}</b> <span class="d">${esc(playing.name || s.attributes.friendly_name || "")}</span>` };
+    return { label: "Listen", html: `<i class="dot"></i><b>${esc(t)}</b> <span class="d">${esc(playing.name || s.attributes.friendly_name || "")}</span>`, icon, tone: "ok" };
   }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-media", players: [] }; }
@@ -1259,7 +1301,7 @@ class HabibRoom extends GlassCard {
     this._maybeRender(true);
     const done = () => { if (this._pending.delete(i)) this._maybeRender(true); };
     this._later(done, 2500);
-    this._hass.callService("light", anyOn ? "turn_off" : "turn_on", {}, { entity_id: usable }).catch(() => {}).finally(done);
+    switchLamps(this._hass, usable, !anyOn).catch(() => {}).finally(done);
   }
   _css() {
     return `${GLASS}
@@ -1297,24 +1339,27 @@ class HabibRoom extends GlassCard {
       return `<button class="chip press ${on ? "on" : ""} ${dead ? "dead" : ""}" data-chip="${i}" style="--c: ${rgbStr(G.glowRgb(glow.rgb))}"
           aria-pressed="${on}" aria-label="${esc(l.cfg.name || "Light")}: ${esc(state)}">
           <span class="ca">${lampSvg(kind, glow, groupLit, `r${i}`)}</span>
-          <span class="cn">${esc(l.cfg.name || "")}</span><span class="cs">${esc(state)}</span></button>`;
+          <span class="tx"><span class="cn">${esc(l.cfg.name || "")}</span><span class="cs">${esc(state)}</span></span></button>`;
     }).join("");
     this.shadowRoot.innerHTML = `<style>${this._css()}
       .chips { display: grid; grid-template-columns: repeat(${Math.min(n, 4)}, minmax(0, 1fr)); gap: 6px; }
-      .chip { all: unset; box-sizing: border-box; position: relative; overflow: hidden; cursor: pointer; border-radius: 14px; padding: 4px 4px 5px;
-        display: flex; flex-direction: column; align-items: center; min-width: 0; background: rgba(0,0,0,.16); border: 1px solid rgba(255,255,255,.08);
+      .chip { all: unset; box-sizing: border-box; position: relative; overflow: hidden; cursor: pointer; border-radius: 14px; padding: 5px 6px 5px 4px;
+        display: grid; grid-template-columns: 1fr 2fr; align-items: center; column-gap: 4px; min-width: 0; min-height: 46px;
+        background: rgba(0,0,0,.16); border: 1px solid rgba(255,255,255,.08);
         -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; transition: border-color .3s, box-shadow .3s, background .3s; }
       .chip.on { background: linear-gradient(180deg, rgba(var(--c), .24), rgba(255,255,255,.05)); border-color: rgba(var(--c), .5);
         box-shadow: 0 8px 22px -12px rgba(var(--c), .9); }
       .chip:focus-visible { box-shadow: 0 0 0 2px rgba(var(--g-warm), .8); }
       .chip.dead { opacity: .5; cursor: default; }
-      .ca { height: 25px; width: 100%; display: flex; justify-content: center; }
-      .ca svg { height: 100%; width: auto; overflow: visible; }
+      .ca { height: 32px; width: 100%; min-width: 0; display: flex; justify-content: center; align-items: center; }
+      .ca svg { height: 100%; width: auto; max-width: 100%; overflow: visible; }
       .chip:not(.on) .ca svg { filter: saturate(.6) brightness(.9); }
       .bloom { animation: breathe 5s ease-in-out infinite; transform-origin: 60px 50px; }
       @keyframes breathe { 50% { opacity: .82; } }
-      .cn { font: 600 11px/13px var(--g-font); max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; }
-      .cs { font: 600 10px/12px var(--g-font); color: var(--g-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+      .tx { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+      .cn { font: 600 11px/13px var(--g-font); overflow-wrap: normal; word-break: normal; hyphens: auto;
+        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .cs { font: 600 10px/12px var(--g-font); color: var(--g-dim); font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .chip.on .cs { color: rgb(var(--c)); filter: brightness(1.25); }
     </style>
     <div class="glass">${this._head(false)}<div class="chips">${chips}</div></div>`;
@@ -1408,7 +1453,7 @@ registerCard("habib-hero", "Habib hero (glass)", "Clock, Hijri date, weather wit
 registerCard("habib-prayer", "Habib prayer times (glass)", "Five prayers, next prayer countdown and progress, Adhan status (read only).");
 registerCard("habib-light", "Habib lamp (glass)", "A drawn lamp that glows in the light's colour. Tap toggles, slider sets brightness, ••• opens colours.");
 registerCard("habib-climate", "Habib climate (glass)", "Indoor temperature and setpoint range per thermostat. Tap opens Home Assistant's dialog.");
-registerCard("habib-security", "Habib security (glass)", "Lock and garage status. Never calls a service.");
+registerCard("habib-security", "Habib security (glass)", "Lock and garage status; a tap can open Home Assistant's own dialog. Never calls a service.");
 registerCard("habib-media", "Habib media (glass)", "Speakers with album art or a spinning record, transport and volume.");
 registerCard("habib-todo", "Habib list (glass)", "A to-do list with quick add and tap to complete.");
 registerCard("habib-room", "Habib room (glass)", "A room's lamps as small chips (tap toggles); the chevron opens the full lamp cards.");

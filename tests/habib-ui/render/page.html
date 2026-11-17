@@ -1,0 +1,84 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>habib render harness</title>
+<style>
+  html, body { margin: 0; background: #0f1c15; }
+  body { font-family: system-ui, sans-serif; }
+  #header { position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 4; background: rgba(15, 28, 21, 0.55);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); color: #eef4ee; display: flex; align-items: center; padding: 0 16px; font-size: 18px; }
+  #view { position: relative; box-sizing: border-box; min-height: 100vh; padding-top: 56px; }
+  #view.sections { background: center / cover no-repeat fixed url('/local/habib/bg/evergreen.svg'), #12221a; }
+  .sv { display: grid; gap: 24px 32px; margin: 0 auto; padding: 8px 16px; box-sizing: border-box; justify-content: center; }
+  .section { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 8px; align-content: start; min-width: 0; }
+  .section > .c { min-width: 0; }
+</style></head>
+<body>
+<div id="header">Home</div>
+<div id="view"></div>
+<script type="module">
+  // A stand-in for the parts of Home Assistant the glass cards touch. Mock states only.
+  const q = new URLSearchParams(location.search);
+  const mode = q.get("mode") || "panel";           // panel (one card fills the view) or sections (HA sections view)
+  const entry = q.get("entry") || "/local/habib/glass/index.js";
+  const RealDate = Date;
+  const fixed = new RealDate(q.get("time") || "2026-11-17T12:00:00").getTime();
+  const t0 = RealDate.now();
+  window.Date = class extends RealDate {
+    constructor(...a) { if (a.length) super(...a); else super(fixed + (RealDate.now() - t0)); }
+    static now() { return fixed + (RealDate.now() - t0); }
+  };
+  const { makeHass } = await import("./mock.js");
+  const hass = makeHass(RealDate, fixed, q.get("scenario") || "default");
+  window.__hass = hass;
+  window.__calls = hass.__calls;
+  window.__events = [];
+  for (const ev of ["hass-more-info", "haptic"]) window.addEventListener(ev, (e) => window.__events.push({ type: ev, detail: e.detail }));
+  window.loadCardHelpers = async () => ({
+    createCardElement(cfg) { const el = document.createElement(String(cfg.type).replace(/^custom:/, "")); el.setConfig(cfg); return el; },
+  });
+  const view = document.getElementById("view");
+  if (q.get("base")) view.style.setProperty("--habib-base", q.get("base"));
+  if (q.get("scale")) view.style.setProperty("--habib-scale", q.get("scale"));
+  await import(entry + "?t=" + RealDate.now());
+  const cfg = await (await fetch(q.get("cfg"))).json();
+  const v = cfg.views[0];
+  const mk = (c) => { const el = document.createElement(String(c.type).replace(/^custom:/, "")); el.setConfig(c); el.hass = hass; return el; };
+  window.__setHass = (h) => { for (const el of window.__cards) el.hass = h; };
+  window.__cards = [];
+  if (v.type === "panel" || mode === "panel") {
+    const el = mk(v.cards[0]); window.__cards.push(el); view.appendChild(el);
+  } else {
+    // HA sections view: columns = min(max_columns, floor((width - 32) / 352)), sections 320 to 500 wide,
+    // a row is as tall as its tallest section, section visibility from screen media queries.
+    view.classList.add("sections");
+    const sv = document.createElement("div"); sv.className = "sv"; view.appendChild(sv);
+    const build = () => {
+      sv.textContent = ""; window.__cards = [];
+      const w = view.clientWidth;
+      const n = Math.max(1, Math.min(v.max_columns || 4, Math.floor((w - 32) / 352)));
+      const side = w < 600 ? 8 : 16;
+      sv.style.padding = `24px ${side}px`;
+      sv.style.gridTemplateColumns = `repeat(${n}, minmax(0, 500px))`;
+      for (const s of v.sections) {
+        const vis = (s.visibility || []).every((c) => c.condition !== "screen" || matchMedia(c.media_query).matches);
+        if (!vis) continue;
+        const sec = document.createElement("div"); sec.className = "section";
+        for (const c of s.cards) {
+          const el = mk(c); window.__cards.push(el);
+          const o = { ...(el.getGridOptions ? el.getGridOptions() : {}), ...(c.grid_options || {}) };
+          const cell = document.createElement("div"); cell.className = "c";
+          cell.style.gridColumn = `span ${o.columns || 12}`;
+          if (Number(o.rows) > 0) cell.style.height = `${o.rows * 56 + (o.rows - 1) * 8}px`;
+          cell.appendChild(el); sec.appendChild(cell);
+        }
+        sv.appendChild(sec);
+      }
+    };
+    build();
+    window.__rebuild = build;
+  }
+  await document.fonts.ready;
+  await new Promise((r) => setTimeout(r, 400));
+  window.__ready = true;
+</script>
+</body></html>

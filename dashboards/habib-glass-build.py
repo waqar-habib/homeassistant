@@ -1,4 +1,6 @@
-# Generates the habib-wh and habib-mkh glass configs (D70). Run: python3 dashboards/habib-glass-build.py (writes wh.json, mkh.json in the cwd).
+# Generates the habib-wh and habib-mkh glass configs (D70) and the two staging dashboards on
+# custom:habib-layout (D79). Run: python3 dashboards/habib-glass-build.py
+# (writes wh.json, mkh.json, wh-next.json, mkh-next.json in the cwd).
 import json
 P = "sensor.living_room_adhan_"
 hero = {"type": "custom:habib-hero", "weather": "weather.forecast_home", "sun": "sun.sun",
@@ -78,9 +80,44 @@ mkh = view([only(compact, PHONE),
             only(floors, WIDE), only(living, WIDE), only(bedroom, WIDE), only(nursery, WIDE), only(upstairs, WIDE),
             only(sec(label("Listen"), media), WIDE)], 4)
 json.dump(wh, open("wh.json", "w"), indent=1); json.dump(mkh, open("mkh.json", "w"), indent=1)
+
+# ---- Staging dashboards on custom:habib-layout (D79): habib-wh-next and habib-mkh-next -----------
+# One panel view, one habib-layout card. A group is what a section was: a label and its cards.
+# The card packs the groups into columns by its own width, so there is no visibility condition and
+# no screen query here. `compact` is what a phone (under 700 px) shows instead of `cards`;
+# compact=[] hides the group on a phone, cards=[] hides it on wide screens.
+def group(gid, cards, label=None, note=None, compact=None):
+    g = {"id": gid, "cards": cards}
+    if label: g["label"] = label
+    if note: g["note"] = note
+    if compact is not None: g["compact_cards"] = compact
+    return g
+def lamps(s): return [c for c in s["cards"] if c["type"] == "custom:habib-light"]
+def panel(groups):
+    return {"views": [{"title": "Home", "path": "home", "type": "panel", "theme": "Habib Glass",
+                       "cards": [{"type": "custom:habib-layout", "max_columns": 4, "groups": groups}]}]}
+ROOMS = [("floors", "Floors", floors, "Nursery not included"), ("living", "Living Room", living, None), ("bedroom", "Bedroom", bedroom, None),
+         ("nursery", "Nursery", nursery, None), ("upstairs", "Upstairs", upstairs, None)]
+wh_next = panel([group("hero", [hero, fold(prayer)]),
+                 group("home", [{"type": "custom:habib-security", "items": [lock, garage]}, fold(climate)], "Home")]
+                + [group(i, lamps(s), l, n) for i, l, s, n in ROOMS]
+                + [group("outdoor", lamps(outdoor), "Outdoor"), group("listen", [fold(media)], "Listen"), group("lists", [fold(todo)], "Lists")])
+# habib-mkh-next: one group order for every screen (DOM order = config order), so it follows the
+# phone order of habib-mkh today: Floors, Bedroom, Nursery, Living Room. Phone: compact hero, each
+# of those rooms as chips, then the dock. Wide: the full cards, plus Home, Upstairs and Listen.
+MKH_ORDER = ["floors", "bedroom", "nursery", "living", "upstairs"]
+PHONE_ROOMS = ["floors", "bedroom", "nursery", "living"]
+def mkh_room(i, l, s, n):
+    return group(i, lamps(s), l, n, [room(l, s, n)] if i in PHONE_ROOMS else [])
+mkh_next = panel([group("hero", [mkh_hero_full], compact=[mkh_hero]),
+                  group("home", [{"type": "custom:habib-security", "items": [tap(lock), tap(garage)]}, climate], "Home", compact=[])]
+                 + [mkh_room(*r) for r in sorted(ROOMS, key=lambda r: MKH_ORDER.index(r[0]))]
+                 + [group("listen", [media], "Listen", compact=[]),
+                    group("dock", [], compact=[{"type": "custom:habib-dock", "cards": [door_bar, garage_bar, mkh_climate, media]}])])
+json.dump(wh_next, open("wh-next.json", "w"), indent=1); json.dump(mkh_next, open("mkh-next.json", "w"), indent=1)
 ids = set()
 def walk(o):
     if isinstance(o, dict): [walk(v) for v in o.values()]
     elif isinstance(o, list): [walk(v) for v in o]
     elif isinstance(o, str) and "." in o and o.split(".")[0] in ("light","switch","sensor","lock","cover","climate","media_player","todo","weather","sun","person","input_boolean"): ids.add(o)
-walk(wh); walk(mkh); print(json.dumps(sorted(ids)))
+walk(wh); walk(mkh); walk(wh_next); walk(mkh_next); print(json.dumps(sorted(ids)))

@@ -1,4 +1,6 @@
-# Habib Glass design tokens. Draft v0.2, 2026-11-16. Companion to docs/design-guide.md.
+# Habib Glass design tokens. Draft v0.3 (code side), 2026-11-16. Companion to docs/design-guide.md.
+# v0.3: the values now live in code in ONE file, www/habib/glass/base.js (TOKENS). This file mirrors it.
+# Sections below still describe v0.2 where they are not listed under `v03_changes` at the end.
 # Machine-readable single source for every value an AI tool may use in a Habib dashboard.
 #
 # status: codified  = read from the live source on 2026-11-16 (file named in `source`).
@@ -9,19 +11,19 @@
 # Change a colour, font or radius HERE and in its `source`, never inside a component.
 
 meta:
-  version: 0.2-draft
+  version: 0.3-draft
   measured: "2026-11-16, Chrome on macOS, HA core 2026.11.1, 12 viewports, docs/design/audit-2026-11-16.md"
   fonts_loaded: { "Habib Display": true, "Habib Text": true }   # document.fonts.check
   profile_theme: Material You      # Habib Glass is applied per view; it has 41 keys and no modes
   system: Habib Glass
   source:
     theme: themes/habib_glass/habib_glass.yaml
-    cards: www/habib/habib-glass.js          # const GLASS = shared CSS, line 36
+    cards: www/habib/glass/                  # base.js = tokens + shared stylesheet; art.js = drawings; one file per card
     logic: www/habib/habib-glass-logic.js
     wallpaper: www/habib/bg/evergreen.svg
     fonts: www/habib/fonts/                  # Outfit.woff2, Inter.woff2 (variable 100-900, SIL OFL)
     generator: dashboards/habib-glass-build.py
-  loader_version: 10
+  loader_version: 11
   live_hashes: { habib-wh: 95f4c477d92c3e07, habib-mkh: c0d82737c4398684 }
 
 # ---------------------------------------------------------------- fonts (codified)
@@ -69,8 +71,8 @@ type:
 color:
   dark:                          # status: codified
     text:        "#eef4ee"                    # --g-text
-    text-dim:    "rgba(238,244,238,.62)"      # --g-dim
-    text-faint:  "rgba(238,244,238,.38)"      # --g-faint (placeholders, notes only)
+    text-dim:    "rgba(238,244,238,.84)"      # --g-dim (was .62 until v0.2; raised for 4.5:1, I55)
+    text-faint:  "rgba(238,244,238,.38)"      # --g-faint (placeholders only)
     text-on-accent: "#16241b"
     accent-warm: "255, 201, 120"              # --g-warm  #ffc978  active, next prayer, focus ring
     accent-mint: "159, 214, 181"              # --g-mint  #9fd6b5  ok, secure, playing, home
@@ -260,3 +262,42 @@ theme_keys:
   habib-radius-card: radius.card
   habib-font-display: font.display
   habib-font-text: font.text
+
+# ---------------------------------------------------------------- v0.3 changes (status: codified in www/habib/glass/base.js, rendered with mock states 2026-11-16)
+v03_changes:
+  rule: "A card file holds no literal colour, px, em or duration. tests/habib-ui/glass-style.test.mjs fails the build if one appears."
+  single_hex:
+    theme_key: habib-base            # the ONLY place the background colour is chosen. Default "#1c3226"
+    optional_theme_key: habib-scale  # multiplies every type size, space, radius and fixed size. Default 1
+    recipes: "PALETTE in www/habib/habib-glass-logic.js: groups css (cards, as color-mix in oklab), wall (habib-layout wallpaper), chrome (HA theme keys)"
+    builder: "python3 dashboards/habib-theme-build.py --base \"#rrggbb\"  (clamps OKLab lightness to 0.16-0.36, refuses below 4.5:1, rewrites the theme)"
+    derived: [page, page-deep, dialog, sheet, surface-solid, scrim, rim, ink, shade, shade-hero]
+    light_mode: "none. One scheme (D78). The `color.light` block above is withdrawn."
+  colour:
+    text-dim: "text at 84%"
+    shade: "base mixed 40% black at 45% opacity, under every glass surface (58% on the hero). Added so dim text reaches 4.5:1"
+    lit_state_text: "text colour (was the lamp colour); the status dot carries the lamp colour"
+    slider_value: "text token (was rgba(255,255,255,.9))"
+    wells: "merged to well .14 and well-deep .22 (were .14 .16 .20 .22)"
+    measured_contrast_min: { hero-dim: 5.05, card-dim: 5.6, dock-bar-dim: 7.5, lamp-off-dim: 5.4, lit-lamp-text: 6.3, any-normal-text: 4.6 }   # 16 renders, 375 to 1920 wide
+  type:
+    clock: "clamp(64px, 26cqi, 104px): follows the hero card's width (container units), not the screen"
+    chip_name: "wide chip 13/16 600, middle and narrow 11/13 600, steps down one role (to 11 or 10) when the longest word does not fit"
+    hyphens: manual                  # a name is never broken inside a word
+  space:
+    scale: [2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 24]   # the only steps; odd values (3, 5, 7, 9, 11) were moved to the nearest step
+  size:
+    touch: 44                        # every control: measured by hit-testing, 0 under 44 px in all renders
+    hit_area: ".tap / .rbtn pseudo-element centred on the control; lamp slider and media volume get a 44 px tall target; room header reaches up over the gap"
+    dock-bar: 52                     # all four, one line; icon column 44
+    chip_breakpoints_px: { wide: 150, narrow: 100 }   # container query on the chip's own box
+    tile-min: 64
+  layout:
+    card: custom:habib-layout
+    columns: "min(max_columns, floor((width + gap) / (min_column + gap))), width = the card's own content width"
+    defaults: { max_columns: 4, min_column: 320, max_column: 500, compact_below: 700 }
+    gaps: { page-pad: 16, page-pad-compact: 8, column: 32, group: 24, group-compact: 8, card: 8, row: 56 }
+    packing: "config order into the shortest column, ties left; DOM order = config order"
+    wallpaper: "painted by habib-layout from habib-base (gradients and leaf shapes as inline SVG); evergreen.svg stays as fallback for the older dashboards"
+  components_added: [habib-layout, habib-button]
+  feedback: { pending-ms: 2500, no-response-ms: 4000, hover: "raised fill lightens, only under @media (hover: hover)" }

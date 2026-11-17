@@ -91,3 +91,103 @@ test("weatherLayers", () => {
   assert.equal(G.daypart(6), "dawn");
   assert.equal(G.daypart(23), "night");
 });
+
+// ---- Prayer bar wording (I57) ----
+test("prayerStatus: all done today when every time is valid and none is left", () => {
+  const now = d("2026-11-16T22:00:00Z");
+  const t = (h) => d(`2026-11-16T${h}:00Z`);
+  const p = G.prayerPlan({ fajr: t("05:50"), sunrise: t("07:00"), dhuhr: t("12:15"), asr: t("15:10"), maghrib: t("17:30"), isha: t("18:45") }, now, sameDay);
+  assert.equal(p.next, null);
+  assert.equal(G.prayerStatus(p), "done");
+});
+
+test("prayerStatus: unavailable only when a sensor is missing, unknown or unavailable", () => {
+  const now = d("2026-11-16T22:00:00Z");
+  const t = (h) => d(`2026-11-16T${h}:00Z`);
+  const missing = G.prayerPlan({ fajr: t("05:50"), dhuhr: t("12:15"), asr: null, maghrib: t("17:30"), isha: t("18:45") }, now, sameDay);
+  assert.equal(G.prayerStatus(missing), "unavailable");
+  assert.equal(G.prayerStatus(G.prayerPlan({ fajr: null, isha: null }, now, sameDay)), "unavailable");
+  const ahead = G.prayerPlan({ fajr: t("05:50"), asr: null, isha: d("2026-11-16T23:00:00Z") }, now, sameDay);
+  assert.equal(G.prayerStatus(ahead), "next");
+});
+
+// ---- habib-layout packing (D79) ----
+test("columnCount follows min(max, floor((width + gap) / (min + gap)))", () => {
+  const o = { maxColumns: 4, minColumn: 320, gap: 32, compactBelow: 700 };
+  assert.equal(G.columnCount(398, o), 1);     // phone
+  assert.equal(G.columnCount(699.09, o), 1);  // the old blank band (I56) still renders one column
+  assert.equal(G.columnCount(788, o), 2);     // 820 wide
+  assert.equal(G.columnCount(1152, o), 3);    // 1440 minus sidebar
+  assert.equal(G.columnCount(1440, o), 4);    // 1728 minus sidebar
+  assert.equal(G.columnCount(2272, o), 4);    // capped
+  assert.equal(G.columnCount(0, o), 1);
+});
+
+test("packGroups: wireframe heights at 3 columns, config order into the shortest column, ties left", () => {
+  // hero, HOME, FLOORS, LIVING, BEDROOM, NURSERY, LISTEN, UPSTAIRS
+  const p = G.packGroups([262, 476, 312, 568, 504, 504, 322, 760], 3, 0);
+  assert.deepEqual(p.place.map((x) => x.col), [0, 1, 2, 0, 2, 1, 2, 0]);
+  assert.deepEqual(p.place.map((x) => x.top), [0, 0, 0, 262, 312, 476, 816, 830]);
+  assert.deepEqual(p.colHeights, [1590, 980, 1138]);
+  assert.equal(p.height, 1590);
+});
+
+test("packGroups: 1, 2 and 4 columns, gaps, hidden groups and one very tall group", () => {
+  assert.deepEqual(G.packGroups([100, 200, 50], 1, 10).place, [{ col: 0, top: 0 }, { col: 0, top: 110 }, { col: 0, top: 320 }]);
+  assert.deepEqual(G.packGroups([100, 100, 100], 2, 0).place.map((x) => x.col), [0, 1, 0]); // tie goes left
+  assert.deepEqual(G.packGroups([10, 20, 30, 40, 5], 4, 0).place.map((x) => x.col), [0, 1, 2, 3, 0]);
+  const tall = G.packGroups([2000, 100, 100, 100, 100], 2, 0);
+  assert.deepEqual(tall.place.map((x) => x.col), [0, 1, 1, 1, 1]); // everything else stacks beside it
+  const hidden = G.packGroups([100, 0, null, 100], 2, 0);
+  assert.equal(hidden.place[1], null);
+  assert.equal(hidden.place[2], null);
+  assert.deepEqual(hidden.place[3], { col: 1, top: 0 });
+});
+
+// ---- habib-button ----
+test("buttonAction: allowed domains toggle or run, refused domains throw", () => {
+  assert.deepEqual(G.buttonAction("light.a", "on"), { domain: "light", service: "turn_off", stateful: true });
+  assert.deepEqual(G.buttonAction("switch.a", "off"), { domain: "switch", service: "turn_on", stateful: true });
+  assert.deepEqual(G.buttonAction("input_boolean.a", "off"), { domain: "input_boolean", service: "turn_on", stateful: true });
+  assert.deepEqual(G.buttonAction("scene.a", "x"), { domain: "scene", service: "turn_on", stateful: false });
+  assert.deepEqual(G.buttonAction("script.a", "off"), { domain: "script", service: "turn_on", stateful: false });
+  for (const id of ["lock.front", "cover.garage", "climate.up", "alarm_control_panel.home", "media_player.pod"]) assert.throws(() => G.buttonAction(id, "on"), /never controls/);
+  assert.throws(() => G.buttonAction("sensor.x", "1"));
+  assert.throws(() => G.buttonAction("", ""));
+});
+
+test("plainText strips summary markup for aria-label", () => {
+  assert.equal(G.plainText('Down <b class="x">72°</b> · Up <b>72°</b>'), "Down 72° · Up 72°");
+});
+
+// ---- Single-hex colour ----
+test("derived colours stay within 5/255 of the values they replaced (default base)", () => {
+  const near = (hex, want) => { const a = G.hexToRgb(hex); want.forEach((v, i) => assert.ok(Math.abs(a[i] - v) <= 5, `${hex} vs ${want}`)); };
+  const css = G.derivePalette("#1c3226", "css");
+  near(css.page, [18, 34, 26]); near(css["page-deep"], [15, 28, 21]); near(css.dialog, [28, 49, 38]); near(css.ink, [22, 36, 27]);
+  const chrome = G.derivePalette("#1c3226", "chrome");
+  near(chrome["sidebar-background-color"], [15, 28, 21]); near(chrome["secondary-background-color"], [26, 45, 34]); near(chrome["state-icon-color"], [207, 224, 212]);
+});
+
+test("a different base changes every derived colour and keeps the hue", () => {
+  const navy = G.derivePalette("#1b2a4a", "css");
+  const page = G.hexToRgb(navy.page);
+  assert.ok(page[2] > page[1] && page[2] > page[0]); // still blue
+  assert.notEqual(navy.page, G.derivePalette("#1c3226", "css").page);
+});
+
+test("clampBase keeps the base in the dark range; contrast maths is WCAG", () => {
+  assert.equal(G.clampBase("#1c3226"), "#1c3226");
+  const L = (hex) => G.rgbToOklab(G.hexToRgb(hex))[0];
+  assert.ok(L(G.clampBase("#ffffff")) <= 0.361);
+  assert.ok(L(G.clampBase("#000000")) >= 0.159);
+  assert.equal(G.clampBase("nope"), null);
+  assert.equal(Math.round(G.contrast([255, 255, 255], [0, 0, 0])), 21);
+});
+
+test("css recipes are valid color-mix text built from the base variable", () => {
+  assert.equal(G.cssRecipe(["black", 19]), "color-mix(in oklab, var(--g-base) 81%, black 19%)");
+  assert.equal(G.cssRecipe(["black", 0]), "var(--g-base)");
+  assert.match(G.cssRecipe(["white", 16.5, 0.88]), /^color-mix\(in oklab, color-mix\(in oklab, var\(--g-base\) 83.5%, white 16.5%\) 88%, transparent\)$/);
+  for (const r of Object.values(G.PALETTE.css)) assert.notEqual(r[0], "lch"); // CSS group: mix recipes only
+});

@@ -1,0 +1,25 @@
+# One-time: re-enable the Adhan Maghrib automation at 00:01 CST on 2026-11-18.
+# Owner GREEN LIGHT 2026-11-17: Maghrib was disabled for 2026-11-17 only.
+# The date condition keeps this from running on any other day, and the automation
+# turns itself off after it runs, so it never fires again.
+
+automation:
+  - id: adhan_maghrib_reenable_once_2026_11_18
+    alias: "One-time: re-enable Adhan Maghrib on 2026-11-18"
+    description: "At 00:01 on 2026-11-18, turn Adhan: Maghrib back on, then turn this automation off."
+    mode: single
+    triggers:
+      - trigger: time
+        at: "00:01:00"
+    conditions:
+      - condition: template
+        value_template: "{{ now().strftime('%Y-%m-%d') == '2026-11-18' }}"
+    actions:
+      - action: automation.turn_on
+        target:
+          entity_id: automation.adhan_maghrib
+      - action: automation.turn_off
+        target:
+          entity_id: automation.one_time_re_enable_adhan_maghrib_on_2026_11_18
+        data:
+          stop_actions: false

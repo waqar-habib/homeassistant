@@ -229,6 +229,46 @@ export function packGroups(heights, columns, gap = 0) {
   return { place, colHeights, height: Math.max(0, ...colHeights) };
 }
 
+// ---- Fluid packing (ui-page packing: fluid, 2026-11-17) -----------------------------------
+// The rule that places sections on wide screens (phones keep config order):
+//   1. A group with `with: <id>` stays directly under that group, in its column (a chain).
+//   2. A chain with `column: n` is pinned: 1 = leftmost, -1 = rightmost (clamped to the count).
+//   3. The other chains go tallest first into the column that is currently shortest (ties go
+//      left), which balances the columns better than config order.
+//   4. Inside a column, chains are stacked in config order, so the top-left stays the top-left.
+//   5. Columns are assigned once per column count; when a section opens or closes only the
+//      tops in its column move (nothing jumps sideways under the finger). Pass `assign` back in.
+// heights: px per group (0 or null = hidden). meta[i]: { with: index of the anchor or null,
+// column: n or null }. Returns { place: [{ col, top } | null], assign: [col | null], colHeights }.
+export function fluidPack(heights, columns, meta = [], assign = null) {
+  const n = Math.max(1, Math.floor(columns) || 1);
+  const shown = (i) => heights[i] > 0;
+  // Chains: an anchor and the groups that follow it (transitively), in config order.
+  const anchorOf = (i) => { let a = i, guard = 0; while (meta[a] && meta[a].with != null && meta[a].with !== a && guard++ < heights.length) a = meta[a].with; return a; };
+  const chains = new Map();
+  heights.forEach((h, i) => { if (!shown(i)) return; const a = anchorOf(i); if (!chains.has(a)) chains.set(a, []); chains.get(a).push(i); });
+  for (const [a, list] of chains) { const rest = list.filter((i) => i !== a); chains.set(a, shown(a) ? [a, ...rest] : rest); }
+  const units = [...chains.entries()].map(([a, list]) => ({ a, list, h: list.reduce((t, i) => t + heights[i], 0), pin: meta[a] && meta[a].column != null ? Number(meta[a].column) : null }));
+  const colOf = new Map();
+  if (assign) {
+    for (const u of units) colOf.set(u.a, Math.min(n - 1, assign[u.list[0]] ?? 0));
+  } else {
+    const load = new Array(n).fill(0);
+    const pinned = units.filter((u) => u.pin != null && u.pin !== 0);
+    for (const u of pinned) { const c = u.pin > 0 ? Math.min(n, u.pin) - 1 : Math.max(0, n + u.pin); colOf.set(u.a, c); load[c] += u.h; }
+    const free = units.filter((u) => !colOf.has(u.a)).sort((x, y) => y.h - x.h || x.a - y.a);
+    for (const u of free) { let c = 0; for (let i = 1; i < n; i++) if (load[i] < load[c]) c = i; colOf.set(u.a, c); load[c] += u.h; }
+  }
+  const place = heights.map(() => null);
+  const outAssign = heights.map(() => null);
+  const colHeights = new Array(n).fill(0);
+  for (const u of [...units].sort((x, y) => x.a - y.a)) {
+    const c = colOf.get(u.a);
+    for (const i of u.list) { place[i] = { col: c, top: colHeights[c] }; outAssign[i] = c; colHeights[c] += heights[i]; }
+  }
+  return { place, assign: outAssign, colHeights, height: Math.max(0, ...colHeights) };
+}
+
 // ---- habib-button: which service a generic button may call ------------------------------
 // Only these domains. Lock, cover, climate, alarm and media_player are refused on purpose
 // (design guide section 9): a generic button must never be able to move them.

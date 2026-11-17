@@ -120,11 +120,28 @@ ui_prayer = {**prayer, "adhan_error": "input_text.adhan_last_error", "adhan_auto
 def page(groups):
     return {"views": [{"title": "Home", "path": "home", "type": "panel", "theme": "Habib Glass",
                        "cards": [{"type": "custom:ui-page", "max_columns": 4, "groups": groups}]}]}
-wh_next = page([group("hero", [ui(hero), accordion(ui_prayer)]),
-                group("home", [section("Home", [ui({"type": "custom:habib-security", "items": [lock, garage]}), accordion(climate)])])]
-               + [group(i, [section(l, [ui(c) for c in lamps(s)], n)]) for i, l, s, n in ROOMS]
-               + [group("outdoor", [section("Outdoor", [ui(c) for c in lamps(outdoor)])]),
-                  group("listen", [section("Listen", [ui(media)])]), group("lists", [section("Lists", [ui(todo)])])])
+# Fluid layout (2026-11-17, owner): wide screens use packing: fluid (logic fluidPack). Home and
+# Floors are always open, Floors directly under Home; a "Lights" section on the right holds one
+# collapsed section per room (closed on every load); "Listen" is "Media" on wide screens. Phones
+# keep the previous arrangement through compact_cards (same cards, same order).
+def g(gid, cards, compact=None, **kw):
+    x = {"id": gid, "cards": cards, **kw}
+    if compact is not None: x["compact_cards"] = compact
+    return x
+def fixed(title, cards, note=None): return section(title, cards, note, collapsible=False)
+def closed(title, cards, note=None): return section(title, cards, note, collapsed=True, remember=False)
+def room_cards(s): return [ui(c) for c in lamps(s)]
+WH_ROOMS = [("living", "Living Room", living), ("bedroom", "Bedroom", bedroom), ("nursery", "Nursery", nursery),
+            ("upstairs", "Upstairs", upstairs), ("outdoor", "Outdoor", outdoor)]
+wh_home = [ui({"type": "custom:habib-security", "items": [lock, garage]}), accordion(climate)]
+wh_next = page([g("hero", [ui(hero), accordion(ui_prayer)], column=1),
+                g("home", [fixed("Home", wh_home)], [section("Home", wh_home)]),
+                g("floors", [fixed("Floors", room_cards(floors), "Nursery not included")], [section("Floors", room_cards(floors), "Nursery not included")], **{"with": "home"}),
+                g("lights", [fixed("Lights", [closed(l, room_cards(s)) for _, l, s in WH_ROOMS])], [], column=-1)]
+               + [g(i, [], [section(l, room_cards(s))]) for i, l, s in WH_ROOMS]
+               + [g("media", [section("Media", [ui(media)])], [section("Listen", [ui(media)])]),
+                  g("lists", [section("Lists", [ui(todo)])])])
+wh_next["views"][0]["cards"][0]["packing"] = "fluid"
 
 # habib-mkh-next: one group order for every screen (DOM order = config order), so it follows the
 # phone order of habib-mkh today: Floors, Bedroom, Nursery, Living Room. Phone: compact hero, each
@@ -133,11 +150,18 @@ MKH_ORDER = ["floors", "bedroom", "nursery", "living", "upstairs"]
 PHONE_ROOMS = ["floors", "bedroom", "nursery", "living"]
 def mkh_room(i, l, s, n):
     return group(i, lamps(s), l, n, [room(l, s, n)] if i in PHONE_ROOMS else [])
-mkh_next = panel([group("hero", [mkh_hero_full], compact=[mkh_hero]),
-                  group("home", [{"type": "custom:habib-security", "items": [tap(lock), tap(garage)]}, climate], "Home", compact=[])]
-                 + [mkh_room(*r) for r in sorted(ROOMS, key=lambda r: MKH_ORDER.index(r[0]))]
-                 + [group("listen", [media], "Listen", compact=[]),
-                    group("dock", [], compact=[{"type": "custom:habib-dock", "cards": [door_bar, garage_bar, mkh_climate, media]}])])
+# habib-mkh-next: phones keep exactly the previous compact_cards (hero, Floors, Bedroom, Nursery,
+# Living Room chips, then the dock). Wide screens get the WH arrangement without prayer and lists.
+mkh_home = [ui({"type": "custom:habib-security", "items": [tap(lock), tap(garage)]}), accordion(climate)]
+MKH_ROOMS = [("bedroom", "Bedroom", bedroom), ("nursery", "Nursery", nursery), ("living", "Living Room", living), ("upstairs", "Upstairs", upstairs)]
+mkh_next = page([g("hero", [ui(mkh_hero_full)], [mkh_hero], column=1),
+                 g("home", [fixed("Home", mkh_home)], []),
+                 g("floors", [fixed("Floors", room_cards(floors), "Nursery not included")], [room("Floors", floors, "Nursery not included")], **{"with": "home"}),
+                 g("lights", [fixed("Lights", [closed(l, room_cards(s)) for _, l, s in MKH_ROOMS])], [], column=-1)]
+                + [g(i, [], [room(l, s)]) for i, l, s in MKH_ROOMS if i in PHONE_ROOMS]
+                + [g("media", [section("Media", [ui(media)])], []),
+                   g("dock", [], [{"type": "custom:habib-dock", "cards": [door_bar, garage_bar, mkh_climate, media]}])])
+mkh_next["views"][0]["cards"][0]["packing"] = "fluid"
 json.dump(wh_next, open("wh-next.json", "w"), indent=1); json.dump(mkh_next, open("mkh-next.json", "w"), indent=1)
 ids = set()
 def walk(o):

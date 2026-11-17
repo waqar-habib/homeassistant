@@ -10,7 +10,8 @@
 //      habib-button, single-hex colour (habib-base), defect fixes I55 to I59.
 // v12: component library v1 (generic ui-* names, Bootstrap 6 naming): ui-page, ui-section, ui-card (Large card),
 //      ui-accordion, drawer (shade, climate controls), Adhan badge on/off/error, heading gap, 44 px list rows.
-const VERSION = 12;
+// v13: fluid rule (ui-page packing: fluid), always-open and nested sections, climate stepper fits its box.
+const VERSION = 13;
 
 const isDev = (() => {
   try {

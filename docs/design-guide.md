@@ -1,3 +1,5 @@
+> **Superseded in part (2026-11-17):** the component library in [`docs/design/library/`](design/library/README.md) (Draft v0.3, Bootstrap 6 format, generic `ui-*` names) is now the reference for layout, components and naming. This file keeps the measured audit values, rationale and gap list (Draft v0.2). Where they differ, the library wins.
+
 # Habib Glass design guide — Draft v0.2 (2026-11-16)
 
 Audience: any AI tool (or person) that builds or changes a Habib Home Assistant dashboard.

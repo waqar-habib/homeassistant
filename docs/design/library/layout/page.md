@@ -40,6 +40,7 @@ views:
 | `min_column` / `max_column` | 320 / 500 | column width limits (px) |
 | `compact_below` | 700 | phone mode under this width |
 | `wallpaper` | true | false = transparent page |
+| `packing` | `order` | `fluid` = the [Fluid rule](fluid.md) on wide screens (group keys `with`, `column`) |
 
 `compact_cards` absent = the group shows `cards` on a phone too; `compact_cards: []` = hidden on a phone; `cards: []` = hidden on wide screens. A group `label` adds a [Heading](../content/heading.md); groups that hold a Section need none.
 

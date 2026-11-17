@@ -29,7 +29,7 @@ Owner GREEN LIGHT climate controls, 2026-11-17. `ui-climate` only; the old `habi
 
 1. Now: current temperature and what the system is doing (Idle, Heating now, …).
 2. Mode: one button per `hvac_modes` (Off, Heating, Cooling, Auto). A tap sends `climate.set_hvac_mode` at once.
-3. Target: Auto shows **Heat to** and **Cool to** steppers; Heating or Cooling shows one. − and + (44 px) change the shown value at once; 0.8 s after the last tap one `climate.set_temperature` call is sent.
+3. Target: Auto shows **Heat to** and **Cool to** steppers; Heating or Cooling shows one. − and + (44 px) change the shown value at once; 0.8 s after the last tap one `climate.set_temperature` call is sent. Each box sizes from its own width: 210 px and wider = − value + on one row; narrower (phones) = the value on its own line, − and + under it. The row never touches the box edge (fix 2026-11-17).
 4. Limits (logic `stepTarget`, tested): the thermostat's own min, max and step; Heat to stays at least 3° under Cool to.
 5. Feedback: "Sending…" until Home Assistant reports the new value; "No response" after 4 s; "Not accepted" if the call fails.
 

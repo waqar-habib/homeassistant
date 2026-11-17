@@ -18,6 +18,8 @@ title: Living Room
 note: Nursery not included     # optional, dim text after the heading
 collapsed: false               # default: starts open
 collapsed_view: none           # none | compact
+collapsible: true              # false = always open: no chevron, no toggle (Home, Floors on wide screens)
+remember: true                 # false = starts as configured on every load (rooms inside Lights: collapsed until clicked)
 cards:
   - { type: custom:ui-card, name: Floor Lamp, art: floor-lamp, entities: [light.floor_lamp] }
   - { type: custom:ui-card, name: Buffet, art: table-lamp, entities: [light.buffet] }
@@ -48,4 +50,5 @@ Header is `role=button` with `aria-expanded` and a label that includes the summa
 ## Do and don't
 
 - Do give every room its own section.
-- Don't put a section inside a section. An [Accordion](../components/accordion.md) inside a section is fine (Home: Climate).
+- A section may hold sections **one level deep** (owner, 2026-11-17: "Lights" holds one collapsed section per room). The outer summary counts the lights of the sections inside it. No deeper nesting.
+- An [Accordion](../components/accordion.md) inside a section is fine (Home: Climate).

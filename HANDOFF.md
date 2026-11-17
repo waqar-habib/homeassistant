@@ -1,6 +1,14 @@
 # HANDOFF
 
-Last updated: 2026-11-16 16:30 CST (Pi 5, habib-mkh compact). Before that: ~02:00 CST (Pi 5, dashboard fold).
+Last updated: 2026-11-16 ~19:25 CST (Pi 5, habib-mkh responsive). Before that: 16:30 CST (Pi 5, habib-mkh compact).
+
+## habib-mkh responsive, plug lamps, garage (2026-11-16 ~19:25 CST, Pi 5, D76): live, mock verified
+1. habib-mkh: phones (<700 px) keep the compact one-screen layout; tablets and laptops get expanded sections like habib-wh. Room chips and dock bars put the icon in the left third and wrapped text in the right two thirds. Shopping list replaced by Garage. Front door and Garage bars open HA's own dialog in one tap; the card never calls lock or cover services (no "GREEN LIGHT outdoor controls").
+2. Groups: Upstairs now has all 5 lamps (3 lights plus 2 smart plugs `switch.upstairs_guest_guest_nightstand`, `switch.study_study_floor_lamp`), on habib-wh and habib-mkh. Downstairs (7) verified complete.
+3. Sliders ignore page scrolls (likely cause of the 1% Upstairs reading). Lamp colour logic made stricter; red not reproducible (I52).
+4. Loader v10, hashes wh `95f4c477d92c3e07`, mkh `c0d82737c4398684`, commit `5969323`, backup `pre-mkh-responsive` (c42207a8). Note `docs/sessions/2026-11-16-mkh-responsive.md`.
+5. **Owner next:** reset frontend cache on the iPhone, check habib-mkh on phone and laptop, tap Upstairs (all 5 should light). Decide I53: add the 2 plugs to the sunset automation? **Claude next:** read lamp colour state at sunset 2026-11-17 ~17:33 CST (I52).
+6. Rollback: re-apply `dashboards/habib-mkh-2026-11-16-compact.json` and `dashboards/habib-wh-2026-11-16-fold.json`, loader `?v=9`.
 
 ## habib-mkh on one iPhone screen (2026-11-16 16:30 CST, Pi 5, D75): live, mock verified
 Hero is 130 px (no Hijri date, no avatars, same weather in smaller type). Each room is a `habib-room` card: small lamp chips (tap toggles), and the chevron opens the full lamp cards. Front door, Climate, Listen and Shopping list sit in a `habib-dock` as 52 px bars, 2 per row; tap one to open it. One section. Loader v9, hash `9dac0e9f30284b82`, commit `e5ed62f`, backup `pre-mkh-compact` (`18afddc4`). habib-wh unchanged. Mock at 430x839 ends at ~814 px. **Owner next:** refresh the app on the MKH iPhone (Reset frontend cache if it looks old) and report fit and tap size. Rollback: re-apply `dashboards/habib-mkh-2026-11-16-fold.json`. Note `docs/sessions/2026-11-16-mkh-compact.md`. Earlier today: cloud session, dashboard v2 plan and prompts P0, P1. Previous: 2026-11-14 (Adhan owner confirm), 2026-11-12 (Pi 5, Adhan build), 2026-11-11 (Mac session, Home v2), 2026-11-09 (Mac session end), 2026-11-08 (backup location, partial stop at step 3).

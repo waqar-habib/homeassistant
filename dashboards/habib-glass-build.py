@@ -102,6 +102,30 @@ wh_next = panel([group("hero", [hero, fold(prayer)]),
                  group("home", [{"type": "custom:habib-security", "items": [lock, garage]}, fold(climate)], "Home")]
                 + [group(i, lamps(s), l, n) for i, l, s, n in ROOMS]
                 + [group("outdoor", lamps(outdoor), "Outdoor"), group("listen", [fold(media)], "Listen"), group("lists", [fold(todo)], "Lists")])
+# ---- Library v1 (2026-11-17): habib-wh-next on the generic ui-* components only ------------------
+# Every room is a ui-section (outlined, collapsible, starts open) holding Large cards (ui-card).
+# Prayer and climate are ui-accordion. The page is ui-page. See docs/design/library/.
+RENAME = {"habib-light": "ui-card", "habib-hero": "ui-hero", "habib-prayer": "ui-prayer", "habib-climate": "ui-climate",
+          "habib-security": "ui-security", "habib-media": "ui-media", "habib-todo": "ui-list"}
+def ui(c):
+    t = c["type"].replace("custom:", "")
+    return {**{k: v for k, v in c.items() if k != "collapsible"}, "type": "custom:" + RENAME.get(t, t)}
+def section(title, cards, note=None, **kw):
+    s = {"type": "custom:ui-section", "title": title, "cards": cards, **kw}
+    if note: s["note"] = note
+    return s
+def accordion(c): return {"type": "custom:ui-accordion", "card": ui(c)}
+ADHAN_AUTOS = ["automation.adhan_" + k for k in ("fajr", "dhuhr", "asr", "maghrib", "isha")]
+ui_prayer = {**prayer, "adhan_error": "input_text.adhan_last_error", "adhan_automations": ADHAN_AUTOS}
+def page(groups):
+    return {"views": [{"title": "Home", "path": "home", "type": "panel", "theme": "Habib Glass",
+                       "cards": [{"type": "custom:ui-page", "max_columns": 4, "groups": groups}]}]}
+wh_next = page([group("hero", [ui(hero), accordion(ui_prayer)]),
+                group("home", [section("Home", [ui({"type": "custom:habib-security", "items": [lock, garage]}), accordion(climate)])])]
+               + [group(i, [section(l, [ui(c) for c in lamps(s)], n)]) for i, l, s, n in ROOMS]
+               + [group("outdoor", [section("Outdoor", [ui(c) for c in lamps(outdoor)])]),
+                  group("listen", [section("Listen", [ui(media)])]), group("lists", [section("Lists", [ui(todo)])])])
+
 # habib-mkh-next: one group order for every screen (DOM order = config order), so it follows the
 # phone order of habib-mkh today: Floors, Bedroom, Nursery, Living Room. Phone: compact hero, each
 # of those rooms as chips, then the dock. Wide: the full cards, plus Home, Upstairs and Listen.
@@ -119,5 +143,5 @@ ids = set()
 def walk(o):
     if isinstance(o, dict): [walk(v) for v in o.values()]
     elif isinstance(o, list): [walk(v) for v in o]
-    elif isinstance(o, str) and "." in o and o.split(".")[0] in ("light","switch","sensor","lock","cover","climate","media_player","todo","weather","sun","person","input_boolean"): ids.add(o)
+    elif isinstance(o, str) and "." in o and o.split(".")[0] in ("light","switch","sensor","lock","cover","climate","media_player","todo","weather","sun","person","input_boolean","input_text","automation"): ids.add(o)
 walk(wh); walk(mkh); walk(wh_next); walk(mkh_next); print(json.dumps(sorted(ids)))

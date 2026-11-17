@@ -8,7 +8,9 @@
 // v10: plug lamps in groups, scroll-safe sliders, stricter lamp colour, 1/3 icon chips and dock bars, direct door and garage bars.
 // v11: glass cards split into www/habib/glass/ (one token file, one shared stylesheet, one file per card), habib-layout,
 //      habib-button, single-hex colour (habib-base), defect fixes I55 to I59.
-const VERSION = 11;
+// v12: component library v1 (generic ui-* names, Bootstrap 6 naming): ui-page, ui-section, ui-card (Large card),
+//      ui-accordion, drawer (shade, climate controls), Adhan badge on/off/error, heading gap, 44 px list rows.
+const VERSION = 12;
 
 const isDev = (() => {
   try {

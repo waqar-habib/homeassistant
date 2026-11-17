@@ -191,3 +191,30 @@ test("css recipes are valid color-mix text built from the base variable", () => 
   assert.match(G.cssRecipe(["white", 16.5, 0.88]), /^color-mix\(in oklab, color-mix\(in oklab, var\(--g-base\) 83.5%, white 16.5%\) 88%, transparent\)$/);
   for (const r of Object.values(G.PALETTE.css)) assert.notEqual(r[0], "lch"); // CSS group: mix recipes only
 });
+
+test("adhanStatus: on, off and error", () => {
+  const all = ["on", "on", "on", "on", "on"];
+  assert.equal(G.adhanStatus({ gate: "on", error: "", automations: all }), "on");
+  assert.equal(G.adhanStatus({ gate: "on", error: "unknown", automations: all }), "on");
+  assert.equal(G.adhanStatus({ gate: "off", error: "", automations: all }), "off");
+  assert.equal(G.adhanStatus({ gate: "off", error: "2026-11-17 Fajr.mp3: volume unreadable", automations: all }), "off");
+  assert.equal(G.adhanStatus({ gate: "on", error: "2026-11-17 Fajr.mp3: volume unreadable", automations: all }), "error");
+  assert.equal(G.adhanStatus({ gate: "on", error: "", automations: ["on", "off", "on"] }), "error");
+  assert.equal(G.adhanStatus({ gate: "on", error: "", automations: ["on", "unavailable"] }), "error");
+  assert.equal(G.adhanStatus({ gate: "unavailable" }), "error");
+  assert.equal(G.adhanStatus({ gate: null }), "error");
+});
+
+test("climate targets and steps keep the range gap and the limits", () => {
+  const r = G.climateTargets("heat_cool", { target_temp_low: 69, target_temp_high: 78, temperature: null });
+  assert.deepEqual(r, { kind: "range", low: 69, high: 78 });
+  assert.deepEqual(G.climateTargets("heat", { temperature: 70 }), { kind: "single", value: 70 });
+  assert.deepEqual(G.climateTargets("off", {}), { kind: "none" });
+  assert.deepEqual(G.stepTarget(r, "low", 1), { kind: "range", low: 70, high: 78 });
+  assert.deepEqual(G.stepTarget({ kind: "range", low: 74, high: 77 }, "low", 1), { kind: "range", low: 74, high: 77 });
+  assert.deepEqual(G.stepTarget({ kind: "range", low: 74, high: 77 }, "high", -1), { kind: "range", low: 74, high: 77 });
+  assert.deepEqual(G.stepTarget({ kind: "single", value: 90 }, null, 1), { kind: "single", value: 90 });
+  assert.deepEqual(G.stepTarget({ kind: "single", value: 50 }, null, -1, { min: 50 }), { kind: "single", value: 50 });
+  assert.deepEqual(G.targetData({ kind: "range", low: 68, high: 77 }), { target_temp_low: 68, target_temp_high: 77 });
+  assert.deepEqual(G.targetData({ kind: "single", value: 71 }), { temperature: 71 });
+});

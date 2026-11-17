@@ -164,6 +164,46 @@ export function prayerStatus(plan) {
   return real.length && real.every((r) => r.at) ? "done" : "unavailable";
 }
 
+// ---- Adhan status badge (2026-11-17) ----------------------------------------------------
+// Shown, never changed. "on": playback gate on, every listed Adhan automation on, no recorded
+// failure. "off": gate off. "error": gate on but an automation is off or unavailable, the gate
+// itself is unavailable, or the last playback recorded a failure (input_text.adhan_last_error).
+// gate/error/automations are HA state strings (null = entity not found).
+export function adhanStatus({ gate, error = null, automations = [] }) {
+  if (gate == null || gate === "unavailable" || gate === "unknown") return "error";
+  if (gate !== "on") return "off";
+  if (automations.some((s) => s !== "on")) return "error";
+  if (error != null && !["", "unknown", "unavailable"].includes(String(error).trim())) return "error";
+  return "on";
+}
+
+// ---- Climate drawer: setpoint steps (owner GREEN LIGHT climate controls, 2026-11-17) ----
+// Which setpoints a thermostat mode shows: heat_cool -> low and high; heat or cool -> one.
+export function climateTargets(mode, a = {}) {
+  if (mode === "heat_cool" || mode === "auto") {
+    if (a.target_temp_low != null && a.target_temp_high != null) return { kind: "range", low: a.target_temp_low, high: a.target_temp_high };
+  }
+  if ((mode === "heat" || mode === "cool") && a.temperature != null) return { kind: "single", value: a.temperature };
+  return { kind: "none" };
+}
+// One step of a setpoint. Clamped to min/max; in a range the two ends keep `gap` degrees apart
+// (Nest refuses a closer pair). Returns the new target object (same shape as climateTargets).
+export function stepTarget(t, which, dir, { step = 1, min = 50, max = 90, gap = 3 } = {}) {
+  const clamp = (v) => Math.min(max, Math.max(min, Math.round(v / step) * step));
+  if (t.kind === "single") return { ...t, value: clamp(t.value + dir * step) };
+  if (t.kind !== "range") return t;
+  let { low, high } = t;
+  if (which === "low") low = Math.min(clamp(low + dir * step), high - gap);
+  else high = Math.max(clamp(high + dir * step), low + gap);
+  return { kind: "range", low: clamp(low), high: clamp(high) };
+}
+// The service data that sets a target.
+export function targetData(t) {
+  if (t.kind === "single") return { temperature: t.value };
+  if (t.kind === "range") return { target_temp_low: t.low, target_temp_high: t.high };
+  return null;
+}
+
 // ---- habib-layout: packed columns (D79) -------------------------------------------------
 // How many columns fit: min(max_columns, floor((width + gap) / (min_column + gap))), at least 1.
 // Under compact_below the answer is always 1 (the caller also swaps in compact cards).

@@ -52,8 +52,9 @@ export class HabibSecurity extends GlassCard {
     const rows = this._items.map((it) => {
       const r = this._read(it);
       if (!r.ok && !r.dead) alerts++;
-      // Tapping opens HA's own dialog only when the item allows it (tap: more-info). Default: status only.
-      const tag = it.tap === "more-info" ? "button" : "div";
+      // A tap opens HA's own dialog (owner, 2026-11-17: door and garage clickable on every dashboard).
+      // tap: none makes an item status only. The card itself never calls a lock or cover service.
+      const tag = it.tap === "none" ? "div" : "button";
       return `<${tag} class="it well ${tag === "button" ? "act" : ""} ${!r.s ? "is-missing" : r.dead ? "is-dead" : r.ok ? "ok" : "is-alert"}" ${tag === "button" ? `data-entity="${esc(it.entity)}" aria-label="${esc(r.name)}: ${esc(r.text)}, open controls"` : ""}>
         <span class="ic">${iconOf(r.kind, r.ok)}</span><span class="nm">${esc(r.name)}</span><span class="st">${esc(r.text)}</span></${tag}>`;
     }).join("");

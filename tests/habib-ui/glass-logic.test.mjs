@@ -67,7 +67,9 @@ test("glowColor prefers white unless HA reports a colour mode", () => {
   assert.deepEqual(G.glowColor({ color_mode: "color_temp", color_temp_kelvin: 3000, rgb_color: [255, 0, 0] }), amber);
   assert.deepEqual(G.glowColor({ color_mode: null, color_temp_kelvin: 3000, rgb_color: [255, 0, 0] }), amber);
   assert.deepEqual(G.glowColor({ color_mode: "rgbw", color_temp_kelvin: 3000, rgb_color: [255, 0, 0], rgbw_color: [255, 0, 0, 255] }), amber);
-  assert.deepEqual(G.glowColor({ color_mode: "rgbw", rgb_color: [255, 0, 0], rgbw_color: [255, 0, 0, 0] }), [255, 0, 0]);
+  // I52: AiDot's placeholder report (pure red, white 0) is drawn warm white; a real colour still shows.
+  assert.deepEqual(G.glowColor({ color_mode: "rgbw", rgb_color: [255, 0, 0], rgbw_color: [255, 0, 0, 0] }), [255, 196, 120]);
+  assert.deepEqual(G.glowColor({ color_mode: "rgbw", rgb_color: [255, 120, 90], rgbw_color: [255, 120, 90, 0] }), [255, 120, 90]);
   assert.equal(G.glowColor({}), null);
   assert.equal(G.colorLabel({ color_mode: "color_temp", color_temp_kelvin: 2700 }), "White 2700 K");
 });

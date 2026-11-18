@@ -1,3 +1,5 @@
+> **Moved (2026-11-17):** the design guide is now `docs/design/guide/index.html` (v1.0, draft until the owner's GREEN LIGHT). Read that file; it holds every component's image, config, options, states and usage. The text below is the v0.2 audit record, kept for its measured values only.
+
 > **Superseded in part (2026-11-17):** the component library in [`docs/design/library/`](design/library/README.md) (Draft v0.3, Bootstrap 6 format, generic `ui-*` names) is now the reference for layout, components and naming. This file keeps the measured audit values, rationale and gap list (Draft v0.2). Where they differ, the library wins.
 
 # Habib Glass design guide — Draft v0.2 (2026-11-16)

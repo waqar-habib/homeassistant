@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Habib Glass Design Guide</title>
+<meta name="description" content="Design guide v1.0 for the Habib Home Assistant dashboards: foundations, layout, every ui-* component with images, config, options, states and usage.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!--
+  READ ME FIRST (for Claude sessions and other tools)
+  This file is the design guide for every Habib dashboard. It is the spec: build from it without asking the owner for specs.
+  Order of truth: www/habib/glass/base.js (token values) > this guide > docs/design/library/*.md (detail pages).
+  Find a component by its anchor: #c-<name>, e.g. #c-large-card, #c-security. Each has: purpose, use / don't use,
+  wireframe line, config, options, anatomy, states, behaviour, accessibility, tokens, helper text.
+  Safety rules (#safety) are Locked and override everything here.
+  The page itself is styled with Material 3 (Roboto); the dashboard components it documents are the Habib Glass set.
+-->
+<style>
+/* ---------- Material 3 tokens (seed: evergreen #1c3226) ---------- */
+:root{
+  --md-primary:#2f6a45; --md-on-primary:#ffffff; --md-primary-container:#b3f1c2; --md-on-primary-container:#00210f;
+  --md-secondary:#4f6353; --md-secondary-container:#d2e8d4; --md-on-secondary-container:#0d1f13;
+  --md-tertiary:#3a6470; --md-tertiary-container:#bdeaf7; --md-on-tertiary-container:#001f26;
+  --md-error:#ba1a1a; --md-error-container:#ffdad6; --md-on-error-container:#410002;
+  --md-surface:#f6fbf3; --md-surface-dim:#d7dbd4; --md-surface-c-lowest:#ffffff; --md-surface-c-low:#f0f5ed;
+  --md-surface-c:#eaefe7; --md-surface-c-high:#e4eae2; --md-surface-c-highest:#dfe4dc;
+  --md-on-surface:#171d18; --md-on-surface-variant:#414941; --md-outline:#717970; --md-outline-variant:#c0c9be;
+  --md-warn-container:#ffdea8; --md-on-warn-container:#2a1800;
+  --stage:#12221a;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --md-primary:#98d5a7; --md-on-primary:#00391c; --md-primary-container:#145230; --md-on-primary-container:#b3f1c2;
+    --md-secondary:#b6ccb8; --md-secondary-container:#384b3c; --md-on-secondary-container:#d2e8d4;
+    --md-tertiary:#a2ceda; --md-tertiary-container:#214c57; --md-on-tertiary-container:#bdeaf7;
+    --md-error:#ffb4ab; --md-error-container:#93000a; --md-on-error-container:#ffdad6;
+    --md-surface:#0f1511; --md-surface-dim:#0f1511; --md-surface-c-lowest:#0a0f0b; --md-surface-c-low:#171d19;
+    --md-surface-c:#1b211c; --md-surface-c-high:#252b27; --md-surface-c-highest:#303631;
+    --md-on-surface:#dee4dc; --md-on-surface-variant:#c0c9be; --md-outline:#8a9389; --md-outline-variant:#414941;
+    --md-warn-container:#5c4300; --md-on-warn-container:#ffdea8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --md-primary:#98d5a7; --md-on-primary:#00391c; --md-primary-container:#145230; --md-on-primary-container:#b3f1c2;
+  --md-secondary:#b6ccb8; --md-secondary-container:#384b3c; --md-on-secondary-container:#d2e8d4;
+  --md-tertiary:#a2ceda; --md-tertiary-container:#214c57; --md-on-tertiary-container:#bdeaf7;
+  --md-error:#ffb4ab; --md-error-container:#93000a; --md-on-error-container:#ffdad6;
+  --md-surface:#0f1511; --md-surface-dim:#0f1511; --md-surface-c-lowest:#0a0f0b; --md-surface-c-low:#171d19;
+  --md-surface-c:#1b211c; --md-surface-c-high:#252b27; --md-surface-c-highest:#303631;
+  --md-on-surface:#dee4dc; --md-on-surface-variant:#c0c9be; --md-outline:#8a9389; --md-outline-variant:#414941;
+  --md-warn-container:#5c4300; --md-on-warn-container:#ffdea8;
+  color-scheme: dark;
+}
+/* M3 type scale */
+.display-s{font:400 36px/44px Roboto,system-ui,sans-serif;letter-spacing:0}
+.headline-l{font:400 32px/40px Roboto,system-ui,sans-serif}
+.headline-m{font:400 28px/36px Roboto,system-ui,sans-serif}
+.headline-s{font:400 24px/32px Roboto,system-ui,sans-serif}
+.title-l{font:400 22px/28px Roboto,system-ui,sans-serif}
+.title-m{font:500 16px/24px Roboto,system-ui,sans-serif;letter-spacing:.15px}
+.title-s{font:500 14px/20px Roboto,system-ui,sans-serif;letter-spacing:.1px}
+.body-l{font:400 16px/24px Roboto,system-ui,sans-serif;letter-spacing:.5px}
+.body-m{font:400 14px/20px Roboto,system-ui,sans-serif;letter-spacing:.25px}
+.body-s{font:400 12px/16px Roboto,system-ui,sans-serif;letter-spacing:.4px}
+.label-l{font:500 14px/20px Roboto,system-ui,sans-serif;letter-spacing:.1px}
+.label-m{font:500 12px/16px Roboto,system-ui,sans-serif;letter-spacing:.5px}
+.label-s{font:500 11px/16px Roboto,system-ui,sans-serif;letter-spacing:.5px}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:16px}
+body{margin:0;background:var(--md-surface);color:var(--md-on-surface);font:400 14px/20px Roboto,system-ui,sans-serif;letter-spacing:.25px;-webkit-font-smoothing:antialiased}
+a{color:var(--md-primary)}
+code,pre,kbd{font-family:"Roboto Mono",ui-monospace,monospace}
+code{font-size:.92em;background:var(--md-surface-c-high);padding:1px 6px;border-radius:6px;overflow-wrap:anywhere}
+pre{margin:12px 0;background:var(--md-surface-c-highest);color:var(--md-on-surface);padding:14px 16px;border-radius:12px;overflow:auto;font-size:12.5px;line-height:19px}
+pre code{background:none;padding:0;font-size:inherit}
+h1,h2,h3,h4{margin:0;font-weight:400}
+
+/* layout: navigation rail + content */
+.app{display:grid;grid-template-columns:1fr;min-height:100vh}
+.nav{background:var(--md-surface-c-low);padding:12px 12px 24px;border-bottom:1px solid var(--md-outline-variant)}
+.nav .brand{display:flex;align-items:center;gap:12px;padding:8px 12px 16px}
+.nav .logo{width:40px;height:40px;border-radius:12px;background:var(--md-primary-container);color:var(--md-on-primary-container);display:grid;place-items:center;flex:none}
+.nav ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px}
+.nav li a{display:block;padding:8px 14px;border-radius:999px;color:var(--md-on-surface-variant);text-decoration:none;font:500 14px/20px Roboto,sans-serif;letter-spacing:.1px}
+.nav li a:hover{background:var(--md-surface-c-high)}
+.nav .sub a{padding-left:28px;font-weight:400}
+.nav .grp{width:100%;padding:12px 14px 4px;color:var(--md-on-surface-variant)}
+main{padding:24px 16px 80px;max-width:1100px;width:100%;margin:0 auto;min-width:0}
+@media (min-width:1000px){
+  .app{grid-template-columns:280px minmax(0,1fr)}
+  .nav{position:sticky;top:0;height:100vh;overflow:auto;border-bottom:0;border-right:1px solid var(--md-outline-variant)}
+  .nav ol{display:block}
+  .nav li a{margin:1px 0}
+  main{padding:40px 48px 120px}
+}
+@media (max-width:999px){ .nav .sub{display:none} }
+@media (min-width:1000px){ .nav .mob{display:none} }
+
+/* surfaces */
+.hero-band{background:var(--md-primary-container);color:var(--md-on-primary-container);border-radius:28px;padding:28px 24px;margin-bottom:32px}
+.hero-band p{max-width:760px}
+section.chapter{margin:56px 0 0}
+section.chapter > h2{margin-bottom:8px}
+.lead{color:var(--md-on-surface-variant);max-width:820px;margin:4px 0 20px}
+.card{background:var(--md-surface-c-low);border:1px solid var(--md-outline-variant);border-radius:16px;padding:20px;margin:16px 0}
+.card.filled{background:var(--md-surface-c-high);border-color:transparent}
+.grid2{display:grid;grid-template-columns:1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:760px){ .grid2{grid-template-columns:1fr 1fr} .grid3{grid-template-columns:repeat(3,1fr)} }
+.callout{border-radius:12px;padding:12px 16px;margin:12px 0;display:flex;gap:12px;align-items:flex-start}
+.callout.tip{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.callout.warn{background:var(--md-warn-container);color:var(--md-on-warn-container)}
+.callout.err{background:var(--md-error-container);color:var(--md-on-error-container)}
+.callout b{font-weight:500}
+.callout .ic{flex:none;width:20px;height:20px;margin-top:1px}
+
+/* chips */
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:8px;font:500 12px/16px Roboto,sans-serif;letter-spacing:.5px;border:1px solid var(--md-outline-variant);color:var(--md-on-surface-variant);white-space:nowrap;vertical-align:middle}
+.chip.locked{background:var(--md-primary-container);color:var(--md-on-primary-container);border-color:transparent}
+.chip.draft{background:var(--md-tertiary-container);color:var(--md-on-tertiary-container);border-color:transparent}
+.chip.planned{background:transparent}
+.chip.el{font-family:"Roboto Mono",monospace;font-weight:400;background:var(--md-surface-c-high);border-color:transparent;color:var(--md-on-surface)}
+
+/* tables */
+.tw{overflow-x:auto;margin:12px 0;border:1px solid var(--md-outline-variant);border-radius:12px}
+table{border-collapse:collapse;width:100%;font:400 14px/20px Roboto,sans-serif}
+th{font:500 12px/16px Roboto,sans-serif;letter-spacing:.5px;text-align:left;color:var(--md-on-surface-variant);background:var(--md-surface-c);padding:10px 12px;white-space:nowrap}
+td{padding:10px 12px;border-top:1px solid var(--md-outline-variant);vertical-align:top}
+td code{white-space:nowrap}
+
+/* component pages */
+.comp{background:var(--md-surface-c-low);border:1px solid var(--md-outline-variant);border-radius:24px;padding:20px;margin:24px 0}
+@media (min-width:760px){ .comp{padding:28px} }
+.comp-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:6px}
+.comp-head h3{margin-right:4px}
+.comp-top{display:grid;grid-template-columns:1fr;gap:20px;margin:16px 0 8px}
+@media (min-width:900px){ .comp-top{grid-template-columns:minmax(0,430px) minmax(0,1fr)} }
+.stage{background:var(--stage);border-radius:16px;overflow:hidden;margin:0}
+.stage img{display:block;width:100%;height:auto}
+.stage figcaption{background:var(--md-surface-c-high);color:var(--md-on-surface-variant);padding:8px 12px;font:400 12px/16px Roboto,sans-serif;letter-spacing:.4px}
+.figs{display:grid;align-items:start;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:12px;margin:12px 0}
+dl.facts{display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0}
+dl.facts dt{font:500 12px/20px Roboto,sans-serif;letter-spacing:.5px;color:var(--md-on-surface-variant);text-transform:uppercase}
+dl.facts dd{margin:0}
+.useno{display:grid;grid-template-columns:1fr;gap:12px;margin:12px 0}
+@media (min-width:600px){ .useno{grid-template-columns:1fr 1fr} }
+.use,.no{border-radius:12px;padding:12px 16px}
+.use{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+.no{background:var(--md-error-container);color:var(--md-on-error-container)}
+.use h4,.no h4{font:500 14px/20px Roboto,sans-serif;margin-bottom:4px}
+.use ul,.no ul{margin:0;padding-left:18px}
+.wire{font-family:"Roboto Mono",monospace;font-size:13px;background:var(--md-primary-container);color:var(--md-on-primary-container);border-radius:12px;padding:10px 14px;margin:12px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.wire::before{content:"Wireframe line  ";font:500 11px/16px Roboto,sans-serif;letter-spacing:.5px;text-transform:uppercase;opacity:.8;display:block;margin-bottom:2px}
+.helper{border-left:4px solid var(--md-primary);background:var(--md-surface-c);border-radius:0 12px 12px 0;padding:10px 14px;margin:12px 0}
+.helper::before{content:"Helper text";display:block;font:500 11px/16px Roboto,sans-serif;letter-spacing:.5px;text-transform:uppercase;color:var(--md-primary);margin-bottom:2px}
+h4.sub{font:500 14px/20px Roboto,sans-serif;letter-spacing:.1px;margin:20px 0 4px;color:var(--md-on-surface)}
+
+/* swatches + type specimen */
+.sw{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:12px 0}
+.sw div{border-radius:12px;overflow:hidden;border:1px solid var(--md-outline-variant);background:var(--md-surface-c-lowest)}
+.sw i{display:block;height:56px}
+.sw span{display:block;padding:8px 10px;font:400 12px/16px Roboto,sans-serif}
+.sw b{font-weight:500;display:block;font-family:"Roboto Mono",monospace;font-size:12px}
+.spec td:first-child{font-family:"Roboto Mono",monospace;font-size:13px;white-space:nowrap}
+.check{list-style:none;padding:0;margin:8px 0;counter-reset:c}
+.check li{counter-increment:c;padding:8px 0 8px 40px;position:relative;border-top:1px solid var(--md-outline-variant)}
+.check li:first-child{border-top:0}
+.check li::before{content:counter(c);position:absolute;left:0;top:8px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--md-primary-container);color:var(--md-on-primary-container);font:500 12px/1 Roboto,sans-serif}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.btn{display:inline-flex;align-items:center;height:40px;padding:0 24px;border-radius:20px;background:var(--md-primary);color:var(--md-on-primary);text-decoration:none;font:500 14px/20px Roboto,sans-serif;letter-spacing:.1px}
+.btn.tonal{background:var(--md-secondary-container);color:var(--md-on-secondary-container)}
+footer{margin-top:64px;color:var(--md-on-surface-variant)}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="nav" aria-label="Guide sections">
+  <div class="brand"><span class="logo" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg></span>
+    <div><div class="title-m">Habib Glass</div><div class="body-s" style="color:var(--md-on-surface-variant)">Design guide v1.0</div></div></div>
+  <ol>
+    <li><a href="#start">Start here</a></li>
+    <li><a href="#names">Nomenclature</a></li>
+    <li class="grp label-m">Foundations</li>
+    <li><a href="#principles">Principles</a></li>
+    <li><a href="#colour">Colour</a></li>
+    <li><a href="#type">Typography</a></li>
+    <li><a href="#space">Space, radius, size</a></li>
+    <li><a href="#motion">Motion and art</a></li>
+    <li class="grp label-m">Layout</li>
+    <li><a href="#c-page">Page</a></li>
+    <li><a href="#c-section">Section</a></li>
+    <li><a href="#grid">Grid</a></li>
+    <li><a href="#fluid">Fluid rule</a></li>
+    <li class="grp label-m">Components</li>
+    <li class="mob"><a href="#components">All components</a></li>
+    <li class="sub"><a href="#c-large-card">Large card</a></li>
+    <li class="sub"><a href="#c-compact-card">Compact card</a></li>
+    <li class="sub"><a href="#c-control-pill">Control pill</a></li>
+    <li class="sub"><a href="#c-button">Button</a></li>
+    <li class="sub"><a href="#c-heading">Heading</a></li>
+    <li class="sub"><a href="#c-accordion">Accordion</a></li>
+    <li class="sub"><a href="#c-bar">Bar</a></li>
+    <li class="sub"><a href="#c-drawer">Drawer</a></li>
+    <li class="sub"><a href="#c-badge">Badge</a></li>
+    <li class="sub"><a href="#c-hero">Hero</a></li>
+    <li class="sub"><a href="#c-prayer">Prayer times</a></li>
+    <li class="sub"><a href="#c-climate">Climate</a></li>
+    <li class="sub"><a href="#c-security">Security</a></li>
+    <li class="sub"><a href="#c-media">Media</a></li>
+    <li class="sub"><a href="#c-list">List</a></li>
+    <li class="sub"><a href="#c-dock">Dock</a></li>
+    <li class="grp label-m">Rules</li>
+    <li><a href="#states">States and wording</a></li>
+    <li><a href="#helpers">Helpers</a></li>
+    <li><a href="#safety">Safety (Locked)</a></li>
+    <li><a href="#build">Build workflow</a></li>
+    <li><a href="#accept">Acceptance</a></li>
+    <li><a href="#gaps">Gap list</a></li>
+    <li><a href="#changes">Changes</a></li>
+  </ol>
+</nav>
+
+<main>
+<!-- ======================================================= START -->
+<header class="hero-band" id="start">
+  <div class="label-l" style="opacity:.85">Home Assistant · Habib Home · 2026-11-17</div>
+  <h1 class="display-s" style="margin:6px 0 10px">Habib Glass design guide</h1>
+  <p class="body-l">The single spec for every Habib dashboard. Pick a component, copy its config, follow its rules. Any session can build a card, button or page from this page without asking the owner for specs again.</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px">
+    <span class="chip draft">v1.0 · Draft until GREEN LIGHT</span>
+    <span class="chip el">loader v16</span>
+    <span class="chip el">www/habib/glass/</span>
+  </div>
+</header>
+
+<div class="grid3">
+  <div class="card filled"><div class="title-m">1 · Describe</div><p class="body-m">Write a wireframe with the names on this page (<a href="#build">Build workflow</a>). Friendly entity names are fine.</p></div>
+  <div class="card filled"><div class="title-m">2 · Build</div><p class="body-m">Claude maps each line to the config shown under the component, adds it to <code>dashboards/habib-glass-build.py</code> and builds a staging dashboard.</p></div>
+  <div class="card filled"><div class="title-m">3 · Measure, then ship</div><p class="body-m">Rendered at 375 to 1920 px and checked against <a href="#accept">Acceptance</a>. Live dashboards change only on the owner's word.</p></div>
+</div>
+
+<div class="callout warn"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4M12 17h.01"/></svg>
+<div><b>Order of truth.</b> Token values in <code>www/habib/glass/base.js</code> win, then this guide, then the detail pages in <code>docs/design/library/</code>. The <a href="#safety">Safety rules</a> are Locked and override everything, including a wireframe.</div></div>
+
+<div class="card">
+  <div class="title-m" style="margin-bottom:8px">The ten rules every build follows</div>
+  <ol class="check">
+    <li>Use <code>custom:ui-*</code> elements only. The old <code>habib-*</code> names stay registered so nothing breaks, but new work never uses them.</li>
+    <li>No fixed colour, size or duration in a component file. Tokens only; the test <code>glass-style.test.mjs</code> fails otherwise.</li>
+    <li>Every tap target is at least 44 px (56 px on the wall tablet). The visible part can be smaller (<a href="#helpers">hit area helper</a>).</li>
+    <li>Text contrast is at least 4.5:1. Secondary text uses <code>--g-dim</code> (84%), never lower.</li>
+    <li>Colour means state: warm = on or next, mint = safe, rose = needs attention. The text always says the state too.</li>
+    <li>Words never break mid-word and never clip. A name that does not fit steps down one type size.</li>
+    <li>Components size from their own width (container queries), never from the screen.</li>
+    <li>Door, garage and covers: a tap opens Home Assistant's own dialog. A card never calls a lock or cover service.</li>
+    <li>Entity IDs come from <code>docs/entities.md</code> or ha-mcp, never guessed and never written into JavaScript.</li>
+    <li>Nothing ships unseen: render, measure, then cut over on the owner's word.</li>
+  </ol>
+</div>
+
+<!-- ======================================================= NAMES -->
+<section class="chapter" id="names">
+  <h2 class="headline-m">Nomenclature</h2>
+  <p class="lead body-l">One naming scheme everywhere, modelled on Bootstrap 6: a base name, then sub-parts with a hyphen, then modifiers. No household name appears in an element, class or option.</p>
+  <div class="tw"><table>
+    <tr><th>Level</th><th>Pattern</th><th>Examples</th><th>Where you write it</th></tr>
+    <tr><td>Element</td><td><code>custom:ui-&lt;component&gt;</code></td><td><code>ui-page</code>, <code>ui-section</code>, <code>ui-card</code>, <code>ui-accordion</code></td><td><code>type:</code> in the dashboard config</td></tr>
+    <tr><td>Sub-part</td><td><code>&lt;component&gt;-&lt;part&gt;</code></td><td><code>section-header</code>, <code>section-body</code>, <code>drawer-done</code></td><td>CSS class inside the component</td></tr>
+    <tr><td>Modifier</td><td><code>&lt;component&gt;-&lt;modifier&gt;</code></td><td><code>badge-on</code>, <code>badge-off</code>, <code>badge-error</code></td><td>CSS class</td></tr>
+    <tr><td>Variant</td><td>plain words</td><td><code>variant: control</code>, <code>size: wide</code>, <code>collapsed_view: compact</code></td><td>config option</td></tr>
+    <tr><td>Token</td><td><code>--&lt;group&gt;-&lt;name&gt;</code></td><td><code>--t-title</code>, <code>--s-12</code>, <code>--z-touch</code>, <code>--r-card</code></td><td>CSS variable in <code>base.js</code></td></tr>
+  </table></div>
+  <p class="body-m">Token groups: <code>--g-</code> colour · <code>--t-</code> type · <code>--ls-</code> letter spacing · <code>--s-</code> space · <code>--r-</code> radius · <code>--z-</code> size · <code>--m-</code> motion · <code>--k-</code> state factor.</p>
+
+  <h4 class="sub">Words used on this page</h4>
+  <div class="tw"><table>
+    <tr><th>Word</th><th>Means</th></tr>
+    <tr><td><b>Page</b></td><td>The one container of a view (<code>ui-page</code>). It holds groups.</td></tr>
+    <tr><td><b>Group</b></td><td>A unit the page places in a column: an id, its cards, and optionally the different cards a phone shows (<code>compact_cards</code>).</td></tr>
+    <tr><td><b>Section</b></td><td>An outlined, collapsible box with a heading (<code>ui-section</code>). One per room or function.</td></tr>
+    <tr><td><b>Card</b></td><td>Short for Large card (<code>ui-card</code>), the lamp tile with art, name, state and a control pill.</td></tr>
+    <tr><td><b>Compact card</b></td><td>The small chip a collapsed section draws per light (phone pattern).</td></tr>
+    <tr><td><b>Data card</b></td><td>A card bound to one kind of data: hero, prayer, climate, security, media, list.</td></tr>
+    <tr><td><b>Bar</b></td><td>Any card folded to one line: 60 px, or 52 px in a dock.</td></tr>
+    <tr><td><b>Drawer</b></td><td>The glass panel that slides up for detail settings (shade, climate).</td></tr>
+    <tr><td><b>Phone / wide</b></td><td>The page is under 700 px wide (phone) or 700 px and wider (wide). Measured on the page itself, not the screen.</td></tr>
+    <tr><td><b>Staging</b></td><td><code>&lt;name&gt;-next</code> dashboards, admin only, where new builds are checked before cutover.</td></tr>
+  </table></div>
+
+  <h4 class="sub">Old names (still registered)</h4>
+  <div class="tw"><table>
+    <tr><th>Old</th><th>Use instead</th><th>Difference</th></tr>
+    <tr><td><code>habib-layout</code></td><td><code>ui-page</code></td><td>none</td></tr>
+    <tr><td><code>habib-light</code></td><td><code>ui-card</code></td><td>default layout is the Large card</td></tr>
+    <tr><td><code>habib-climate</code></td><td><code>ui-climate</code></td><td>a tap opens the climate drawer (<code>controls: true</code>)</td></tr>
+    <tr><td><code>habib-label</code></td><td><code>ui-heading</code></td><td>none</td></tr>
+    <tr><td><code>habib-room</code></td><td><code>ui-section</code> + <code>collapsed_view: compact</code></td><td>a section starts open; a room started folded</td></tr>
+    <tr><td><code>habib-hero</code>, <code>-prayer</code>, <code>-security</code>, <code>-media</code>, <code>-todo</code>, <code>-dock</code>, <code>-button</code></td><td><code>ui-hero</code>, <code>ui-prayer</code>, <code>ui-security</code>, <code>ui-media</code>, <code>ui-list</code>, <code>ui-dock</code>, <code>ui-button</code></td><td>none</td></tr>
+  </table></div>
+</section>
+
+<!-- ======================================================= PRINCIPLES -->
+<section class="chapter" id="principles">
+  <h2 class="headline-m">Principles</h2>
+  <p class="lead body-l">When this guide is silent, decide with these. Each has a rule you can test.</p>
+  <div class="tw"><table>
+    <tr><th>#</th><th>Principle</th><th>Testable rule</th></tr>
+    <tr><td>1</td><td>Hierarchy</td><td>One hero per view. Size order: clock &gt; numbers &gt; titles &gt; body &gt; labels. No size between two type tokens.</td></tr>
+    <tr><td>2</td><td>Progressive disclosure</td><td>A phone shows state and one-tap actions. Detail is one tap down (section, accordion, three dots, drawer). At most 2 levels.</td></tr>
+    <tr><td>3</td><td>Consistency</td><td>A control looks and behaves the same everywhere. Build from components on this page before writing new CSS.</td></tr>
+    <tr><td>4</td><td>Colour means state</td><td>Warm = on or next, mint = safe, rose = attention. Never decorative.</td></tr>
+    <tr><td>5</td><td>Accessibility</td><td>Text 4.5:1, large text and icons 3:1, 44 px targets, every control named, focusable, works with Enter and Space. State is never colour alone.</td></tr>
+    <tr><td>6</td><td>Proximity and safety</td><td>Lock and garage sit apart from lamps and never act on one tap.</td></tr>
+    <tr><td>7</td><td>Alignment</td><td>Everything sits on the 12-column grid. No absolute positioning, no pixel nudges.</td></tr>
+    <tr><td>8</td><td>Hover</td><td>Hover may lighten a fill. It never shows anything touch cannot reach.</td></tr>
+    <tr><td>9</td><td>Failure feedback</td><td>No state change after 2.5 s: return to the real state and show "No response".</td></tr>
+    <tr><td>10</td><td>Orientation</td><td>Works in portrait and landscape. A phone in landscape gets the phone layout.</td></tr>
+    <tr><td>11</td><td>Locale</td><td>Clock, date and numbers follow the browser locale. Wording sits in one string table per card.</td></tr>
+    <tr><td>12</td><td>Performance</td><td>No new always-running animation, no second blur layer, drawings as SVG.</td></tr>
+  </table></div>
+</section>
+
+<!-- ======================================================= COLOUR -->
+<section class="chapter" id="colour">
+  <h2 class="headline-m">Colour</h2>
+  <p class="lead body-l">Dark glass with light text. One theme key sets the whole background family; the accents only ever mean state.</p>
+  <div class="callout tip"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>
+  <div><b>Change the background with one hex.</b> Theme key <code>habib-base</code> (default <code>#1c3226</code>, evergreen) derives page, sheet, surface, scrim and wallpaper. Run <code>python3 dashboards/habib-theme-build.py --base "#rrggbb"</code>, then reload themes. The script refuses a colour that drops text below 4.5:1.</div></div>
+  <div class="sw">
+    <div><i style="background:#1c3226"></i><span><b>habib-base</b>#1c3226 · background family</span></div>
+    <div><i style="background:#eef4ee"></i><span><b>--g-text</b>#eef4ee · primary text</span></div>
+    <div><i style="background:rgba(238,244,238,.84);box-shadow:inset 0 0 0 100px rgba(18,34,26,.16)"></i><span><b>--g-dim</b>text at 84% · secondary text</span></div>
+    <div><i style="background:rgba(238,244,238,.38);box-shadow:inset 0 0 0 100px rgba(18,34,26,.62)"></i><span><b>--g-faint</b>text at 38% · placeholders only</span></div>
+    <div><i style="background:#ffc978"></i><span><b>--g-warm</b>255, 201, 120 · on, next, "n on"</span></div>
+    <div><i style="background:#9fd6b5"></i><span><b>--g-mint</b>159, 214, 181 · safe, secure, Adhan on</span></div>
+    <div><i style="background:#ff8a80"></i><span><b>--g-rose</b>255, 138, 128 · alert, error, unlocked</span></div>
+    <div><i style="background:#ffb36b"></i><span><b>--g-heat</b>#ffb36b · climate heating only</span></div>
+    <div><i style="background:#8fc9ff"></i><span><b>--g-cool</b>#8fc9ff · climate cooling only</span></div>
+    <div><i style="background:linear-gradient(90deg,#ffa757,#fff1e0)"></i><span><b>--c</b>a lamp's own colour, from HA</span></div>
+  </div>
+  <div class="tw"><table>
+    <tr><th>Rule</th><th>Detail</th></tr>
+    <tr><td>Accents are triples</td><td>Stored as <code>r, g, b</code> so one token gives fill (20–24%), border (25–50%), glow (50–90%) and solid.</td></tr>
+    <tr><td>Lamp colour is data</td><td>Comes from the entity (kelvin or rgb), softened 15% toward white. Fallback glow 255, 196, 120. AiDot's placeholder report (rgbw 255, 0, 0, 0) is drawn white, because the bulb shines white (I52).</td></tr>
+    <tr><td>Surfaces</td><td>Card glass: white 13% → 4% → 7% gradient, 22 px blur, white 14% border. Well (inset): black 14–22%. Raised (pills, buttons): white 7–18%.</td></tr>
+    <tr><td>No teal</td><td>Owner decision D64. No decorative mint or rose.</td></tr>
+    <tr><td>Scheme</td><td>Dark only (D78). Light mode is in the backlog (B1).</td></tr>
+  </table></div>
+</section>
+
+<!-- ======================================================= TYPE -->
+<section class="chapter" id="type">
+  <h2 class="headline-m">Typography</h2>
+  <p class="lead body-l">Dashboards use two self-hosted faces: <b>Outfit</b> (display: numbers, titles, section labels) and <b>Inter</b> (text: everything else), fallback <code>system-ui</code>. This guide page uses Roboto and the Material 3 scale; the right-hand column maps each dashboard role to its nearest Material 3 role so you can talk about sizes in either language.</p>
+  <div class="tw"><table class="spec">
+    <tr><th>Token</th><th>Face, weight, size/line</th><th>Tracking</th><th>Used for</th><th>Nearest M3 role</th></tr>
+    <tr><td>clock</td><td>Display 200, 64–104 (follows card width, 26cqi)</td><td>-0.04em</td><td>hero clock</td><td>Display Large</td></tr>
+    <tr><td>metric-xl / lg / md / sm</td><td>Display 200, 56 / 40 / 36; 300, 30</td><td>-0.04 to -0.02em</td><td>temperature, dial, countdown</td><td>Display L / Display S / Headline L</td></tr>
+    <tr><td>headline</td><td>Display 700, 22/26</td><td>-0.01em</td><td>list title</td><td>Title Large</td></tr>
+    <tr><td>title-lg</td><td>Display 600, 18/22</td><td>0</td><td>weather condition, media title</td><td>Title Medium (larger)</td></tr>
+    <tr><td>title</td><td>Display 600, 17/22</td><td>-0.01em</td><td>card name</td><td>Title Medium</td></tr>
+    <tr><td>title-sm</td><td>Display 600, 15/20</td><td>-0.01em</td><td>Large card name, dock value</td><td>Title Small</td></tr>
+    <tr><td>section</td><td>Display 600, 13/16, CAPS</td><td>0.22em</td><td>heading on the wallpaper</td><td>Label Large (caps)</td></tr>
+    <tr><td>section-sm</td><td>Display 600, 12/14, CAPS</td><td>0.20em</td><td>section header</td><td>Label Medium (caps)</td></tr>
+    <tr><td>body</td><td>Text 500, 15</td><td>0</td><td>rows, list items</td><td>Body Large</td></tr>
+    <tr><td>label / label-b</td><td>Text 500 / 600, 13</td><td>0</td><td>secondary line, item name</td><td>Body Medium</td></tr>
+    <tr><td>state / sub</td><td>Text 600 / 500, 12/16</td><td>0</td><td>state line, subtitle, pill value</td><td>Label Medium</td></tr>
+    <tr><td>eyebrow</td><td>Text 600, 11/14, CAPS</td><td>0.14em</td><td>bar label</td><td>Label Small (caps)</td></tr>
+    <tr><td>caption / micro</td><td>Text 600, 11/13 and 10/12</td><td>0</td><td>chips, counters (compact parts only)</td><td>Label Small</td></tr>
+  </table></div>
+  <div class="helper body-m">Numbers use <code>tabular-nums</code>. Units are a smaller sibling, about half the number's size; the degree sign keeps the number's colour, AM/PM is dim. Sentence case everywhere except <code>section</code> and <code>eyebrow</code>. New work never goes below 12 px; 10 and 11 px exist only inside compact chips and dock bars.</div>
+</section>
+
+<!-- ======================================================= SPACE -->
+<section class="chapter" id="space">
+  <h2 class="headline-m">Space, radius, size</h2>
+  <div class="grid2">
+    <div>
+      <h4 class="sub">Space <code>--s-N</code></h4>
+      <p class="body-m">New work uses <b>4, 8, 12, 16, 24</b>. The dense steps 2, 6, 10, 14, 18, 22 exist and stay inside compact parts.</p>
+      <div style="display:flex;align-items:flex-end;gap:10px;margin:12px 0">
+        <div style="width:4px;height:4px;background:var(--md-primary)"></div><div style="width:8px;height:8px;background:var(--md-primary)"></div><div style="width:12px;height:12px;background:var(--md-primary)"></div><div style="width:16px;height:16px;background:var(--md-primary)"></div><div style="width:24px;height:24px;background:var(--md-primary)"></div>
+      </div>
+      <h4 class="sub">Radius <code>--r-*</code></h4>
+      <div class="tw"><table><tr><th>Token</th><th>px</th><th>On</th></tr>
+        <tr><td>sheet</td><td>30</td><td>drawer top</td></tr><tr><td>card</td><td>26</td><td>every glass card and section</td></tr>
+        <tr><td>tile</td><td>20</td><td>inset tiles</td></tr><tr><td>panel</td><td>18</td><td>panels</td></tr>
+        <tr><td>item</td><td>16</td><td>security items, list rows</td></tr><tr><td>chip</td><td>14</td><td>compact cards</td></tr>
+        <tr><td>control</td><td>12</td><td>control pill, steppers</td></tr><tr><td>small</td><td>8</td><td>small parts</td></tr>
+        <tr><td>pill</td><td>999</td><td>pills, round buttons</td></tr></table></div>
+      <p class="body-s">A shape inside another is at least 6 px smaller than its parent.</p>
+    </div>
+    <div>
+      <h4 class="sub">Key sizes <code>--z-*</code></h4>
+      <div class="tw"><table><tr><th>Token</th><th>px</th><th>Meaning</th></tr>
+        <tr><td>touch</td><td>44</td><td>minimum hit area (56 on the wall tablet)</td></tr>
+        <tr><td>row</td><td>56</td><td>one grid row</td></tr>
+        <tr><td>bar</td><td>60</td><td>collapsed accordion</td></tr>
+        <tr><td>bar-stack</td><td>52</td><td>dock bar</td></tr>
+        <tr><td>slider</td><td>34</td><td>control pill height (44 hit area)</td></tr>
+        <tr><td>card-lg-min</td><td>120</td><td>Large card minimum height (2 rows)</td></tr>
+        <tr><td>card-lg-art</td><td>56</td><td>art box in a Large card</td></tr>
+        <tr><td>section-pad</td><td>10</td><td>section padding</td></tr>
+        <tr><td>gap-card</td><td>8</td><td>gap between cards</td></tr>
+        <tr><td>label-gap</td><td>10</td><td>gap under a heading</td></tr>
+        <tr><td>stepper</td><td>44</td><td>climate − / + buttons</td></tr>
+        <tr><td>sheet-max</td><td>560</td><td>drawer maximum width</td></tr></table></div>
+      <p class="body-s">All lengths scale with theme key <code>habib-scale</code> (default 1).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= MOTION + ART -->
+<section class="chapter" id="motion">
+  <h2 class="headline-m">Motion, elevation, icons and art</h2>
+  <div class="grid2">
+    <div class="card">
+      <div class="title-m">Motion <code>--m-*</code></div>
+      <ul class="body-m">
+        <li>Press: scale 0.97, spring, 0.18 s.</li>
+        <li>Fast: 0.2 s · State change (colour, glow): 0.4 s · Drawer: 0.32 s.</li>
+        <li>Timers: pending 2.5 s · "No response" shown 4 s · setpoint send 0.8 s after the last tap.</li>
+        <li>Ambient loops (lamp breathing, weather) run only on visible state.</li>
+        <li><code>prefers-reduced-motion</code> turns all of it off.</li>
+      </ul>
+      <div class="title-m" style="margin-top:12px">Elevation and blur</div>
+      <ul class="body-m">
+        <li>One shadow for all cards. A lit lamp tints it with its own colour.</li>
+        <li>Blur 22 px on cards, 30 px on drawers. <code>prefers-reduced-transparency</code> turns blur off and uses a solid surface.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="title-m">Icons and art</div>
+      <ul class="body-m">
+        <li><b>Interface icons</b>: inline SVG, 24 viewBox, 1.8 stroke, round caps, <code>currentColor</code>. Names: chevron, lock, garage, door, shield, thermometer, speaker, sun, plus, bulb, power, plug, scene, script, toggle, fan, moon, home, play, pause, next, prev, more. No <code>mdi:</code> icons in glass cards.</li>
+        <li><b>Lamp art</b> (<code>art:</code> on a card): <code>table-lamp</code>, <code>floor-lamp</code>, <code>desk-lamp</code>, <code>pendant</code>, <code>group</code>, <code>shelf</code>, <code>nightlight</code>, <code>coach</code>.</li>
+        <li><b>Weather</b> is built from layers (sun, moon, cloud, rain, snow, storm, fog, wind). <b>Prayer</b> art: fajr, sunrise, dhuhr, asr, maghrib, isha.</li>
+        <li>An icon changes shape as well as colour with state (closed and open padlock).</li>
+        <li><code>www/habib/glass/art.js</code> is the only file allowed literal illustration colours.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= LAYOUT: PAGE -->
+<section class="chapter" id="layout">
+  <h2 class="headline-m">Layout</h2>
+  <p class="lead body-l">A dashboard is one Page. The Page places groups in columns by its own width; each group holds sections; each section holds cards on a 12-column grid.</p>
+
+  <article class="comp" id="c-page">
+    <div class="comp-head"><h3 class="headline-s">Page</h3><span class="chip el">custom:ui-page</span><span class="chip draft">Draft</span><span class="chip">Layout</span></div>
+    <p class="body-l">The one container of a view. Packs groups into columns by its own width and paints the wallpaper from <code>habib-base</code>.</p>
+    <figure class="stage"><img src="img/page-1184.png" alt="habib-wh-next at 1184 px: three columns of glass sections on the evergreen wallpaper" loading="lazy"><figcaption>habib-wh-next at 1184 px: 3 columns.</figcaption></figure>
+    <div class="useno">
+      <div class="use"><h4>Use when</h4><ul><li>Building any dashboard view. Exactly one per view.</li><li>You want phone and wide layouts from one config.</li></ul></div>
+      <div class="no"><h4>Don't</h4><ul><li>Nest a page in a page or in a section.</li><li>Use screen media queries or HA visibility conditions for layout.</li></ul></div>
+    </div>
+    <div class="wire">page  (max 4 columns, fluid)</div>
+<pre><code>views:
+  - title: Home
+    path: home
+    type: panel              # one card fills the view
+    theme: Habib Glass
+    cards:
+      - type: custom:ui-page
+        max_columns: 4
+        packing: fluid       # wide screens use the Fluid rule
+        groups:
+          - id: hero
+            column: 1
+            cards: [ {type: custom:ui-hero, ...} ]
+          - id: living
+            cards: [ {type: custom:ui-section, title: Living Room, cards: [...]} ]</code></pre>
+    <h4 class="sub">Options</h4>
+    <div class="tw"><table>
+      <tr><th>Key</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>groups[]</code></td><td>required</td><td><code>{ id, cards[], compact_cards[]?, label?, note?, with?, column? }</code></td></tr>
+      <tr><td><code>max_columns</code></td><td>4</td><td>upper limit of columns</td></tr>
+      <tr><td><code>min_column</code> / <code>max_column</code></td><td>320 / 500</td><td>column width limits in px</td></tr>
+      <tr><td><code>compact_below</code></td><td>700</td><td>phone mode under this page width</td></tr>
+      <tr><td><code>packing</code></td><td><code>order</code></td><td><code>fluid</code> = the <a href="#fluid">Fluid rule</a> on wide screens</td></tr>
+      <tr><td><code>wallpaper</code></td><td>true</td><td>false = transparent page</td></tr>
+    </table></div>
+    <h4 class="sub">How it works</h4>
+    <ol class="body-m">
+      <li>Columns = min(<code>max_columns</code>, floor((width + 32) / 352)): 1 / 2 / 3 / 4 columns at 430 / 820 / 1184 / 1472 px.</li>
+      <li>Under 700 px: one column in config order, using each group's <code>compact_cards</code> when present.</li>
+      <li><code>compact_cards</code> absent = the phone shows <code>cards</code> too. <code>compact_cards: []</code> = hidden on a phone. <code>cards: []</code> = hidden on wide screens.</li>
+      <li>A group that changes height (a section opened) is re-packed at once. Keyboard and screen-reader order stays config order.</li>
+    </ol>
+    <div class="helper body-m">Put each room in its own group: the page can only move whole groups. A group <code>label</code> adds a Heading; a group that holds a Section needs none.</div>
+  </article>
+
+  <article class="comp" id="c-section">
+    <div class="comp-head"><h3 class="headline-s">Section</h3><span class="chip el">custom:ui-section</span><span class="chip draft">Draft</span><span class="chip">Layout</span></div>
+    <p class="body-l">An outlined, collapsible box with a heading that holds cards on a 12-column grid. Same pattern on phone and wide screens.</p>
+    <div class="figs">
+      <figure class="stage"><img src="img/section.png" alt="Living Room section open with four Large cards, header shows 2 on" loading="lazy"><figcaption>Open, with a note.</figcaption></figure>
+      <figure class="stage"><img src="img/section-collapsed.png" alt="Three collapsed sections: Living Room 2 on, Bedroom All off, Home All secure" loading="lazy"><figcaption>Collapsed (<code>collapsed_view: none</code>): summary on the right.</figcaption></figure>
+    </div>
+    <div class="useno">
+      <div class="use"><h4>Use when</h4><ul><li>Grouping a room's lights, or a function (Home, Media, Lists).</li><li>A "Lights" section that holds one collapsed section per room (one level of nesting).</li></ul></div>
+      <div class="no"><h4>Don't</h4><ul><li>Nest more than one level deep.</li><li>Put a page inside a section.</li></ul></div>
+    </div>
+    <div class="wire">section "Living Room"  note: "Downstairs"   (add collapsed, collapsed_view: compact as needed)</div>
+<pre><code>type: custom:ui-section
+title: Living Room
+note: Nursery not included   # optional, dim text after the heading
+collapsed: false             # default: starts open
+collapsed_view: none         # none | compact (Compact cards when closed)
+collapsible: true            # false = always open, no chevron
+remember: true               # false = starts as configured on every load
+cards:
+  - {type: custom:ui-card, name: Floor Lamp, art: floor-lamp, entities: [light.floor_lamp]}</code></pre>
+    <h4 class="sub">Anatomy</h4>
+    <div class="tw"><table>
+      <tr><th>Part</th><th>Class</th><th>Notes</th></tr>
+      <tr><td>Container</td><td><code>.glass</code></td><td>glass surface, padding 10</td></tr>
+      <tr><td>Header</td><td><code>.section-header</code></td><td>whole row is the toggle; 44 px hit area</td></tr>
+      <tr><td>Heading</td><td><code>.heading</code></td><td><code>section-sm</code> caps</td></tr>
+      <tr><td>Note</td><td><code>.section-note</code></td><td>optional, dim, one line, ellipsis</td></tr>
+      <tr><td>Summary</td><td><code>.section-sum</code></td><td>"2 on" (warm) or "All off"; without lights, the children's summaries joined with " · "</td></tr>
+      <tr><td>Chevron</td><td><code>.fold</code></td><td>up when open, down when collapsed</td></tr>
+      <tr><td>Body</td><td><code>.section-body</code></td><td>12-column grid, gap 8</td></tr>
+    </table></div>
+    <h4 class="sub">Behaviour and accessibility</h4>
+    <ul class="body-m">
+      <li>Tap, Enter or Space on the header toggles; remembered per device unless <code>remember: false</code>.</li>
+      <li>With <code>compact</code>: tapping a Compact card toggles its lights; the header opens the section.</li>
+      <li>Header is <code>role=button</code> with <code>aria-expanded</code> and a label that includes the summary ("Living Room, 2 on, collapse").</li>
+    </ul>
+    <div class="helper body-m">Every room gets its own section. Use <code>collapsible: false</code> for always-open groups on wide screens (Home, Floors) and <code>collapsed: true, remember: false</code> for rooms inside a "Lights" section, so they start closed on every load.</div>
+  </article>
+
+  <article class="comp" id="grid">
+    <div class="comp-head"><h3 class="headline-s">Grid</h3><span class="chip draft">Draft</span><span class="chip">Layout</span></div>
+    <p class="body-l">Inside a group and a section body, cards sit on a 12-column grid with an 8 px gap. Rows are 56 px.</p>
+    <div class="tw"><table>
+      <tr><th>Card</th><th>Columns</th><th>Rows</th></tr>
+      <tr><td>Large card</td><td>6</td><td>2 (120 px)</td></tr>
+      <tr><td>Large card, <code>size: wide</code></td><td>12</td><td>2</td></tr>
+      <tr><td>Control pill (<code>variant: control</code>)</td><td>12</td><td>1</td></tr>
+      <tr><td>Button chip / tile</td><td>4 / 6 (set with <code>grid_options</code>)</td><td>auto</td></tr>
+      <tr><td>Section, accordion, data cards</td><td>12</td><td>auto</td></tr>
+    </table></div>
+    <p class="body-m">Override per card: <code>grid_options: { columns: 4, rows: 2 }</code>. A column is 320–500 px wide, so a 6-column Large card is 152–236 px; container queries handle the rest.</p>
+  </article>
+
+  <article class="comp" id="fluid">
+    <div class="comp-head"><h3 class="headline-s">Fluid rule</h3><span class="chip el">ui-page packing: fluid</span><span class="chip draft">Draft</span><span class="chip">Layout</span></div>
+    <p class="body-l">On wide screens the page arranges groups itself, so a dashboard needs no hand placement and columns stay balanced. Phones are untouched.</p>
+    <figure class="stage"><img src="img/fluid-wh-1184.png" alt="habib-wh-next at 1184 px laid out by the fluid rule" loading="lazy"><figcaption>habib-wh-next at 1184 px: hero and prayer pinned left, Lights pinned right, the rest balanced.</figcaption></figure>
+    <div class="tw"><table>
+      <tr><th>#</th><th>Rule</th><th>Config</th></tr>
+      <tr><td>1</td><td><b>Chains</b>: a group stays directly under another group, in the same column.</td><td><code>with: &lt;group id&gt;</code></td></tr>
+      <tr><td>2</td><td><b>Pins</b>: a group (and its chain) goes to a fixed column. 1 = leftmost, -1 = rightmost.</td><td><code>column: 1</code> / <code>column: -1</code></td></tr>
+      <tr><td>3</td><td><b>Balance</b>: every other group goes, tallest first, into the shortest column; ties go left.</td><td>–</td></tr>
+      <tr><td>4</td><td><b>Reading order</b>: inside a column, groups stack in config order.</td><td>–</td></tr>
+      <tr><td>5</td><td><b>No jumping</b>: columns are set once per column count after a 1.5 s settle. Opening a section moves only what is below it.</td><td>–</td></tr>
+    </table></div>
+<pre><code>type: custom:ui-page
+packing: fluid
+groups:
+  - { id: hero,   column: 1,  cards: [hero, accordion &gt; prayer] }
+  - { id: home,   cards: [section "Home" collapsible: false] }
+  - { id: floors, with: home, cards: [section "Floors" collapsible: false] }
+  - { id: lights, column: -1, cards: [section "Lights" holding one collapsed section per room], compact_cards: [] }
+  - { id: media,  cards: [section "Media"], compact_cards: [section "Listen"] }</code></pre>
+    <div class="helper body-m">Measured 2026-11-17: blank area between groups at most 0.42%. Pin only the hero and the long "Lights" column; let the rule place the rest.</div>
+  </article>
+</section>
+
+<!-- ======================================================= COMPONENTS -->
+<section class="chapter" id="components">
+  <h2 class="headline-m">Components</h2>
+  <p class="lead body-l">Every component below has the same parts: purpose, image, when to use it, the wireframe line that asks for it, its config, options, anatomy, states, behaviour, and helper text. Images are real renders at phone width (430 px) with mock states.</p>
+
+  <!-- LARGE CARD -->
+  <article class="comp" id="c-large-card">
+    <div class="comp-head"><h3 class="headline-s">Large card</h3><span class="chip el">custom:ui-card</span><span class="chip draft">Draft</span><span class="chip">Lights, plugs, groups</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/card-large.png" alt="Four Large cards: Floor Lamp 60%, Buffet 100% glowing warm, Side Table off, Console Lamp off" loading="lazy"><figcaption>Two on (glow in the lamp's colour), two off.</figcaption></figure>
+      <div>
+        <p class="body-l">One light or group with art, name, state and a control pill, in as little space as possible (120 px tall).</p>
+        <dl class="facts body-m"><dt>Grid</dt><dd>6 columns × 2 rows; <code>size: wide</code> = 12</dd><dt>Tap card</dt><dd>on/off for every usable entity</dd><dt>Pill</dt><dd>brightness (drag or tap)</dd><dt>Three dots</dt><dd>shade <a href="#c-drawer">drawer</a></dd><dt>Entities</dt><dd><code>light.*</code> and <code>switch.*</code> plugs, may mix</dd></dl>
+      </div>
+    </div>
+    <div class="useno">
+      <div class="use"><h4>Use when</h4><ul><li>A lamp, a plug lamp, or a group of lamps that act as one ("Downstairs").</li><li>Wide screens and open sections.</li></ul></div>
+      <div class="no"><h4>Don't</h4><ul><li>Locks, covers, climate, alarm or media: they have their own cards.</li><li>Phone rooms that should fit one screen: use <a href="#c-compact-card">Compact cards</a>.</li></ul></div>
+    </div>
+    <div class="wire">card "Floor Lamp"  art: floor-lamp  light: living room floor lamp   (add size: wide for a full row)</div>
+<pre><code>type: custom:ui-card
+name: Floor Lamp
+art: floor-lamp              # see Motion and art
+entities: [light.floor_lamp] # one or more; lights and switch plugs may mix
+size: wide                   # optional: 12 columns</code></pre>
+    <h4 class="sub">Options</h4>
+    <div class="tw"><table>
+      <tr><th>Key</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>name</code></td><td>friendly name</td><td>title, up to 2 lines, never broken mid-word</td></tr>
+      <tr><td><code>art</code></td><td><code>table-lamp</code></td><td>lamp drawing; <code>group</code> = three pendants lit by how many are on</td></tr>
+      <tr><td><code>entities</code></td><td>required</td><td>list of <code>light.*</code> / <code>switch.*</code></td></tr>
+      <tr><td><code>size</code></td><td>–</td><td><code>wide</code> = 12 columns</td></tr>
+      <tr><td><code>variant</code></td><td>–</td><td><code>control</code> = <a href="#c-control-pill">Control pill</a> only</td></tr>
+      <tr><td><code>grid_options</code></td><td>6 × 2</td><td>override the size</td></tr>
+    </table></div>
+    <h4 class="sub">Anatomy</h4>
+    <div class="tw"><table>
+      <tr><th>Part</th><th>Class</th><th>Size</th></tr>
+      <tr><td>Card</td><td><code>.glass.lg</code></td><td>min 120 px, padding 12 / 12 / 10</td></tr>
+      <tr><td>Top row</td><td><code>.top</code></td><td>art column 56 px, gap 12, text column</td></tr>
+      <tr><td>Art</td><td><code>.stage</code></td><td>56 px box</td></tr>
+      <tr><td>Title</td><td><code>.title</code></td><td><code>title-sm</code> 15/20, up to 2 lines</td></tr>
+      <tr><td>State</td><td><code>.state</code></td><td>dot + "60%", "On", "Off", "2 of 7 on", "All off"</td></tr>
+      <tr><td>Control pill</td><td><code>.slider</code> / <code>.sw-pill</code></td><td>34 px tall, 44 px hit area</td></tr>
+    </table></div>
+    <figure class="stage" style="max-width:430px;margin-top:12px"><img src="img/card-states.png" alt="Large cards with Side Table showing No response at reduced opacity" loading="lazy"><figcaption>"No response": 50% opacity, not tappable.</figcaption></figure>
+    <h4 class="sub">States</h4>
+    <div class="tw"><table>
+      <tr><th>State</th><th>Look</th><th>Text</th></tr>
+      <tr><td>On</td><td>border and glow in the lamp colour, warm dot</td><td>"60%", "On", "2 of 7 on"</td></tr>
+      <tr><td>Off</td><td>desaturated art, dim dot</td><td>"Off", "All off"</td></tr>
+      <tr><td>Pending</td><td>unchanged</td><td>"…" up to 2.5 s</td></tr>
+      <tr><td>No response</td><td>50% opacity</td><td>"No response"</td></tr>
+      <tr><td>Not found</td><td>rose note</td><td>"Not found", "Missing: …"</td></tr>
+    </table></div>
+    <h4 class="sub">Behaviour and accessibility</h4>
+    <ul class="body-m">
+      <li>A vertical swipe that starts on the pill scrolls the page and never dims.</li>
+      <li>Card is <code>role=button</code> with <code>aria-pressed</code> and label "Name: state". Pill is <code>role=slider</code>; arrow keys step ±10%.</li>
+      <li>Turning on sends only <code>brightness_pct</code>; colour changes only from the shade drawer.</li>
+    </ul>
+    <div class="helper body-m">Two cards per row. If a room has an odd number of lamps, make the first one <code>size: wide</code>. Nursery lamps never join a floor group.</div>
+  </article>
+
+  <!-- COMPACT CARD -->
+  <article class="comp" id="c-compact-card">
+    <div class="comp-head"><h3 class="headline-s">Compact card</h3><span class="chip el">ui-section collapsed_view: compact</span><span class="chip locked">Locked</span><span class="chip">Lights</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/card-compact.png" alt="Collapsed Living Room and Bedroom sections showing small lamp chips" loading="lazy"><figcaption>Collapsed sections drawing a chip per light.</figcaption></figure>
+      <div>
+        <p class="body-l">A small toggle for one light or group. You don't place it yourself: a collapsed section with <code>collapsed_view: compact</code> draws one per Large card inside it.</p>
+        <dl class="facts body-m"><dt>Per row</dt><dd>at most 4</dd><dt>Tap</dt><dd>toggles the light</dd><dt>Status</dt><dd>Locked (owner, 2026-11-17)</dd></dl>
+      </div>
+    </div>
+    <div class="useno">
+      <div class="use"><h4>Use when</h4><ul><li>A phone view must fit one screen (habib-mkh).</li><li>Quick on/off for a room without opening it.</li></ul></div>
+      <div class="no"><h4>Don't</h4><ul><li>Expect brightness or colour here: open the section for the Large card.</li><li>Put more than 4 in a row.</li></ul></div>
+    </div>
+    <div class="wire">section "Bedroom"  collapsed  collapsed_view: compact</div>
+<pre><code>type: custom:ui-section
+title: Bedroom
+collapsed: true
+collapsed_view: compact
+remember: false
+cards: [ ...Large cards... ]   # each one becomes a chip while collapsed</code></pre>
+    <h4 class="sub">Layout by its own width</h4>
+    <div class="tw"><table>
+      <tr><th>Own width</th><th>Layout</th></tr>
+      <tr><td>150 px and wider</td><td>icon, name left, state right, one line</td></tr>
+      <tr><td>100–149 px</td><td>icon left, name (up to 2 lines) over state</td></tr>
+      <tr><td>under 100 px</td><td>icon above, name and state centred</td></tr>
+    </table></div>
+    <div class="helper body-m">The name steps down to 10 px only when its longest word does not fit. It is never hyphenated.</div>
+  </article>
+
+  <!-- CONTROL PILL -->
+  <article class="comp" id="c-control-pill">
+    <div class="comp-head"><h3 class="headline-s">Control pill</h3><span class="chip el">ui-card variant: control</span><span class="chip draft">Draft</span><span class="chip">Lights, plugs</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/control-pill.png" alt="Two control pills: Floor Lamp dimmer at 60% and Porch on/off pill" loading="lazy"><figcaption>Dimmable (top) and on/off (bottom).</figcaption></figure>
+      <div>
+        <p class="body-l">One reusable control for the nested flow <b>on/off → brightness → shade</b>. It is part of every Large card, and can stand alone as one 56 px row.</p>
+        <dl class="facts body-m"><dt>Grid</dt><dd>12 columns × 1 row (standalone)</dd><dt>Height</dt><dd>34 px visible, 44 px hit area</dd></dl>
+      </div>
+    </div>
+    <div class="tw"><table>
+      <tr><th>Entity</th><th>Pill shows</th><th>Tap pill</th><th>Three dots</th></tr>
+      <tr><td>Dimmable light or group</td><td>sun icon, "60%" or "Off", fill in the lamp colour, knob</td><td>sets the level where tapped; drag slides</td><td>shade drawer</td></tr>
+      <tr><td>On/off light, switch, plug</td><td>power icon, "On" / "Off"</td><td>toggles</td><td>none</td></tr>
+    </table></div>
+    <div class="wire">card "Porch"  variant: control  light: porch</div>
+<pre><code>type: custom:ui-card
+variant: control
+name: Porch
+entities: [light.smart_wi_fi_light_switch]</code></pre>
+    <h4 class="sub">Anatomy</h4>
+    <div class="tw"><table>
+      <tr><th>Part</th><th>Class</th><th>Size</th></tr>
+      <tr><td>Track</td><td><code>.slider .track</code></td><td>34 px, radius 12, deep well</td></tr>
+      <tr><td>Fill</td><td><code>.fill</code></td><td>lamp-colour ramp so the value text always sits on a dark part</td></tr>
+      <tr><td>Knob</td><td><code>.knob</code></td><td>4 px</td></tr>
+      <tr><td>Value</td><td><code>.pct</code></td><td><code>state</code> 12 px 600</td></tr>
+      <tr><td>Dots</td><td><code>.dots.tap</code></td><td>26 px visible, 44 px hit area</td></tr>
+    </table></div>
+    <div class="helper body-m">Never put a control pill in a lock, cover, alarm or climate card. Those open their own dialog or drawer.</div>
+  </article>
+
+  <!-- BUTTON -->
+  <article class="comp" id="c-button">
+    <div class="comp-head"><h3 class="headline-s">Button</h3><span class="chip el">custom:ui-button</span><span class="chip draft">Draft</span><span class="chip">Scenes, scripts, switches</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/button.png" alt="Three chip buttons (Movie, Good night, Study plug) and two tile buttons (Floor Lamp on, Movie)" loading="lazy"><figcaption>Chips (4 columns) and tiles (6 columns).</figcaption></figure>
+      <div>
+        <p class="body-l">A generic chip or tile for a switch, light, scene, script or <code>input_boolean</code>.</p>
+        <dl class="facts body-m"><dt>Scenes, scripts</dt><dd>tap runs (<code>turn_on</code>), state reads "Scene" / "Run"</dd><dt>Others</dt><dd>tap toggles</dd><dt>Refuses</dt><dd>lock, cover, climate, alarm, media_player (config error)</dd></dl>
+      </div>
+    </div>
+    <div class="useno">
+      <div class="use"><h4>Use when</h4><ul><li>One-tap actions: a scene, a script, a helper toggle.</li><li>A plug that is not a lamp.</li></ul></div>
+      <div class="no"><h4>Don't</h4><ul><li>Lamps that need brightness: use a Large card.</li><li>Anything that unlocks or opens.</li></ul></div>
+    </div>
+    <div class="wire">button "Movie"  scene: movie  icon: scene  size: chip</div>
+<pre><code>type: custom:ui-button
+entity: scene.movie
+name: Movie
+icon: scene        # an interface icon name
+size: auto         # auto | chip | tile
+grid_options: {columns: 4}</code></pre>
+    <div class="tw"><table>
+      <tr><th>Key</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>entity</code></td><td>required</td><td>switch, light, scene, script, input_boolean</td></tr>
+      <tr><td><code>name</code></td><td>friendly name</td><td>label</td></tr>
+      <tr><td><code>icon</code></td><td>by domain</td><td>interface icon name (see Motion and art)</td></tr>
+      <tr><td><code>size</code></td><td><code>auto</code></td><td><code>auto</code> = chip under 150 px of its own width, tile from 150 px</td></tr>
+    </table></div>
+    <div class="helper body-m">Three chips per row (<code>columns: 4</code>) or two tiles (<code>columns: 6</code>). A lit tile glows warm like a Large card.</div>
+  </article>
+
+  <!-- HEADING -->
+  <article class="comp" id="c-heading">
+    <div class="comp-head"><h3 class="headline-s">Heading</h3><span class="chip el">custom:ui-heading</span><span class="chip draft">Draft</span><span class="chip">Content</span></div>
+    <figure class="stage" style="max-width:430px"><img src="img/heading.png" alt="LIVING ROOM in spaced capitals on the wallpaper with a dim note on the right" loading="lazy"><figcaption>Label on the wallpaper, note on the right.</figcaption></figure>
+    <p class="body-l">A small-caps label that sits on the wallpaper above a group of cards. A group <code>label</code> creates one for you.</p>
+    <div class="wire">heading "Living Room"  note: "Nursery not included"</div>
+<pre><code>type: custom:ui-heading
+label: Living Room
+note: Nursery not included</code></pre>
+    <ul class="body-m"><li>Type <code>section</code> (13 px, 600, +0.22em, caps) with a text shadow for the wallpaper.</li><li>14 px above, 10 px below.</li></ul>
+    <div class="helper body-m">Inside a Section the header carries its own heading. A group that holds a Section has no <code>label</code>, otherwise the name shows twice.</div>
+  </article>
+
+  <!-- ACCORDION -->
+  <article class="comp" id="c-accordion">
+    <div class="comp-head"><h3 class="headline-s">Accordion</h3><span class="chip el">custom:ui-accordion</span><span class="chip draft">Draft</span><span class="chip">Any data card</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/accordion-bars.png" alt="Four collapsed accordion bars: Prayer with countdown, Climate temperatures, Media, Shopping list" loading="lazy"><figcaption>Collapsed: one 60 px bar per card.</figcaption></figure>
+      <div>
+        <p class="body-l">Any data card shown two ways: <b>collapsed</b> as a one-line <a href="#c-bar">Bar</a>, <b>open</b> as the full card.</p>
+        <dl class="facts body-m"><dt>Works with</dt><dd><code>ui-prayer</code>, <code>ui-climate</code>, <code>ui-media</code>, <code>ui-list</code>, <code>ui-security</code></dd><dt>Collapsed</dt><dd>whole bar is the button</dd><dt>Open</dt><dd>the card's chevron closes it</dd></dl>
+      </div>
+    </div>
+    <div class="wire">accordion &gt; climate   downstairs, upstairs</div>
+<pre><code>type: custom:ui-accordion
+collapsed: true      # default
+remember: true       # keeps the viewer's last choice on this device
+layout: stack        # optional: 52 px half-width dock bar
+card:
+  type: custom:ui-climate
+  entities:
+    - {entity: climate.downstairs, name: Downstairs}
+    - {entity: climate.upstairs, name: Upstairs}</code></pre>
+    <div class="helper body-m">The bar text has a long and a short form ("Downstairs 72° · Upstairs 71°" / "72° · 71°"). The bar picks the one that fits, so it is always one line. Screen readers always get the long form.</div>
+  </article>
+
+  <!-- BAR -->
+  <article class="comp" id="c-bar">
+    <div class="comp-head"><h3 class="headline-s">Bar</h3><span class="chip el">.glass.mini</span><span class="chip locked">Locked</span><span class="chip">Folded card</span></div>
+    <figure class="stage" style="max-width:430px"><img src="img/accordion-430.png" alt="Collapsed accordion bar" loading="lazy"><figcaption>60 px bar with eyebrow label, value and chevron.</figcaption></figure>
+    <div class="tw"><table>
+      <tr><th>Variant</th><th>Height</th><th>Layout</th></tr>
+      <tr><td>Bar</td><td>60 px</td><td>label (eyebrow caps), value right-aligned, chevron; optional 3 px progress line (prayer)</td></tr>
+      <tr><td>Dock bar (<code>.stack</code>)</td><td>52 px</td><td>44 px icon column, label over value, chevron; half width</td></tr>
+    </table></div>
+    <ul class="body-m"><li>Always one line. Value in long and short forms; <code>aria-label</code> carries the long form.</li><li><code>direct: true</code> (one entity) opens HA's dialog instead of unfolding: front door, garage.</li></ul>
+    <div class="helper body-m">You never write a Bar yourself: an Accordion or a Dock makes it. Write card summaries that fit about 100 px at phone width.</div>
+  </article>
+
+  <!-- DRAWER -->
+  <article class="comp" id="c-drawer">
+    <div class="comp-head"><h3 class="headline-s">Drawer</h3><span class="chip el">openDrawer()</span><span class="chip draft">Draft</span><span class="chip">Detail settings</span></div>
+    <div class="figs">
+      <figure class="stage"><img src="img/drawer-shade-430.png" alt="Shade drawer with ten colour swatches" loading="lazy"><figcaption>Shade drawer (from a card's three dots).</figcaption></figure>
+      <figure class="stage"><img src="img/drawer-climate-430.png" alt="Climate drawer with mode buttons and target steppers" loading="lazy"><figcaption>Climate drawer (from a climate dial).</figcaption></figure>
+    </div>
+    <p class="body-l">The glass panel that slides up for detail settings. It replaces HA's white dialogs where the library has its own controls.</p>
+    <div class="tw"><table>
+      <tr><th>Part</th><th>Class</th><th>Notes</th></tr>
+      <tr><td>Scrim</td><td><code>.scrim</code></td><td>tap closes</td></tr>
+      <tr><td>Panel</td><td><code>.drawer</code></td><td>max 560 px wide, radius 30 top, max 92% of the screen tall, scrolls</td></tr>
+      <tr><td>Handle</td><td><code>.drawer-handle</code></td><td>38 × 5</td></tr>
+      <tr><td>Header</td><td><code>.drawer-header</code></td><td>title, sub, <b>Done</b> (<code>.drawer-done</code>, 44 px)</td></tr>
+      <tr><td>Group label</td><td><code>.drawer-label</code></td><td>eyebrow caps</td></tr>
+      <tr><td>Bottom link</td><td><code>.drawer-link</code></td><td>"Open full controls" (HA's own dialog)</td></tr>
+    </table></div>
+    <h4 class="sub">Shade drawer</h4>
+    <p class="body-m">Ten swatches, 5 per row: Candle 2200 K, Warm 2700 K, Neutral 4000 K, Daylight 6000 K, then Coral, Amber, Green, Blue, Violet, Pink (colours only when the light supports colour). A tap sends <code>light.turn_on</code> with <code>color_temp_kelvin</code> or <code>rgb_color</code>.</p>
+    <h4 class="sub">Climate drawer</h4>
+    <ol class="body-m">
+      <li>Now: current temperature and what the system is doing.</li>
+      <li>Mode: one button per <code>hvac_modes</code>; a tap sends <code>climate.set_hvac_mode</code> at once.</li>
+      <li>Target: Auto shows Heat to and Cool to; Heating or Cooling shows one. − and + (44 px) change the value; 0.8 s after the last tap one <code>climate.set_temperature</code> call is sent.</li>
+      <li>Limits: the thermostat's own min, max and step; Heat to stays at least 3° under Cool to.</li>
+      <li>Feedback: "Sending…" until HA reports the value; "No response" after 4 s; "Not accepted" if the call fails.</li>
+    </ol>
+    <div class="helper body-m">Escape, Done or a tap on the scrim closes. A drawer never controls a lock, cover or alarm.</div>
+  </article>
+
+  <!-- BADGE -->
+  <article class="comp" id="c-badge">
+    <div class="comp-head"><h3 class="headline-s">Badge</h3><span class="chip el">.badge</span><span class="chip draft">Draft</span><span class="chip">Status</span></div>
+    <p class="body-l">A small status pill. The text always names the state; colour only repeats it. Used today for the Adhan status in <a href="#c-prayer">Prayer times</a>.</p>
+    <div class="figs">
+      <figure class="stage"><img src="img/prayer.png" alt="Prayer card with Adhan on badge" loading="lazy"><figcaption><code>.badge-on</code>: mint, "Adhan on".</figcaption></figure>
+      <figure class="stage"><img src="img/prayer-off.png" alt="Prayer card with Adhan off badge" loading="lazy"><figcaption><code>.badge-off</code>: dim, "Adhan off".</figcaption></figure>
+      <figure class="stage"><img src="img/prayer-error.png" alt="Prayer card with Adhan error badge" loading="lazy"><figcaption><code>.badge-error</code>: rose, "Adhan error".</figcaption></figure>
+    </div>
+    <div class="tw"><table>
+      <tr><th>Status</th><th>When</th></tr>
+      <tr><td>on</td><td>the playback switch is on, every Adhan automation is on, and the error helper is empty</td></tr>
+      <tr><td>off</td><td>the playback switch is off</td></tr>
+      <tr><td>error</td><td>the switch is missing or unavailable; or it is on but an Adhan automation is off; or the last playback failed. The error text is in the tooltip.</td></tr>
+    </table></div>
+  </article>
+
+  <!-- HERO -->
+  <article class="comp" id="c-hero">
+    <div class="comp-head"><h3 class="headline-s">Hero</h3><span class="chip el">custom:ui-hero</span><span class="chip draft">Draft</span><span class="chip">Data card</span></div>
+    <div class="figs">
+      <figure class="stage"><img src="img/hero.png" alt="Full hero with large clock, date, Hijri date, weather and two people" loading="lazy"><figcaption>Full hero.</figcaption></figure>
+      <figure class="stage"><img src="img/hero-compact.png" alt="Compact hero, 130 px tall" loading="lazy"><figcaption><code>compact: true</code>: 130 px phone hero.</figcaption></figure>
+    </div>
+    <p class="body-l">Clock (follows the card width), date, Hijri date, weather with feels-like, high, low and humidity, and people.</p>
+    <div class="wire">hero   clock, weather, people: Waqar, Maham</div>
+<pre><code>type: custom:ui-hero
+weather: weather.forecast_home
+sun: sun.sun
+persons:
+  - {entity: person.waqar_habib, name: Waqar}
+  - {entity: person.maham_habib, name: Maham}
+hijri: true        # false hides the Hijri date
+compact: false     # true = 130 px phone hero</code></pre>
+    <div class="helper body-m">One hero per view, always first. It has no summary, so it cannot go in an Accordion. Test any new hero layout with "12:00 PM", the widest time.</div>
+  </article>
+
+  <!-- PRAYER -->
+  <article class="comp" id="c-prayer">
+    <div class="comp-head"><h3 class="headline-s">Prayer times</h3><span class="chip el">custom:ui-prayer</span><span class="chip draft">Draft</span><span class="chip">Data card</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/prayer.png" alt="Prayer times card: five prayers and sunrise, next prayer with countdown" loading="lazy"><figcaption>Next prayer highlighted warm with a countdown.</figcaption></figure>
+      <div>
+        <p class="body-l">Five prayers plus sunrise, the next prayer with countdown and progress, and the <a href="#c-badge">Adhan badge</a>.</p>
+        <dl class="facts body-m"><dt>Summary</dt><dd>next prayer and countdown, progress line</dd><dt>After Isha</dt><dd>"All done today"</dd><dt>Missing sensor</dt><dd>"Times unavailable"</dd><dt>Adhan</dt><dd>shown, never changed</dd></dl>
+      </div>
+    </div>
+    <div class="wire">accordion &gt; prayer   Adhan badge</div>
+<pre><code>type: custom:ui-prayer
+prayers:
+  fajr: sensor.living_room_adhan_fajr_prayer
+  sunrise: sensor.living_room_adhan_sunrise_time
+  dhuhr: sensor.living_room_adhan_dhuhr_prayer
+  asr: sensor.living_room_adhan_asr_prayer
+  maghrib: sensor.living_room_adhan_maghrib_prayer
+  isha: sensor.living_room_adhan_isha_prayer
+adhan: input_boolean.adhan_enabled
+adhan_error: input_text.adhan_last_error
+adhan_automations: [automation.adhan_fajr, automation.adhan_dhuhr,
+                    automation.adhan_asr, automation.adhan_maghrib, automation.adhan_isha]</code></pre>
+    <div class="helper body-m">habib-mkh has no prayer card (D71). On habib-wh it sits under the hero as an Accordion.</div>
+  </article>
+
+  <!-- CLIMATE -->
+  <article class="comp" id="c-climate">
+    <div class="comp-head"><h3 class="headline-s">Climate</h3><span class="chip el">custom:ui-climate</span><span class="chip draft">Draft</span><span class="chip">Data card</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/climate.png" alt="Climate card with two dials, Downstairs and Upstairs at 72 degrees" loading="lazy"><figcaption>One dial per thermostat.</figcaption></figure>
+      <div>
+        <p class="body-l">One dial per thermostat: current temperature, setpoint range arc, what it is doing. A tap opens the <a href="#c-drawer">climate drawer</a>.</p>
+        <dl class="facts body-m"><dt>Summary</dt><dd>"Downstairs 72° · Upstairs 71°", short "72° · 71°"</dd><dt>Tint</dt><dd>heat / cool while running</dd><dt>Controls</dt><dd>drawer only (owner GREEN LIGHT 2026-11-17)</dd></dl>
+      </div>
+    </div>
+    <div class="wire">accordion &gt; climate   downstairs (short: Down), upstairs (short: Up)</div>
+<pre><code>type: custom:ui-climate
+title: Climate          # optional
+controls: true          # default for ui-climate; false = HA's own dialog
+entities:
+  - {entity: climate.downstairs, name: Downstairs, short: Down}
+  - {entity: climate.upstairs, name: Upstairs, short: Up}</code></pre>
+    <div class="helper body-m">No other component may call a climate service. Give each thermostat a <code>short</code> name so dock bars stay one line.</div>
+  </article>
+
+  <!-- SECURITY -->
+  <article class="comp" id="c-security">
+    <div class="comp-head"><h3 class="headline-s">Security</h3><span class="chip el">custom:ui-security</span><span class="chip draft">Draft</span><span class="chip">Data card · door, garage</span></div>
+    <div class="figs">
+      <figure class="stage"><img src="img/security.png" alt="Security card: All secure, Front door Locked, Garage Closed" loading="lazy"><figcaption>All secure: mint shield.</figcaption></figure>
+      <figure class="stage"><img src="img/security-alert.png" alt="Security card: 1 needs attention, Front door Unlocked in rose" loading="lazy"><figcaption>Alert: rose shield, the item says what is wrong.</figcaption></figure>
+    </div>
+    <p class="body-l">A shield plus one tile per door or garage. <b>Every tile is clickable</b>: a tap opens Home Assistant's own lock or garage dialog, so unlocking or opening always takes two deliberate taps. The card itself never calls a lock or cover service.</p>
+    <div class="useno">
+      <div class="use"><h4>Use when</h4><ul><li>Front door lock, garage door, any cover or door sensor.</li><li>On every dashboard that shows the door or garage (owner, 2026-11-17).</li></ul></div>
+      <div class="no"><h4>Don't</h4><ul><li>Add a toggle, slider or button that acts on a lock or cover.</li><li>Use <code>tap: none</code> unless the owner asks for status only.</li></ul></div>
+    </div>
+    <div class="wire">security   front door, garage</div>
+<pre><code>type: custom:ui-security
+subtitle: Doors and garage   # optional
+items:
+  - entity: lock.living_room_front_door
+    name: Front door
+    kind: lock               # lock | garage | door (guessed from the domain)
+    states: {locked: Locked, unlocked: Unlocked, jammed: Jammed}
+  - entity: cover.general_garage_door_garage_door
+    name: Garage
+    kind: garage
+    states: {closed: Closed, open: Open, opening: Opening, closing: Closing}</code></pre>
+    <div class="tw"><table>
+      <tr><th>Item key</th><th>Default</th><th>Meaning</th></tr>
+      <tr><td><code>entity</code></td><td>required</td><td><code>lock.*</code>, <code>cover.*</code> or a door sensor</td></tr>
+      <tr><td><code>name</code></td><td>friendly name</td><td>tile label</td></tr>
+      <tr><td><code>kind</code></td><td>from the domain</td><td>icon: lock, garage or door</td></tr>
+      <tr><td><code>states</code></td><td>capitalised state</td><td>wording per state</td></tr>
+      <tr><td><code>ok_states</code></td><td><code>[locked, closed, off]</code></td><td>states that count as secure (mint)</td></tr>
+      <tr><td><code>tap</code></td><td><code>more-info</code></td><td>opens HA's dialog; <code>none</code> = status only (loader v15)</td></tr>
+    </table></div>
+    <div class="helper body-m">In a phone dock, use one security card per item with <code>direct: true</code>: one tap on the bar opens HA's dialog straight away.</div>
+  </article>
+
+  <!-- MEDIA -->
+  <article class="comp" id="c-media">
+    <div class="comp-head"><h3 class="headline-s">Media</h3><span class="chip el">custom:ui-media</span><span class="chip draft">Draft</span><span class="chip">Data card</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/media.png" alt="Media card playing Surah Ar-Rahman with speaker tabs, transport and volume" loading="lazy"><figcaption>Playing, with speaker tabs.</figcaption></figure>
+      <div>
+        <p class="body-l">Player tabs per speaker, artwork or record, transport and volume (44 px hit area).</p>
+        <dl class="facts body-m"><dt>Summary</dt><dd>now playing, or "Nothing playing"</dd><dt>Name</dt><dd>"Media" on wide screens, "Listen" on phones</dd></dl>
+      </div>
+    </div>
+    <div class="wire">section "Media"  media: living room HomePod, bedroom HomePod</div>
+<pre><code>type: custom:ui-media
+players:
+  - {entity: media_player.living_room_living_room_homepod, name: Living Room}
+  - {entity: media_player.master_bedroom_homepod, name: Bedroom}</code></pre>
+  </article>
+
+  <!-- LIST -->
+  <article class="comp" id="c-list">
+    <div class="comp-head"><h3 class="headline-s">List</h3><span class="chip el">custom:ui-list</span><span class="chip draft">Draft</span><span class="chip">Data card</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/list.png" alt="Shopping list with three items and an add field" loading="lazy"><figcaption>Items with colour stripe and check circle.</figcaption></figure>
+      <div>
+        <p class="body-l">A <code>todo</code> list: items with a colour stripe and check circle (44 px rows) and an add field.</p>
+        <dl class="facts body-m"><dt>Summary</dt><dd>items left</dd></dl>
+      </div>
+    </div>
+    <div class="wire">section "Lists"  list: shopping list</div>
+<pre><code>type: custom:ui-list
+entity: todo.shopping_list
+title: Shopping list
+max_items: 8          # optional</code></pre>
+  </article>
+
+  <!-- DOCK -->
+  <article class="comp" id="c-dock">
+    <div class="comp-head"><h3 class="headline-s">Dock</h3><span class="chip el">custom:ui-dock</span><span class="chip draft">Draft</span><span class="chip">Phone</span></div>
+    <div class="comp-top">
+      <figure class="stage"><img src="img/dock.png" alt="Dock with four bars two per row: Front door, Garage, Climate, Listen" loading="lazy"><figcaption>Four dock bars, two per row.</figcaption></figure>
+      <div>
+        <p class="body-l">Holds cards as 52 px dock bars, two per row, for a one-screen phone view. A tap opens the card in place, or HA's dialog with <code>direct: true</code>.</p>
+        <dl class="facts body-m"><dt>Cards</dt><dd>security, climate, media, list, prayer</dd><dt>Used on</dt><dd>habib-mkh phone view</dd></dl>
+      </div>
+    </div>
+    <div class="wire">phone: dock   front door (direct), garage (direct), climate, media</div>
+<pre><code>type: custom:ui-dock
+cards:
+  - {type: custom:ui-security, subtitle: Front door, direct: true,
+     items: [{entity: lock.living_room_front_door, name: Front door, kind: lock}]}
+  - {type: custom:ui-security, subtitle: Garage, direct: true,
+     items: [{entity: cover.general_garage_door_garage_door, name: Garage, kind: garage}]}
+  - {type: custom:ui-climate, entities: [...]}
+  - {type: custom:ui-media, players: [...]}</code></pre>
+    <div class="helper body-m">Dock bars are Locked at 52 px and must stay one line: use the <code>short</code> names on climate entities.</div>
+  </article>
+</section>
+
+<!-- ======================================================= STATES -->
+<section class="chapter" id="states">
+  <h2 class="headline-m">States and wording</h2>
+  <p class="lead body-l">Every control can show these six states, with exactly these words.</p>
+  <div class="tw"><table>
+    <tr><th>State</th><th>Look</th><th>Text</th></tr>
+    <tr><td>Off</td><td>desaturated art, dim dot</td><td>"Off", "All off"</td></tr>
+    <tr><td>On</td><td>accent or lamp-colour border and glow, coloured dot</td><td>"82%", "On", "3 of 7 on"</td></tr>
+    <tr><td>Pending</td><td>unchanged</td><td>"…" for up to 2.5 s</td></tr>
+    <tr><td>No response</td><td>50% opacity, not tappable</td><td>"No response"</td></tr>
+    <tr><td>Not found</td><td>50% opacity, rose note</td><td>"Not found", "Missing: &lt;id&gt;"</td></tr>
+    <tr><td>Alert</td><td>rose border and icon</td><td>the state word, e.g. "Unlocked"</td></tr>
+  </table></div>
+</section>
+
+<!-- ======================================================= HELPERS -->
+<section class="chapter" id="helpers">
+  <h2 class="headline-m">Helpers</h2>
+  <p class="lead body-l">Shared by every component, all in <code>base.js</code>. Use them; don't rebuild them.</p>
+  <div class="tw"><table>
+    <tr><th>Helper</th><th>Class / function</th><th>What it does</th></tr>
+    <tr><td>Hit area</td><td><code>.tap</code></td><td>a control smaller than 44 px gets an invisible 44 px target; visible size unchanged</td></tr>
+    <tr><td>Focus ring</td><td><code>:focus-visible</code></td><td>2 px warm ring</td></tr>
+    <tr><td>Press</td><td><code>.press</code></td><td>scale 0.97, spring 0.18 s</td></tr>
+    <tr><td>Hover</td><td><code>@media (hover: hover)</code></td><td>raised fill lightens; never on touch screens</td></tr>
+    <tr><td>Text fit</td><td><code>fitText()</code></td><td>never breaks a word; if the longest word overflows, the type steps down one role</td></tr>
+    <tr><td>Container queries</td><td><code>.chipbox</code> and others</td><td>size from the component's own width</td></tr>
+    <tr><td>Reduced motion</td><td><code>prefers-reduced-motion</code></td><td>all animation off</td></tr>
+    <tr><td>Reduced transparency</td><td><code>prefers-reduced-transparency</code></td><td>blur off, solid surface</td></tr>
+    <tr><td>Feedback</td><td><code>_begin()</code></td><td>pending 2.5 s, then the real state and "No response" for 4 s</td></tr>
+    <tr><td>Dialog</td><td><code>moreInfo()</code></td><td>opens HA's own dialog for an entity (door, garage, "Open full controls")</td></tr>
+  </table></div>
+  <h4 class="sub">Building a new component</h4>
+  <ol class="body-m">
+    <li>Write its page first (status Planned) with the same parts as the components above.</li>
+    <li>One file in <code>www/habib/glass/</code>, extending <code>GlassCard</code>: <code>_validate</code>, <code>_signature</code>, <code>_render</code>, and <code>_summary</code> if it can sit in an Accordion.</li>
+    <li>Render only when the states it shows change (the signature).</li>
+    <li>Every entity, name and label comes from config; no entity ID in JavaScript.</li>
+    <li>Pure logic goes in <code>habib-glass-logic.js</code> with a node test.</li>
+    <li>Role, <code>aria-label</code> with the state, Enter and Space, focus ring; the six states with the words above.</li>
+    <li>Bump <code>VERSION</code> in <code>loader.js</code> and the resource URL together.</li>
+  </ol>
+</section>
+
+<!-- ======================================================= SAFETY -->
+<section class="chapter" id="safety">
+  <h2 class="headline-m">Safety rules <span class="chip locked">Locked</span></h2>
+  <p class="lead body-l">No component, wireframe or option may override these.</p>
+  <div class="callout err"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><div>
+  <ol style="margin:0;padding-left:18px">
+    <li><b>Locks, garage and covers:</b> no card calls a lock or cover service. A tap opens Home Assistant's own dialog (two deliberate taps to unlock or open). Every dashboard makes the door and garage clickable this way.</li>
+    <li><b>Adhan:</b> shown, never changed by any card. It changes only through the Adhan package and the owner's GREEN LIGHT.</li>
+    <li><b>Climate:</b> only the climate drawer of <code>ui-climate</code> may call <code>climate.set_hvac_mode</code> and <code>climate.set_temperature</code>, within the thermostat's limits and a 3° gap.</li>
+    <li><b>Alarm and media:</b> <code>ui-button</code> refuses alarm and media_player entities.</li>
+    <li><b>Nursery</b> lamps stay out of floor groups.</li>
+    <li><b>Entity IDs</b> come from <code>docs/entities.md</code> or ha-mcp; never guessed; never in JavaScript.</li>
+    <li><b>Never edit <code>.storage/</code></b>; dashboards change through ha-mcp. Live dashboards change only at cutover, on the owner's word.</li>
+    <li><b>Nothing unseen ships:</b> every layout is rendered and measured before it reaches a device.</li>
+  </ol></div></div>
+</section>
+
+<!-- ======================================================= BUILD -->
+<section class="chapter" id="build">
+  <h2 class="headline-m">Build workflow</h2>
+  <p class="lead body-l">How the owner asks for something new, and what Claude does with it.</p>
+  <div class="grid2">
+    <div class="card">
+      <div class="title-m">1. Write the wireframe</div>
+      <p class="body-m">One line per part, indented by nesting, using the wireframe lines shown with each component. Friendly entity names are fine; Claude looks up the real IDs and asks if one is ambiguous.</p>
+<pre><code>page  (max 4 columns, fluid)
+  hero                       clock, weather, people: Waqar, Maham
+  accordion &gt; prayer         Adhan badge
+  section "Home"
+    security                 front door, garage
+    accordion &gt; climate      downstairs, upstairs
+  section "Kitchen"  collapsed_view: compact
+    card "Pendants"          light group: kitchen pendants
+    card "Under cabinet"     size: wide
+  section "Listen"
+    media                    living room HomePod
+  phone: dock                front door (direct), garage (direct), climate, media</code></pre>
+    </div>
+    <div class="card">
+      <div class="title-m">2. Claude builds and checks</div>
+      <ol class="body-m">
+        <li>Maps every line to the config on this page.</li>
+        <li>Adds it to <code>dashboards/habib-glass-build.py</code> and builds a staging dashboard <code>&lt;name&gt;-next</code> (admin only).</li>
+        <li>Renders at 375 to 1920 px with <code>tests/habib-ui/render/render.mjs</code> and measures against <a href="#accept">Acceptance</a>.</li>
+        <li>Shows the screenshots and numbers.</li>
+        <li>Cuts over only on the owner's word.</li>
+      </ol>
+      <div class="helper body-m">A part that is missing from this guide becomes a new component (status Planned) before it is built. Commit the wireframe as <code>docs/prompts/&lt;target&gt;/YYYY-MM-DD-&lt;slug&gt;.md</code> or paste it.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================================================= ACCEPT -->
+<section class="chapter" id="accept">
+  <h2 class="headline-m">Acceptance</h2>
+  <p class="lead body-l">A change passes when all of these hold at 375, 430, 820, 1024, 1184, 1280, 1440, 1920 and 2560 px wide.</p>
+  <ol class="check">
+    <li>Every font, size, weight, radius and colour equals a token.</li>
+    <li>No sideways scroll, no clipped or mid-word-broken text, no overlap.</li>
+    <li>Every control at least 44 px (56 on the wall tablet); text at least 4.5:1.</li>
+    <li>The six states render with the wording above.</li>
+    <li>Tab reaches every control; focus ring shows; Enter and Space act.</li>
+    <li>Reduced motion and reduced transparency render correctly.</li>
+    <li>Lock and garage click test: zero service calls (HA's dialog only).</li>
+    <li>Wide: blank area between groups under 5%; chip unused width under 12 px; dock bars one line at 52 px.</li>
+    <li><code>node --test tests/habib-ui/*.mjs</code> and <code>ha core check</code> pass; the config is read back and its hash recorded.</li>
+  </ol>
+  <div class="callout tip"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg><div><b>Last staging result (2026-11-17):</b> all 9 pass. Lowest contrast 4.6, 0 targets under 44 px, blank area at most 0.42%, unused chip width at most 11 px.</div></div>
+</section>
+
+<!-- ======================================================= GAPS -->
+<section class="chapter" id="gaps">
+  <h2 class="headline-m">Gap list</h2>
+  <p class="lead body-l">Cleaned 2026-11-17. Open items first; the owner sorts priority.</p>
+  <h4 class="sub">Open</h4>
+  <div class="tw"><table>
+    <tr><th>#</th><th>Gap</th><th>Next step</th><th>Owner call?</th></tr>
+    <tr><td>G1</td><td>Live habib-wh and habib-mkh still use the old layout; the staging fixes reach them only at cutover</td><td>Owner checks staging on the Mac and iPhone, then says cut over</td><td>Yes</td></tr>
+    <tr><td>G2</td><td>Not yet seen on the wall tablet</td><td>Measure on arrival (about 2026-11-20): viewport, pixel ratio, columns with the sidebar hidden, 56 px targets</td><td>No</td></tr>
+    <tr><td>G4</td><td>Material You Utilities loads on every page and is unused</td><td>Remove from <code>configuration.yaml</code> (restart, needs GREEN LIGHT)</td><td>Yes</td></tr>
+    <tr><td>G5</td><td>No performance budget</td><td>Set once the tablet is measured</td><td>No</td></tr>
+    <tr><td>G6</td><td>27 text styles across 16 sizes</td><td>Merge 17/18 and 12/13 px when cards are next changed</td><td>Yes</td></tr>
+    <tr><td>G7</td><td>11 spacing steps in use</td><td>Move to 4, 8, 12, 16, 24 when a card is next changed</td><td>No</td></tr>
+  </table></div>
+  <h4 class="sub">Backlog</h4>
+  <div class="tw"><table>
+    <tr><th>#</th><th>Gap</th><th>Note</th></tr>
+    <tr><td>B1</td><td>Light mode (I54, D78)</td><td>Lower priority. Path: light and dark values in the theme, cards read them, a light wallpaper.</td></tr>
+  </table></div>
+  <h4 class="sub">Closed</h4>
+  <div class="tw"><table>
+    <tr><th>Was</th><th>Gap</th><th>How it closed</th></tr>
+    <tr><td>G3 / I52</td><td>Lamps drawn red while white</td><td>AiDot reports rgbw 255, 0, 0, 0 after a brightness-only turn-on; drawn white since loader v14 (2026-11-17)</td></tr>
+    <tr><td>new</td><td>Door and garage not clickable on habib-wh and habib-wh-next</td><td>Tap opens HA's dialog on every dashboard; the default since loader v15 (2026-11-17)</td></tr>
+    <tr><td>2</td><td>Text contrast too low</td><td>Dim text raised to 84%; lowest on staging 4.6</td></tr>
+    <tr><td>3</td><td>7 controls under 44 px</td><td>Hit-area helper; none under 44 on staging</td></tr>
+    <tr><td>5</td><td>Two slightly different warm colours</td><td>Accepted as separate roles</td></tr>
+    <tr><td>7</td><td>Column count</td><td>The rule matches every measurement</td></tr>
+    <tr><td>8</td><td>Blank page at 699–700 px</td><td>The page uses its own width</td></tr>
+    <tr><td>9</td><td>Dock bars wrapping</td><td>19 bars, one line, 52 px</td></tr>
+    <tr><td>10</td><td>"Times unavailable" after Isha</td><td>"All done today" (live since v11)</td></tr>
+    <tr><td>11</td><td>Empty space under the clock on wide habib-mkh</td><td>Fluid rule</td></tr>
+    <tr><td>12</td><td>Slider value used a fixed white</td><td>Fixed values banned by the style test</td></tr>
+    <tr><td>13 (part)</td><td><code>nuvio.js</code> and Material Symbols loading</td><td>Removed by the owner (I61)</td></tr>
+    <tr><td>I59</td><td>Wasted space, broken words, chip slack, wrapping bars, fixed green</td><td>Staging measurements; colour from one hex</td></tr>
+  </table></div>
+</section>
+
+<!-- ======================================================= CHANGES -->
+<section class="chapter" id="changes">
+  <h2 class="headline-m">Changes</h2>
+  <div class="tw"><table>
+    <tr><th>Version</th><th>Date</th><th>Change</th></tr>
+    <tr><td>v1.0 (draft)</td><td>2026-11-17</td><td>One HTML guide replaces <code>docs/design-guide.md</code> v0.2 and the library index as the entry point. Real renders for every component; wireframe line and helper text per component; Material 3 page styling; cleaned gap list; I52 and door/garage taps closed.</td></tr>
+    <tr><td>v0.3</td><td>2026-11-17</td><td>Component library v1 (<code>ui-*</code> names), fluid rule.</td></tr>
+    <tr><td>v0.2</td><td>2026-11-16</td><td>Measured audit values (<code>docs/design/audit-2026-11-16.md</code>).</td></tr>
+  </table></div>
+  <p class="body-m">Sources: <code>www/habib/glass/</code>, <code>docs/design/library/</code>, <code>docs/design/habib-tokens.yaml</code>, <code>docs/sessions/2026-11-17-habib-layout.md</code>, decisions D48, D60, D64, D70, D71, D75 to D81. Images rendered with <code>tests/habib-ui/render/</code> at 430 px with mock states (no real household data).</p>
+</section>
+
+<footer class="body-s">Habib Glass design guide · v1.0 draft · locks on the owner's GREEN LIGHT · an interactive version follows once locked.</footer>
+</main>
+</div>
+</body>
+</html>

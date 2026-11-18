@@ -2,6 +2,13 @@
 
 Last updated: 2026-11-17 ~10:00 CST (Pi 5, fluid rule and Mac layout). Before that: ~09:20 CST (Adhan gate fix, library v1).
 
+
+## Defect triage and guide v0.4 draft (2026-11-17 evening, Pi 5)
+1. I59 closed; I54 backlog; tablet arrives about 2026-11-20 (I46).
+2. **I62 new:** arrival garage dry run fails every run (`notify.waqars_iphone` is not an action). No phone notice has ever been sent. Fix in the I63 automation walkthrough.
+3. **I52 again:** lamps drawn red at 22:27 CST. Owner to say whether they were physically red.
+4. Design guide Draft v0.4 is in review in chat, not committed. On approval: `docs/design-guide.html` and commit.
+5. Note `docs/sessions/2026-11-17-defects-guide-v04.md`.
 ## Fluid rule and Mac layout (2026-11-17, Pi 5, D81): merged, staging live
 1. **Climate drawer padding fixed:** each target box sizes from its own width (one row from 210 px, stacked on phones); the row never touches the edge.
 2. **Fluid rule** (`ui-page` `packing: fluid`, logic `fluidPack`, tests): chains (`with`), pins (`column: 1` / `-1`), tallest-first balance, config order inside a column, no sideways jumps after the page settles. Docs `docs/design/library/layout/fluid.md`.

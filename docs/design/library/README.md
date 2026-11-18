@@ -1,3 +1,5 @@
+> **Entry point (2026-11-17):** `docs/design/guide/index.html` (design guide v1.0) is the single guide. These pages stay as the per-component detail.
+
 # Glass UI: component library for Home Assistant dashboards
 
 Version: library v1 (Draft v0.3 of the design guide), 2026-11-17. Loader v12.

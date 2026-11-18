@@ -14,7 +14,7 @@ A second host, **networkpi** (Raspberry Pi 3B+), is the always-on support backen
 | Device source | Apple Home (HomeKit) devices already exposed to HA |
 | Speakers | HomePods (entity IDs: see `docs/entities.md`) |
 | Live access | `ha-mcp` add-on (MCP server) + `ha` CLI |
-| Dashboard | Habib Glass: `custom:habib-*` cards (`www/habib/`) on native sections views, theme "Habib Glass". Design rules: `docs/design-guide.md`, values: `docs/design/habib-tokens.yaml`. Nuvio is no longer used |
+| Dashboard | Habib Glass: `custom:habib-*` cards (`www/habib/`) on native sections views, theme "Habib Glass". Design guide: `docs/design/guide/index.html` (components, configs, rules), values: `www/habib/glass/base.js` and `docs/design/habib-tokens.yaml`. Nuvio is no longer used |
 | Support host | networkpi, Raspberry Pi 3B+, 192.168.1.39 (wired). Planned: AdGuard Home, Samba backup share, uptime monitoring, Claude Code CLI |
 | Remote access | Planned: Cloudflare Tunnel for HA. Raspberry Pi Connect for networkpi (break-glass, iPhone-capable) |
 

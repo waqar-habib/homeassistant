@@ -3,6 +3,12 @@
 Last updated: 2026-11-17 ~10:00 CST (Pi 5, fluid rule and Mac layout). Before that: ~09:20 CST (Adhan gate fix, library v1).
 
 
+
+## Fixes and design guide v1.0 (2026-11-17 late evening, Pi 5)
+1. **I52 fixed** (AiDot reports pure red after a brightness-only turn-on; cards draw it white). **I64 fixed:** door and garage open HA's dialog on every dashboard, now the default. **I65 fixed** (collapsed section summary). Loader v16 live.
+2. **Design guide v1.0 draft:** `docs/design/guide/index.html` with images per component. Waiting for the owner's GREEN LIGHT; then the interactive version and hosting.
+3. **Owner next:** hard refresh (Mac) or Reset frontend cache (iPhone); check door and garage taps on habib-wh and habib-wh-next; review the guide.
+4. Open: I62 and I63 automation walkthrough, G1 cutover, tablet about 2026-11-20. Note `docs/sessions/2026-11-17-design-guide-v1.md`.
 ## Defect triage and guide v0.4 draft (2026-11-17 evening, Pi 5)
 1. I59 closed; I54 backlog; tablet arrives about 2026-11-20 (I46).
 2. **I62 new:** arrival garage dry run fails every run (`notify.waqars_iphone` is not an action). No phone notice has ever been sent. Fix in the I63 automation walkthrough.

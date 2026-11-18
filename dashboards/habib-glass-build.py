@@ -9,9 +9,10 @@ prayer = {"type": "custom:habib-prayer", "adhan": "input_boolean.adhan_enabled",
           "prayers": {"fajr": P+"fajr_prayer", "sunrise": P+"sunrise_time", "dhuhr": P+"dhuhr_prayer",
                       "asr": P+"asr_prayer", "maghrib": P+"maghrib_prayer", "isha": P+"isha_prayer"}}
 lock = {"entity": "lock.living_room_front_door", "name": "Front door", "kind": "lock",
-        "states": {"locked": "Locked", "unlocked": "Unlocked", "jammed": "Jammed"}}
+        "states": {"locked": "Locked", "unlocked": "Unlocked", "jammed": "Jammed"}, "tap": "more-info"}
 garage = {"entity": "cover.general_garage_door_garage_door", "name": "Garage", "kind": "garage",
-          "states": {"closed": "Closed", "open": "Open", "opening": "Opening", "closing": "Closing"}}
+          "states": {"closed": "Closed", "open": "Open", "opening": "Opening", "closing": "Closing"}, "tap": "more-info"}
+# Front door and garage open HA's own dialog on tap on every dashboard (owner, 2026-11-17). The card never calls the service.
 climate = {"type": "custom:habib-climate", "entities": [{"entity": "climate.downstairs", "name": "Downstairs"}, {"entity": "climate.upstairs", "name": "Upstairs"}]}
 media = {"type": "custom:habib-media", "players": [{"entity": "media_player.living_room_living_room_homepod", "name": "Living Room"},
                                                    {"entity": "media_player.master_bedroom_homepod", "name": "Bedroom"}]}

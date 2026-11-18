@@ -85,6 +85,10 @@ export function glowColor(a) {
   const k = typeof a.color_temp_kelvin === "number" ? a.color_temp_kelvin : null;
   const mode = a.color_mode;
   if (mode === "color_temp" && k) return kelvinToRgb(k);
+  // AiDot lamps report rgbw [255, 0, 0, 0] (pure red, no white) after a brightness-only turn-on
+  // while the bulb shines white (I52, measured 2026-11-17). The colour sheet never sends pure red,
+  // so this exact report is a placeholder, not a colour: draw it as white.
+  if (mode === "rgbw" && Array.isArray(a.rgbw_color) && a.rgbw_color.join(",") === "255,0,0,0") return k ? kelvinToRgb(k) : WARM;
   if (COLOR_MODES.includes(mode) && Array.isArray(a.rgb_color)) {
     const w = Array.isArray(a.rgbw_color) ? a.rgbw_color[3] : Array.isArray(a.rgbww_color) ? Math.max(a.rgbww_color[3], a.rgbww_color[4]) : 0;
     if (w && w >= Math.max(...a.rgb_color.slice(0, 3)) * 0.5) return k ? kelvinToRgb(k) : WARM;

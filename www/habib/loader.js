@@ -1,4 +1,4 @@
-// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=11
+// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=14
 // Dev loop: add ?dev to the dashboard URL (or set localStorage habib_dev to "1")
 // to load the card files with a fresh timestamp on every page load (no cache).
 // Production loads them pinned to VERSION. Bump VERSION on every JS change (CR6).
@@ -11,7 +11,8 @@
 // v12: component library v1 (generic ui-* names, Bootstrap 6 naming): ui-page, ui-section, ui-card (Large card),
 //      ui-accordion, drawer (shade, climate controls), Adhan badge on/off/error, heading gap, 44 px list rows.
 // v13: fluid rule (ui-page packing: fluid), always-open and nested sections, climate stepper fits its box.
-const VERSION = 13;
+// v14: lamps drawn white when AiDot reports its pure-red placeholder (I52).
+const VERSION = 14;
 
 const isDev = (() => {
   try {

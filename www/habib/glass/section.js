@@ -84,6 +84,8 @@ export class UiSection extends GlassCard {
         if (!String(cfg.type || "").startsWith("custom:")) throw new Error("only custom cards");
         el = document.createElement(tag);
         el.setConfig(cfg);
+        // Give a new child the current state at once, so a collapsed section's summary is filled on its first render.
+        if (this._hass) el.hass = this._hass;
       } catch (err) {
         el = document.createElement("div");
         el.className = "err";

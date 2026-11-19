@@ -1,4 +1,5 @@
-// glass/hero.js: habib-hero. Clock, date, Hijri date, weather, people. compact: true is the 130 px phone hero.
+// glass/hero.js: habib-hero. Clock, date, Hijri date, weather, people. compact: true is the 130 px phone hero;
+// dense: true keeps every element of the full hero at about 75% of its height.
 const B = await import(new URL("./base.js", import.meta.url).href.split("?")[0] + new URL(import.meta.url).search);
 const A = await B.load("./art.js");
 const { G, GlassCard, esc, moreInfo } = B;
@@ -29,6 +30,17 @@ export class HabibHero extends GlassCard {
     .cond { display: flex; flex-direction: column; gap: var(--s-6); min-width: 0; flex: 1; }
     .cname { font: var(--t-title-lg); }
     .pills { display: flex; flex-wrap: wrap; gap: var(--s-4); }
+    /* dense (owner, 2026-11-19): every element of the full hero, about 25% less height. Date and
+       Hijri sit beside the people; smaller clock and temperature. */
+    .glass.dense { padding: var(--s-14) var(--s-18) var(--s-12); gap: var(--s-8); min-height: 0; }
+    .dense .clock { font: var(--t-clock-md); letter-spacing: var(--ls-clock-md); }
+    .dense .ampm { font: var(--t-ampm-md); letter-spacing: var(--ls-ampm-md); }
+    .dense .date { margin-top: 0; }
+    .dense .dl { margin-top: var(--s-6); align-items: flex-end; }
+    .dense .wxrow { gap: var(--s-8); }
+    .dense .wx { width: var(--z-wx-md); }
+    .dense .temp { font: var(--t-metric-lg); letter-spacing: var(--ls-metric-lg); }
+    .dense .cond { gap: var(--s-4); }
     /* compact */
     .glass.compact { height: var(--z-hero-compact); min-height: 0; padding: var(--s-14) var(--s-16); flex-direction: row; align-items: center; justify-content: space-between; gap: var(--s-10); }
     .compact .left { position: relative; flex: none; min-width: 0; }
@@ -113,9 +125,12 @@ export class HabibHero extends GlassCard {
       return `<button class="who tap ${home ? "home" : "away"}" data-entity="${esc(p.entity)}" aria-label="${esc(p.name || "")}: ${esc(where)}">
         ${pic ? `<img src="${esc(this._hass.hassUrl ? this._hass.hassUrl(pic) : pic)}" alt="">` : `<span>${initials}</span>`}<i></i></button>`;
     }).join("");
-    this._paint(`<div class="glass deep ${part}"><div class="tint"></div>
-        <div class="top">${clockHtml}<div class="date">${esc(date)}</div>
-          <div class="dl"><div>${hijri ? `<div class="hijri">${esc(hijri)}</div>` : ""}</div><div class="people">${people}</div></div>
+    const dense = this._config.dense === true;
+    const dateHtml = `<div class="date">${esc(date)}</div>`;
+    const hijriHtml = hijri ? `<div class="hijri">${esc(hijri)}</div>` : "";
+    this._paint(`<div class="glass deep ${dense ? "dense" : ""} ${part}"><div class="tint"></div>
+        <div class="top">${clockHtml}${dense ? "" : dateHtml}
+          <div class="dl"><div>${dense ? dateHtml : ""}${hijriHtml}</div><div class="people">${people}</div></div>
         </div>
         <div class="wxrow" ${wxAttr}>
           ${A.weatherSvg(w ? w.state : "cloudy", night)}${tempHtml}

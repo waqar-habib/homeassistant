@@ -181,6 +181,14 @@ export class HabibClimate extends GlassCard {
     });
     return { label: this._config.title || "Climate", html: parts.map((p) => p.long).join(" · "), short: parts.map((p) => p.short).join(" · "), icon: ICONS.thermometer };
   }
+  // One line for a parent section header: entity `line` names (e.g. "Down"), else as the bar.
+  _line() {
+    return this._items.map((it) => {
+      const s = this._st(it.entity);
+      const cur = s && typeof s.attributes.current_temperature === "number" ? `${Math.round(s.attributes.current_temperature)}°` : "–";
+      return `${esc(it.line || it.short || it.name || (s && s.attributes.friendly_name) || it.entity)} <b>${cur}</b>`;
+    }).join(" · ");
+  }
   getGridOptions() { return { columns: 12, rows: "auto", min_columns: 6 }; }
   static getStubConfig() { return { type: "custom:habib-climate", entities: [] }; }
   static defaultControls = false;

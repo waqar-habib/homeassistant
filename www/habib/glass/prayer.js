@@ -54,7 +54,7 @@ export class HabibPrayer extends GlassCard {
     const status = G.prayerStatus(plan);
     if (status !== "next") return { label: "Prayer", html: esc(STATUS_TEXT[status]) };
     const n = plan.next;
-    const t = n.at.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    const t = plan.nextAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
     const left = esc(G.formatCountdown(plan.msLeft));
     return { label: "Prayer", progress: plan.progress,
       html: `<b>${PRAYER_NAMES[n.key]}</b> ${esc(t)} · <span class="tone-warm">${left}</span>`,

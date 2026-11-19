@@ -1,4 +1,4 @@
-// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=16
+// Habib UI loader. Loaded as a Lovelace module resource: /local/habib/loader.js?v=17
 // Dev loop: add ?dev to the dashboard URL (or set localStorage habib_dev to "1")
 // to load the card files with a fresh timestamp on every page load (no cache).
 // Production loads them pinned to VERSION. Bump VERSION on every JS change (CR6).
@@ -14,7 +14,10 @@
 // v14: lamps drawn white when AiDot reports its pure-red placeholder (I52).
 // v15: ui-security items open HA's dialog by default (tap: none = status only).
 // v16: a collapsed section without lights shows its children's summaries on first render.
-const VERSION = 16;
+// v17: prayer counts down to tomorrow's Fajr after Isha; page re-measures HA's header (no empty scroll,
+//      wallpaper fits the visible screen); dense hero; security light items and short "All secure" line;
+//      section open_view: compact; an open section is not rebuilt when a child's summary changes.
+const VERSION = 17;
 
 const isDev = (() => {
   try {

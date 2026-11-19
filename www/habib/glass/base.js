@@ -24,6 +24,8 @@ const FONT = {
 const TYPE = {
   clock: ["display", 200, "clamp(64px, 26cqi, 104px)", ".92", -0.04], // follows the card width (cqi), not the screen
   "clock-sm": ["display", 200, 54, ".95", -0.04],
+  "clock-md": ["display", 200, "clamp(52px, 18cqi, 74px)", ".92", -0.04], // dense hero (2026-11-19)
+  "ampm-md": ["display", 300, 17, "1", 0.02],
   "metric-xl": ["display", 200, 56, "1", -0.04],
   "metric-lg": ["display", 200, 40, "1", -0.03],
   "metric-md": ["display", 200, 36, "1", -0.04],
@@ -67,7 +69,7 @@ const SIZE = {
   avatar: 38, "avatar-dot": 11, shield: 44, "media-art": 112, "dial-max": 132, "sheet-max": 560,
   btn: 40, "btn-lg": 52, "btn-sm": 30, "btn-xs": 24, more: 26, plus: 46, check: 20, thumb: 20,
   dot: 7, "dot-sm": 6, "handle-w": 38, "handle-h": 5, track: 6, progress: 3, "progress-lg": 5, stripe: 4,
-  wx: 78, "wx-sm": 46, "label-pad": 14,
+  wx: 78, "wx-md": 52, "wx-sm": 46, "label-pad": 14,
   "i-13": 13, "i-14": 14, "i-16": 16, "i-18": 18, "i-20": 20, "i-22": 22, "i-24": 24, "i-26": 26,
   // habib-layout
   "page-pad": 16, "page-pad-compact": 8, "gap-col": 32, "gap-group": 24, "gap-card": 8, "header": 56,

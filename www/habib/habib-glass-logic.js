@@ -15,7 +15,21 @@ export function prayerPlan(times, now, sameDay) {
     return { key, at: valid ? at : null, passed: valid ? !sameDay(at, now) && at > now : false, next: false };
   });
   const upcoming = rows.filter((r) => r.at && r.at > now && r.key !== "sunrise");
-  if (!upcoming.length) return { rows, next: null, msLeft: null, progress: 0 };
+  if (!upcoming.length) {
+    // Every time has passed but the sensors still hold today's times (they refresh after
+    // midnight). Count down to tomorrow's first prayer, estimated as today's time + 1 day
+    // (Fajr moves about a minute a day). Only when every real time is valid (I57 wording stays).
+    const real = rows.filter((r) => r.key !== "sunrise");
+    if (!real.length || !real.every((r) => r.at)) return { rows, next: null, nextAt: null, msLeft: null, progress: 0 };
+    const roll = (at) => { let t = at.getTime(); for (let i = 0; i < 3 && t <= now.getTime(); i++) t += DAY_MS; return new Date(t); };
+    const next = real.reduce((a, b) => (roll(b.at) < roll(a.at) ? b : a));
+    next.next = true;
+    const nextAt = roll(next.at);
+    const past = real.map((r) => r.at).filter((d) => d <= now);
+    const prev = past.length ? new Date(Math.max(...past.map((d) => d.getTime()))) : null;
+    const span = prev ? nextAt - prev : 0;
+    return { rows, next, nextAt, estimated: true, msLeft: nextAt - now, progress: span > 0 ? Math.min(1, Math.max(0, (now - prev) / span)) : 0 };
+  }
   const next = upcoming.reduce((a, b) => (b.at < a.at ? b : a));
   next.next = true;
   // Previous prayer = the latest (time - 1 day) that is before now, among real prayers.
@@ -27,7 +41,7 @@ export function prayerPlan(times, now, sameDay) {
   const msLeft = next.at - now;
   const span = prev ? next.at - prev : 0;
   const progress = span > 0 ? Math.min(1, Math.max(0, (now - prev) / span)) : 0;
-  return { rows, next, msLeft, progress };
+  return { rows, next, nextAt: next.at, msLeft, progress };
 }
 
 export function formatCountdown(ms) {

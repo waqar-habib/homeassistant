@@ -22,10 +22,14 @@ const DEFAULTS = { max_columns: 4, min_column: 320, max_column: 500, compact_bel
 const UNIT = 4; // px per packing row: placements snap to this grid
 
 const CSS = `
-  :host { position: relative; height: auto; min-height: calc(100vh - var(--top, 0px)); color: var(--g-text); font-family: var(--g-font); }
+  /* Fill the VISIBLE viewport (dvh; 100vh on iOS is taller than the screen) minus HA's own
+     padding under the page (--below), so a page that fits never scrolls (owner, 2026-11-19). */
+  :host { position: relative; height: auto; min-height: calc(100vh - var(--top, 0px)); min-height: calc(100dvh - var(--top, 0px) - var(--below, 0px));
+    color: var(--g-text); font-family: var(--g-font); }
   /* Wallpaper: a viewport-tall layer that stays put while the page scrolls. All colours come
      from habib-base (set as --w-* by the card from the palette recipes). */
   .wall { position: sticky; top: 0; z-index: 0; height: 100vh; margin-top: calc(-1 * var(--top, 0px)); margin-bottom: calc(var(--top, 0px) - 100vh);
+    height: 100dvh; margin-bottom: calc(var(--top, 0px) - 100dvh);
     overflow: hidden; pointer-events: none;
     background: radial-gradient(75% 75% at 50% 45%, transparent 55%, rgba(var(--g-dark), .45)),
       radial-gradient(55% 55% at 22% 18%, var(--w-glow-a), transparent),
@@ -122,11 +126,35 @@ export class HabibLayout extends HTMLElement {
   }
   set hass(h) {
     this._hass = h;
+    // HA's header can settle after the first layout; a stale --top left empty scroll under the
+    // page and pushed the wallpaper's leaves below the screen (owner, 2026-11-19). Re-check, at most once a second.
+    const now = Date.now();
+    if (!this._topAt || now - this._topAt > 1000) { this._topAt = now; this._measureTop(); }
     for (const g of this._groups || []) for (const c of (g.sets[this._mode] || { cards: [] }).cards) c.hass = h;
     if (h && h.themes !== this._themes) { this._themes = h.themes; this._paintWall(); }
   }
   get hass() { return this._hass; }
-  connectedCallback() { this._paintWall(); this._layout(); }
+  connectedCallback() {
+    this._paintWall(); this._layout();
+    // Re-measure after HA has laid out its header (next frames and after fonts and cards settle).
+    requestAnimationFrame(() => requestAnimationFrame(() => this._measureTop()));
+    for (const ms of [300, 1500]) setTimeout(() => this._measureTop(), ms);
+    if (!this._onResize) { this._onResize = () => this._measureTop(); window.addEventListener("resize", this._onResize); }
+  }
+  disconnectedCallback() { if (this._onResize) { window.removeEventListener("resize", this._onResize); this._onResize = null; } }
+  // Offset of the page from the document top (HA's header) and the space HA adds under it.
+  _measureTop() {
+    if (!this.isConnected) return;
+    const top = Math.max(0, Math.round(this.getBoundingClientRect().top + window.scrollY));
+    if (top !== this._top) { this._top = top; this.style.setProperty("--top", `${top}px`); }
+    // Space HA adds under the page (view padding, safe area). Capped: a stray value never hides content.
+    // Measured only while the page overflows (otherwise the value is already right and kept).
+    const root = document.scrollingElement || document.documentElement;
+    if (root.scrollHeight > root.clientHeight + 1) {
+      const below = Math.min(160, Math.max(0, Math.round(root.scrollHeight - (this.getBoundingClientRect().bottom + window.scrollY))));
+      if (Math.abs(below - (this._below || 0)) > 1) { this._below = below; this.style.setProperty("--below", `${below}px`); }
+    }
+  }
 
   // Wallpaper colours from the one theme key. Re-read when the theme changes.
   _paintWall() {
@@ -189,8 +217,7 @@ export class HabibLayout extends HTMLElement {
   }
   _layout() {
     if (!this._groups || this._h === undefined || !this.isConnected) return;
-    const top = Math.max(0, Math.round(this.getBoundingClientRect().top + window.scrollY));
-    if (top !== this._top) { this._top = top; this.style.setProperty("--top", `${top}px`); }
+    this._measureTop();
     this._paintWall();
     const width = this.getBoundingClientRect().width;
     if (!(width > 0)) return;

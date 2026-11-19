@@ -95,12 +95,16 @@ test("weatherLayers", () => {
 });
 
 // ---- Prayer bar wording (I57) ----
-test("prayerStatus: all done today when every time is valid and none is left", () => {
+test("prayerPlan: all of today's times passed counts down to tomorrow's Fajr (owner, 2026-11-19)", () => {
   const now = d("2026-11-16T22:00:00Z");
   const t = (h) => d(`2026-11-16T${h}:00Z`);
   const p = G.prayerPlan({ fajr: t("05:50"), sunrise: t("07:00"), dhuhr: t("12:15"), asr: t("15:10"), maghrib: t("17:30"), isha: t("18:45") }, now, sameDay);
-  assert.equal(p.next, null);
-  assert.equal(G.prayerStatus(p), "done");
+  assert.equal(p.next.key, "fajr");
+  assert.equal(p.estimated, true);
+  assert.equal(p.nextAt.toISOString(), "2026-11-17T05:50:00.000Z");
+  assert.equal(G.formatCountdown(p.msLeft), "7h 50m");
+  assert.ok(p.progress > 0 && p.progress < 1);
+  assert.equal(G.prayerStatus(p), "next");
 });
 
 test("prayerStatus: unavailable only when a sensor is missing, unknown or unavailable", () => {

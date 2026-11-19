@@ -135,11 +135,23 @@ def room_cards(s): return [ui(c) for c in lamps(s)]
 WH_ROOMS = [("living", "Living Room", living), ("bedroom", "Bedroom", bedroom), ("nursery", "Nursery", nursery),
             ("upstairs", "Upstairs", upstairs), ("outdoor", "Outdoor", outdoor)]
 wh_home = [ui({"type": "custom:habib-security", "items": [lock, garage]}), accordion(climate)]
-wh_next = page([g("hero", [ui(hero), accordion(ui_prayer)], column=1),
-                g("home", [fixed("Home", wh_home)], [section("Home", wh_home)]),
-                g("floors", [fixed("Floors", room_cards(floors), "Nursery not included")], [section("Floors", room_cards(floors), "Nursery not included")], **{"with": "home"}),
-                g("lights", [fixed("Lights", [closed(l, room_cards(s)) for _, l, s in WH_ROOMS])], [], column=-1)]
-               + [g(i, [], [section(l, room_cards(s))]) for i, l, s in WH_ROOMS]
+# Phone (compact_cards) redesign, owner 2026-11-19. Wide screens unchanged (same `cards`).
+#   hero 25% shorter with every element (dense); Prayer and Home open on every launch (remember: false);
+#   Porch moves from Outdoor into Home, a third item beside Front door and Garage; Floors open as
+#   one-tap chips; every room in one "Rooms" drawer, closed on launch, rooms inside shown as chips.
+porch = {"entity": "light.smart_wi_fi_light_switch", "name": "Porch", "kind": "light"}
+OPEN = {"collapsed": False, "remember": False}
+# Short names only for the collapsed Home line ("All secure · Down 72° · Up 71°"); the bar keeps full names.
+phone_climate = {**climate, "entities": [{**e, "line": {"Downstairs": "Down", "Upstairs": "Up"}[e["name"]]} for e in climate["entities"]]}
+phone_home = [ui({"type": "custom:habib-security", "items": [lock, garage, porch]}), accordion(phone_climate)]
+PHONE_ROOMS_WH = [r for r in WH_ROOMS if r[0] != "outdoor"]
+wh_next = page([g("hero", [ui(hero), accordion(ui_prayer)],
+                  [{**ui(hero), "dense": True}, {**accordion(ui_prayer), **OPEN}], column=1),
+                g("home", [fixed("Home", wh_home)], [section("Home", phone_home, **OPEN)]),
+                g("floors", [fixed("Floors", room_cards(floors), "Nursery not included")],
+                  [section("Floors", room_cards(floors), "Nursery not included", open_view="compact", **OPEN)], **{"with": "home"}),
+                g("lights", [fixed("Lights", [closed(l, room_cards(s)) for _, l, s in WH_ROOMS])],
+                  [section("Rooms", [section(l, room_cards(s), open_view="compact", **OPEN) for _, l, s in PHONE_ROOMS_WH], collapsed=True, remember=False)], column=-1)]
                + [g("media", [section("Media", [ui(media)])], [section("Listen", [ui(media)])]),
                   g("lists", [section("Lists", [ui(todo)])])])
 wh_next["views"][0]["cards"][0]["packing"] = "fluid"

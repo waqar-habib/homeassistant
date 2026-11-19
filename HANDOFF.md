@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last updated: 2026-11-19 ~02:30 CST (Pi 5, overnight run). networkpi: unchanged, not touched.
+Last updated: 2026-11-19 ~00:50 CST (Pi 5, overnight run). networkpi: unchanged, not touched.
 
 ## Overnight: WH-next phone redesign, defects, audit (2026-11-19, Pi 5): merged `161f1f0`, loader v17 live
 1. **Done:** Home line no longer truncated ("All secure · Down 72° · Up 71°"); Prayer counts down to Fajr after Isha; MKH next empty scroll and cut-off wallpaper fixed (stale header offset); WH-next phone: dense hero (-24 to -33%), Prayer and Home open on launch, Porch in Home, Floors chips, Rooms drawer. Wide screens measured unchanged.

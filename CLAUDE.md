@@ -18,7 +18,7 @@ A second host, **networkpi** (Raspberry Pi 3B+), is the always-on support backen
 | Support host | networkpi, Raspberry Pi 3B+, 192.168.1.39 (wired). Planned: AdGuard Home, Samba backup share, uptime monitoring, Claude Code CLI |
 | Remote access | Planned: Cloudflare Tunnel for HA. Raspberry Pi Connect for networkpi (break-glass, iPhone-capable) |
 
-Areas — Downstairs: Living Room, Kitchen, Master, Nursery, Formal Living. Upstairs: Game Room, Upstairs Guest, Study.
+Areas — Downstairs: Living Room, Kitchen, Master, Nursery, Formal Living, Laundry, Outdoor. Upstairs: Game Room, Upstairs Guest, Study.
 
 ## Repo layout
 

@@ -1,6 +1,14 @@
 # HANDOFF
 
-Last updated: 2026-11-17 ~10:00 CST (Pi 5, fluid rule and Mac layout). Before that: ~09:20 CST (Adhan gate fix, library v1).
+Last updated: 2026-11-19 ~02:30 CST (Pi 5, overnight run). networkpi: unchanged, not touched.
+
+## Overnight: WH-next phone redesign, defects, audit (2026-11-19, Pi 5): merged `161f1f0`, loader v17 live
+1. **Done:** Home line no longer truncated ("All secure · Down 72° · Up 71°"); Prayer counts down to Fajr after Isha; MKH next empty scroll and cut-off wallpaper fixed (stale header offset); WH-next phone: dense hero (-24 to -33%), Prayer and Home open on launch, Porch in Home, Floors chips, Rooms drawer. Wide screens measured unchanged.
+2. **Door and garage on WH-next (I66):** not reproduced, hardened. Owner retest after Reset frontend cache.
+3. **Audit:** `docs/audit-2026-11-19-automations.md`, 12 findings, nothing changed. Needs owner answers (section 6); A5 and A9 need GREEN LIGHT. New issues I66, I67 (AiDot login and password logging), I68.
+4. **On hold for GREEN LIGHT:** CalDAV, Ring tab on large screens, UI dashboard editor.
+5. Note `docs/sessions/2026-11-19-overnight-dashboard-audit.md`. Backup `089e07f1`. Rollback: loader `?v=16` + `git revert -m 1 161f1f0`.
+
 
 
 

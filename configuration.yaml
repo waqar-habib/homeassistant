@@ -10,6 +10,7 @@ frontend:
   themes: !include_dir_merge_named themes
   extra_module_url:
     - /hacsfiles/material-you-utilities/material-you-utilities.min.js
+    - /hacsfiles/HaCasa/hacasa-nova.js   # loads the HaCasa logo icon for the sidebar
 
 panel_custom:
   - name: material-you-panel
@@ -17,6 +18,11 @@ panel_custom:
     sidebar_title: Material You Utilities
     sidebar_icon: mdi:material-design
     module_url: /hacsfiles/material-you-utilities/material-you-utilities.min.js
+  - name: hacasa-nova
+    url_path: hacasa
+    sidebar_title: HaCasa
+    sidebar_icon: hacasa:logo
+    module_url: /hacsfiles/HaCasa/hacasa-nova.js
 
 automation: !include automations.yaml
 script: !include scripts.yaml

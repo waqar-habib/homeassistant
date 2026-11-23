@@ -1,0 +1,29 @@
+# One-time: re-enable Adhan Maghrib and the two evening light automations at 00:00 CST on 2026-11-24.
+# Owner GREEN LIGHT 2026-11-23: all three were disabled from 17:13 CST on 2026-11-23 until
+# midnight, to be re-enabled at 00:00 CST on 2026-11-24.
+# The date condition keeps this from running on any other day, and the automation
+# turns itself off after it runs, so it never fires again.
+
+automation:
+  - id: maghrib_evening_resume_once_2026_11_24
+    alias: "One-time: re-enable Maghrib and evening lights on 2026-11-24"
+    description: "At 00:00 on 2026-11-24, turn Adhan: Maghrib and the two evening light automations back on, then turn this automation off."
+    mode: single
+    triggers:
+      - trigger: time
+        at: "00:00:00"
+    conditions:
+      - condition: template
+        value_template: "{{ now().strftime('%Y-%m-%d') == '2026-11-24' }}"
+    actions:
+      - action: automation.turn_on
+        target:
+          entity_id:
+            - automation.adhan_maghrib
+            - automation.evening_all_lights_on_at_sunset_except_nursery
+            - automation.evening_away_lights_on_for_2_hours_when_no_one_is_home
+      - action: automation.turn_off
+        target:
+          entity_id: automation.one_time_re_enable_maghrib_and_evening_lights_on_2026_11_24
+        data:
+          stop_actions: false

@@ -1,6 +1,13 @@
 # HANDOFF
 
-Last updated: 2026-11-25 16:10 CST (Pi 5). networkpi: unchanged, not touched.
+Last updated: 2026-11-25 16:05 CST (Pi 5). networkpi: unchanged, not touched.
+
+## Plug lamps and 804 live (2026-11-25 late afternoon, Pi 5): merged `8e110d6`, sunset check pending
+1. **Done:** upstairs plug lamps join the sunset automation (I53 closed); 804 arrival now says "804 is already unlocked." or "804 is now unlocked." and `arrival_804_live` is ON (owner GREEN LIGHT); HA Cloud shows no errors. Backup `4ad3c5a6`. Note `docs/sessions/2026-11-25-lamps-804-live.md`.
+2. **Location check:** Waqar `home` (fresh). Maham still `home`, no report since 15:14; her phone does not answer pings (I74).
+3. **Waiting on owner:** GREEN LIGHT wording for Adhan volumes (Dhuhr, Asr, Maghrib, Isha 0.55; Fajr 0.45); which entities to exclude from the HomeKit Bridge (it bridges whole `switch` and `light` domains); Maham's phone.
+4. **Claude next:** after sunset 17:30 CST read the outdoor, evening (plugs) traces; 804 trace at the next real arrival; sunrise check 11-26.
+5. Rollback: `git revert -m 1 8e110d6` and reload automations; turn `arrival_804_live` OFF.
 
 ## Phone sensors and cloud logout (2026-11-25 afternoon, Pi 5, D83): Waqar's phone fixed, car test and Maham pending
 1. **Done:** Waqar's iPhone had been sending everything to the dead Nabu Casa cloudhook (I73). Owner logged HA Cloud out (backup `pre-cloud-logout` 3d31a84b), synced the app, set home Wi-Fi. Activity now reports (`Stationary`), plus 9 sensors enabled in HA. HA restarted 15:14 CST; 15 automations on; both live switches OFF.

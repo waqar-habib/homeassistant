@@ -9,7 +9,7 @@
 #   1. Armed: the person was outside zone.sasural for at least 10 minutes (anti-jitter).
 #      Armed state is cleared on every arrival run.
 #   2. GPS accuracy better than 50 m, person state not unknown or unavailable.
-#   3. The lock is reachable and currently locked (nothing to do if already unlocked).
+#   3. The lock is reachable. Already unlocked: notice "804 is already unlocked." and no action. Locked: unlock, then notice "804 is now unlocked."
 #   4. At least 30 minutes since the last run (any person).
 # Never relocks. No lock codes, coordinates or addresses are stored here.
 # Radius note: zone.sasural is 200 m (D65). That is large for a door unlock; before going
@@ -125,10 +125,8 @@ automation:
             {%- if states(person_id) in ['unknown', 'unavailable'] -%}
               {%- set p = p + ['person state ' ~ states(person_id)] -%}
             {%- endif -%}
-            {%- if states(door) in ['unknown', 'unavailable'] -%}
+            {%- if states(door) not in ['locked', 'unlocked'] -%}
               {%- set p = p + ['lock is ' ~ states(door)] -%}
-            {%- elif states(door) != 'locked' -%}
-              {%- set p = p + ['lock is already ' ~ states(door)] -%}
             {%- endif -%}
             {%- if now().timestamp() - (state_attr('input_datetime.arrival_804_last_action', 'timestamp') | float(0)) < 1800 -%}
               {%- set p = p + ['ran less than 30 minutes ago'] -%}
@@ -145,6 +143,15 @@ automation:
                 data:
                   datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
               - choose:
+                  # Left unlocked by someone else: tell, do nothing.
+                  - conditions:
+                      - condition: state
+                        entity_id: lock.804_front_door
+                        state: unlocked
+                    sequence:
+                      - action: script.arrival_804_notify
+                        data:
+                          message: "804 is already unlocked."
                   - conditions:
                       - condition: state
                         entity_id: input_boolean.arrival_804_live
@@ -153,16 +160,19 @@ automation:
                       - action: lock.unlock
                         target:
                           entity_id: lock.804_front_door
-                      - action: script.arrival_804_notify
-                        data:
-                          message: "{{ who }} is {{ dist_m }} m from the 804 zone edge. Unlocking the 804 door."
                       - wait_template: "{{ is_state('lock.804_front_door', 'unlocked') }}"
                         timeout: "00:01:00"
                         continue_on_timeout: true
-                      - if:
-                          - condition: template
-                            value_template: "{{ not is_state('lock.804_front_door', 'unlocked') }}"
-                        then:
+                      - choose:
+                          - conditions:
+                              - condition: state
+                                entity_id: lock.804_front_door
+                                state: unlocked
+                            sequence:
+                              - action: script.arrival_804_notify
+                                data:
+                                  message: "804 is now unlocked."
+                        default:
                           - action: script.arrival_804_notify
                             data:
                               message: "The 804 door did not unlock within 1 minute (state: {{ states('lock.804_front_door') }}). Check the door."

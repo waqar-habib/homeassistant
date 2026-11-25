@@ -1,0 +1,31 @@
+# Switch front-ends for the two skip helpers (owner GREEN LIGHT 2026-11-25).
+# Why switches: the HomeKit Bridge includes the whole `switch` domain, so these show up in
+# Apple Home (and Siri) with no bridge change. Bridging `input_boolean` or `script` as a whole
+# would also expose arrival_804_live and adhan_enabled, so that is deliberately not done.
+# The dashboard buttons use the same two switches.
+#   switch.skip_evening_lights_tonight  <-> input_boolean.skip_evening_lights (clears at 03:00)
+#   switch.adhan_pause                  <-> timer.adhan_pause (ON starts script.adhan_pause for 2 h)
+template:
+  - switch:
+      - name: "Skip evening lights tonight"
+        unique_id: skip_evening_lights_tonight_switch
+        icon: mdi:lightbulb-off-outline
+        state: "{{ is_state('input_boolean.skip_evening_lights', 'on') }}"
+        turn_on:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.skip_evening_lights
+        turn_off:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.skip_evening_lights
+      - name: "Adhan pause"
+        unique_id: adhan_pause_switch
+        icon: mdi:bell-sleep-outline
+        state: "{{ is_state('timer.adhan_pause', 'active') }}"
+        turn_on:
+          - action: script.adhan_pause
+        turn_off:
+          - action: timer.cancel
+            target:
+              entity_id: timer.adhan_pause

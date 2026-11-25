@@ -26,3 +26,10 @@ automation:
                | reject('in', area_entities('Nursery'))
                | reject('eq', 'light.smart_wi_fi_light_switch')
                | list }}
+      # Upstairs smart-plug lamps (I53, owner GREEN LIGHT 2026-11-25). Plugs are in the
+      # switch domain, so they need their own action.
+      - action: switch.turn_on
+        target:
+          entity_id:
+            - switch.upstairs_guest_guest_nightstand
+            - switch.study_study_floor_lamp

@@ -2,7 +2,7 @@
 
 Last updated: 2026-11-25 16:20 CST (Pi 5). networkpi: unchanged, not touched.
 
-## Skip switches (2026-11-25, Pi 5): `input_boolean.skip_evening_lights` (clears at 03:00) and `script.adhan_pause` / `timer.adhan_pause` (default 2 h) are live; no dashboard button yet. Note `docs/sessions/2026-11-25-lamps-804-live.md` section 8.
+## Skip switches (2026-11-25, Pi 5): `input_boolean.skip_evening_lights` (clears at 03:00) and `script.adhan_pause` / `timer.adhan_pause` (default 2 h) are live; dashboard buttons on both next dashboards and Apple Home switches (`switch.skip_evening_lights_tonight`, `switch.adhan_pause`) added, section 9 of the same note; owner checks Apple Home and the dashboards. Maham's phone still silent (checked 16:12). Note `docs/sessions/2026-11-25-lamps-804-live.md` section 8.
 
 ## Plug lamps and 804 live (2026-11-25 late afternoon, Pi 5): merged `8e110d6`, sunset check pending
 1. **Done:** upstairs plug lamps join the sunset automation (I53 closed); 804 arrival now says "804 is already unlocked." or "804 is now unlocked." and `arrival_804_live` is ON (owner GREEN LIGHT); HA Cloud shows no errors. Backup `4ad3c5a6`. Note `docs/sessions/2026-11-25-lamps-804-live.md`.

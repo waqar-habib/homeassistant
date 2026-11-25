@@ -34,28 +34,28 @@ input_datetime:
     initial: "2000-01-01 00:00:00"
 
 script:
+  # Notices (owner 2026-11-25): plain English, both phones, through script.notify_household.
   arrival_garage_notify:
     alias: "Arrival garage: notify both phones"
     mode: queued
     fields:
       message:
         description: "Notification text"
-        example: "Dry run: would open the garage"
+        example: "Garage Door is opening now."
+      title:
+        description: "Notification title"
+        example: "Garage: Waqar arriving"
+      level:
+        description: "quiet, normal or urgent"
+        example: normal
     sequence:
-      - action: notify.send_message
-        continue_on_error: true
-        target:
-          entity_id: notify.waqars_iphone
+      - action: script.notify_household
         data:
-          title: "Arrival garage"
+          title: "{{ title | default('Garage') }}"
           message: "{{ message }}"
-      - action: notify.send_message
-        continue_on_error: true
-        target:
-          entity_id: notify.mahams_iphone
-        data:
-          title: "Arrival garage"
-          message: "{{ message }}"
+          to: both
+          level: "{{ level | default('normal') }}"
+          group: garage
 
 automation:
   - id: arrival_garage_arm
@@ -119,27 +119,27 @@ automation:
           problems: >-
             {%- set p = [] -%}
             {%- if (states(activity) | lower) != 'automotive' -%}
-              {%- set p = p + ['not driving (activity: ' ~ states(activity) ~ ')'] -%}
+              {%- set p = p + ['not driving'] -%}
             {%- endif -%}
             {%- if (state_attr(person_id, 'gps_accuracy') | float(9999)) >= 50 -%}
-              {%- set p = p + ['GPS accuracy worse than 50 m'] -%}
+              {%- set p = p + ['the phone location is not precise enough'] -%}
             {%- endif -%}
             {%- if states(person_id) in ['unknown', 'unavailable'] -%}
-              {%- set p = p + ['person state ' ~ states(person_id)] -%}
+              {%- set p = p + ['the phone location is unknown'] -%}
             {%- endif -%}
             {%- if states(garage) != 'closed' -%}
-              {%- set p = p + ['garage is ' ~ states(garage)] -%}
+              {%- set p = p + ['it is already ' ~ states(garage)] -%}
             {%- endif -%}
             {%- if not is_state('binary_sensor.general_garage_door_active_fault', 'off') -%}
-              {%- set p = p + ['garage fault sensor is ' ~ states('binary_sensor.general_garage_door_active_fault')] -%}
+              {%- set p = p + ['the opener reports a fault'] -%}
             {%- endif -%}
             {%- if not is_state('binary_sensor.general_garage_door_vacation_mode', 'off') -%}
-              {%- set p = p + ['garage vacation mode is ' ~ states('binary_sensor.general_garage_door_vacation_mode')] -%}
+              {%- set p = p + ['vacation mode is on'] -%}
             {%- endif -%}
             {%- if now().timestamp() - (state_attr('input_datetime.arrival_garage_last_action', 'timestamp') | float(0)) < 1800 -%}
-              {%- set p = p + ['ran less than 30 minutes ago'] -%}
+              {%- set p = p + ['it already opened in the last 30 minutes'] -%}
             {%- endif -%}
-            {{ p | join('; ') }}
+            {{ p | join(', ') }}
       - choose:
           - conditions:
               - condition: template
@@ -157,11 +157,9 @@ automation:
                         state: "on"
                     sequence:
                       - action: cover.open_cover
+                        continue_on_error: true
                         target:
                           entity_id: cover.general_garage_door_garage_door
-                      - action: script.arrival_garage_notify
-                        data:
-                          message: "{{ who }} is {{ dist_m }} m from home and driving. Opening the garage door."
                       - wait_template: "{{ not is_state('cover.general_garage_door_garage_door', 'closed') }}"
                         timeout: "00:02:00"
                         continue_on_timeout: true
@@ -172,8 +170,15 @@ automation:
                         then:
                           - action: script.arrival_garage_notify
                             data:
-                              message: "The garage did not start opening within 2 minutes of the command. Check the door."
+                              title: "Garage: {{ who }} arriving"
+                              message: "Garage Door failed to open, check logs."
+                              level: urgent
                           - stop: "Garage did not move"
+                            error: true
+                      - action: script.arrival_garage_notify
+                        data:
+                          title: "Garage: {{ who }} arriving"
+                          message: "Garage Door is opening now."
                       - wait_template: "{{ is_state('cover.general_garage_door_garage_door', 'closed') }}"
                         timeout: "00:15:00"
                         continue_on_timeout: true
@@ -183,12 +188,20 @@ automation:
                         then:
                           - action: script.arrival_garage_notify
                             data:
-                              message: "The garage door is still {{ states('cover.general_garage_door_garage_door') }} 15 minutes after opening for {{ who }}. It does not close automatically."
+                              message: "Garage Door is still open, 15 minutes after it opened for {{ who }}. It does not close by itself."
                 default:
                   - action: script.arrival_garage_notify
                     data:
-                      message: "DRY RUN: {{ who }} is {{ dist_m }} m from home and driving. Would open the garage door. Nothing was opened."
+                      title: "Garage: {{ who }} arriving"
+                      message: "Test: Garage Door would open now. Nothing was opened."
         default:
+          # Walking or otherwise not driving: silent, the trace keeps the reason (owner 2026-11-25).
+          - if:
+              - condition: template
+                value_template: "{{ 'not driving' in problems }}"
+            then:
+              - stop: "Not driving: no notice"
           - action: script.arrival_garage_notify
             data:
-              message: "Arrival garage: {{ who }} entered the zone but no action was taken: {{ problems }}."
+              title: "Garage: {{ who }} arriving"
+              message: "Garage Door did not open: {{ problems }}."

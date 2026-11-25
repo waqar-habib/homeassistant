@@ -27,6 +27,13 @@ automation:
             - light.game_room
             - light.dresser
             - light.side_table
+      - action: script.notify_household
+        data:
+          title: "Lights"
+          message: "Nobody is home. 4 lamps are on until {{ (now() + timedelta(hours=2)).strftime('%-I:%M %p') }}."
+          to: waqar
+          level: quiet
+          group: lights
       - delay:
           hours: 2
           minutes: 0
@@ -38,3 +45,10 @@ automation:
             - light.game_room
             - light.dresser
             - light.side_table
+      - action: script.notify_household
+        data:
+          title: "Lights"
+          message: "Away lamps are off."
+          to: waqar
+          level: quiet
+          group: lights

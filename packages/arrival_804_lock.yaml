@@ -36,28 +36,25 @@ input_datetime:
     initial: "2000-01-01 00:00:00"
 
 script:
+  # Notices (owner 2026-11-25): plain English, both phones, through script.notify_household.
   arrival_804_notify:
     alias: "Arrival 804: notify both phones"
     mode: queued
     fields:
       message:
         description: "Notification text"
-        example: "Dry run: would unlock the 804 door"
+        example: "804 is now unlocked."
+      level:
+        description: "quiet, normal or urgent"
+        example: normal
     sequence:
-      - action: notify.send_message
-        continue_on_error: true
-        target:
-          entity_id: notify.waqars_iphone
+      - action: script.notify_household
         data:
-          title: "Arrival 804"
+          title: "804"
           message: "{{ message }}"
-      - action: notify.send_message
-        continue_on_error: true
-        target:
-          entity_id: notify.mahams_iphone
-        data:
-          title: "Arrival 804"
-          message: "{{ message }}"
+          to: both
+          level: "{{ level | default('normal') }}"
+          group: "804"
 
 automation:
   - id: arrival_804_arm
@@ -120,18 +117,18 @@ automation:
           problems: >-
             {%- set p = [] -%}
             {%- if (state_attr(person_id, 'gps_accuracy') | float(9999)) >= 50 -%}
-              {%- set p = p + ['GPS accuracy worse than 50 m'] -%}
+              {%- set p = p + ['the phone location is not precise enough'] -%}
             {%- endif -%}
             {%- if states(person_id) in ['unknown', 'unavailable'] -%}
-              {%- set p = p + ['person state ' ~ states(person_id)] -%}
+              {%- set p = p + ['the phone location is unknown'] -%}
             {%- endif -%}
             {%- if states(door) not in ['locked', 'unlocked'] -%}
-              {%- set p = p + ['lock is ' ~ states(door)] -%}
+              {%- set p = p + ['the lock is ' ~ states(door)] -%}
             {%- endif -%}
             {%- if now().timestamp() - (state_attr('input_datetime.arrival_804_last_action', 'timestamp') | float(0)) < 1800 -%}
-              {%- set p = p + ['ran less than 30 minutes ago'] -%}
+              {%- set p = p + ['it already ran in the last 30 minutes'] -%}
             {%- endif -%}
-            {{ p | join('; ') }}
+            {{ p | join(', ') }}
       - choose:
           - conditions:
               - condition: template
@@ -158,6 +155,7 @@ automation:
                         state: "on"
                     sequence:
                       - action: lock.unlock
+                        continue_on_error: true
                         target:
                           entity_id: lock.804_front_door
                       - wait_template: "{{ is_state('lock.804_front_door', 'unlocked') }}"
@@ -175,15 +173,16 @@ automation:
                         default:
                           - action: script.arrival_804_notify
                             data:
-                              message: "The 804 door did not unlock within 1 minute (state: {{ states('lock.804_front_door') }}). Check the door."
+                              message: "804 failed to unlock, check the door."
+                              level: urgent
                 default:
                   - action: script.arrival_804_notify
                     data:
-                      message: "DRY RUN: {{ who }} entered the 804 zone. Would unlock the 804 door. Nothing was unlocked."
+                      message: "Test: 804 would unlock now for {{ who }}. Nothing was unlocked."
         default:
           - action: script.arrival_804_notify
             data:
-              message: "Arrival 804: {{ who }} entered the zone but no action was taken: {{ problems }}."
+              message: "804 did not unlock for {{ who }}: {{ problems }}."
 
   - id: arrival_804_low_battery
     alias: "804 lock: low battery notice"
@@ -198,4 +197,4 @@ automation:
     actions:
       - action: script.arrival_804_notify
         data:
-          message: "The 804 front door lock battery is at {{ states('sensor.804_front_door_battery') }}%. Replace the batteries soon."
+          message: "The 804 lock battery is at {{ states('sensor.804_front_door_battery') }}%. Replace the batteries soon."

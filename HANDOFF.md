@@ -2,6 +2,8 @@
 
 Last updated: 2026-11-25 16:20 CST (Pi 5). networkpi: unchanged, not touched.
 
+## Skip switches (2026-11-25, Pi 5): `input_boolean.skip_evening_lights` (clears at 03:00) and `script.adhan_pause` / `timer.adhan_pause` (default 2 h) are live; no dashboard button yet. Note `docs/sessions/2026-11-25-lamps-804-live.md` section 8.
+
 ## Plug lamps and 804 live (2026-11-25 late afternoon, Pi 5): merged `8e110d6`, sunset check pending
 1. **Done:** upstairs plug lamps join the sunset automation (I53 closed); 804 arrival now says "804 is already unlocked." or "804 is now unlocked." and `arrival_804_live` is ON (owner GREEN LIGHT); HA Cloud shows no errors. Backup `4ad3c5a6`. Note `docs/sessions/2026-11-25-lamps-804-live.md`.
 2. **Location check:** Waqar `home` (fresh). Maham still `home`, no report since 15:14; her phone does not answer pings (I74).

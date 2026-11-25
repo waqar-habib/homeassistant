@@ -4,9 +4,9 @@ Last updated: 2026-11-25 17:3x CST (Pi 5). networkpi: unchanged, not touched.
 
 ## End of session 2026-11-25 evening (Pi 5): notifications and Noor's bedtime live (D85), resume point
 1. **State:** `main` = merge `88d0b31`. `script.notify_household` sends plain-English notices (quiet/normal/urgent); lights and Adhan to Waqar only, garage and 804 to both. `script.nursery_bedtime` + `switch.noor_s_bedtime` (Apple Home, bridge reloaded) + "Noor's Bedtime" buttons on habib-mkh-next and habib-wh-next. Backup `pre-notifications` (c7e292b4). Note `docs/sessions/2026-11-25-notifications-bedtime.md`.
-2. **Verified at sunset 17:30:** porch/driveway, evening lights and Maghrib notices sent with no errors.
+2. **Verified at sunset 17:30, owner confirmed on the iPhone:** porch/driveway, evening lights and Maghrib notices arrive silent and grouped. Noor's Bedtime works via Hey Siri.
 3. **Garage live switch still OFF** although GREEN LIGHT given: Maham's delivery through the new script unconfirmed, car test (I51) pending, her Activity sensor unavailable (I74). Owner flips `input_boolean.arrival_garage_live` or says "go".
-4. **Owner next:** confirm the 3 quiet notices on the iPhone (Notification Center, no sound); assign "Noor's Bedtime" a room in Apple Home and test Siri; answer the dashboard direction: (a) convert the component library to Sections-native drag-and-drop, (b) pilot Drag & Drop Card on a throwaway dashboard, (c) accept looser packing on wide screens.
+4. **Owner next:** garage drive test (I51) and Maham's phone (I74) when she is back, then the garage live switch; answer the Ultra Card plan questions 1 to 6 and GREEN LIGHT phase 1 (`docs/ultra-card-plan.md`, owner chose Ultra Card over the earlier options).
 5. **Claude next:** sunrise 11-26 outdoor-off notice and Fajr notice traces; earlier items below still open (804 real arrival, location refresh, Dhuhr 0.55).
 6. Manual notify test from ha-mcp was blocked by the permission classifier; not worked around.
 

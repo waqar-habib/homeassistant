@@ -42,3 +42,9 @@ Recommendation: make the `ui-*` library native Sections components (grid sizing,
 
 ## 7. Resume point
 Owner confirms the three quiet notices on the iPhone and their look; Maham's phone check; garage live switch; Siri test of "Noor's Bedtime"; answers on the dashboard direction. Claude next: sunrise 2026-11-26 outdoor-off notice; Fajr notice.
+
+## 8. Owner confirmation (2026-11-25 ~17:52 CST)
+1. Notices work as expected: lock-screen screenshot shows "Evening lights are on.", "Porch and driveway lights are on." (stacked under Lights) and "Maghrib adhan played in the Living Room and Bedroom." (Adhan), silent, in Notification Center. Screenshot not stored (public repo, family photo).
+2. "Noor's Bedtime" works through "Hey Siri".
+3. Still open: garage drive test (I51) and Maham's phone (I74, she is away). Garage live switch stays OFF until then.
+

@@ -1,0 +1,28 @@
+# Location refresh: ask both iPhones for a fresh location every 30 minutes.
+# Owner approved 2026-11-25 (Claude recommendation: 30 min; 60 min would let a position be
+# up to an hour old for the arrival arming rule, shorter than 15 min risks Apple throttling
+# the silent pushes). Zone enter and exit events still come from iOS itself; this only
+# bounds how stale a position can get.
+# The legacy notify action with message `request_location_update` is the Companion app
+# command; it shows no banner on the phone.
+
+automation:
+  - id: location_refresh_30_min
+    alias: "Location: ask both iPhones for a fresh location every 30 minutes"
+    description: "Sends request_location_update to Waqar's and Maham's iPhones every 30 minutes."
+    mode: single
+    max_exceeded: silent
+    trace:
+      stored_traces: 20
+    triggers:
+      - trigger: time_pattern
+        minutes: "/30"
+    actions:
+      - action: notify.mobile_app_waqars_iphone
+        continue_on_error: true
+        data:
+          message: request_location_update
+      - action: notify.mobile_app_mahams_iphone
+        continue_on_error: true
+        data:
+          message: request_location_update

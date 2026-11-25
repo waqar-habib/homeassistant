@@ -2,7 +2,26 @@
 # Requested by owner 2026-11-14. The Nursery exclusion uses the HA area, so new
 # lights in other areas are included automatically.
 
+# Skip switch (owner request 2026-11-25): turn input_boolean.skip_evening_lights ON to skip
+# tonight's sunset run (for example when sleeping at sunset). It clears itself at 03:00.
+input_boolean:
+  skip_evening_lights:
+    name: Skip evening lights tonight
+    icon: mdi:lightbulb-off-outline
+
 automation:
+  - id: skip_evening_lights_reset
+    alias: "Evening: clear the skip switch at 03:00"
+    description: "Turns the skip switch off every night so the next sunset runs normally."
+    mode: single
+    triggers:
+      - trigger: time
+        at: "03:00:00"
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.skip_evening_lights
+
   - id: evening_all_lights_on_at_sunset
     alias: "Evening: all lights on at sunset except Nursery"
     description: "At sunset, if someone is home, turn on every light outside the Nursery area (the Porch is handled by the outdoor package)."
@@ -17,6 +36,9 @@ automation:
       - condition: numeric_state
         entity_id: zone.home
         above: 0
+      - condition: state
+        entity_id: input_boolean.skip_evening_lights
+        state: "off"
     actions:
       - action: light.turn_on
         target:

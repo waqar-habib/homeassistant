@@ -20,6 +20,16 @@ input_text:
     icon: mdi:alert-circle-outline
     max: 255
 
+# Pause (owner request 2026-11-25): start timer.adhan_pause (script.adhan_pause) to skip every
+# prayer that falls inside the window, for example while sleeping. Ends by itself; the timer
+# survives restarts. The prayer automations do nothing while the timer is active.
+timer:
+  adhan_pause:
+    name: Adhan pause
+    icon: mdi:bell-sleep-outline
+    duration: "02:00:00"
+    restore: true
+
 input_number:
   adhan_saved_volume:
     name: Adhan saved volume
@@ -31,6 +41,28 @@ input_number:
     initial: 0
 
 script:
+  adhan_pause:
+    alias: Adhan pause
+    icon: mdi:bell-sleep-outline
+    mode: single
+    fields:
+      hours:
+        name: Hours
+        description: "How long to pause (default 2)."
+        required: false
+        default: 2
+        selector:
+          number:
+            min: 1
+            max: 12
+            step: 0.5
+    sequence:
+      - action: timer.start
+        target:
+          entity_id: timer.adhan_pause
+        data:
+          duration: "{{ ((hours | default(2) | float(2)) * 3600) | int }}"
+
   adhan_play:
     alias: Adhan play
     mode: single
@@ -288,6 +320,9 @@ automation:
       - condition: state
         entity_id: input_boolean.adhan_enabled
         state: "on"
+      - condition: state
+        entity_id: timer.adhan_pause
+        state: idle
       - condition: template
         value_template: "{{ states('sensor.living_room_adhan_fajr_prayer') not in ['unknown', 'unavailable'] }}"
     actions:
@@ -308,6 +343,9 @@ automation:
       - condition: state
         entity_id: input_boolean.adhan_enabled
         state: "on"
+      - condition: state
+        entity_id: timer.adhan_pause
+        state: idle
       - condition: template
         value_template: "{{ states('sensor.living_room_adhan_dhuhr_prayer') not in ['unknown', 'unavailable'] }}"
     actions:
@@ -329,6 +367,9 @@ automation:
       - condition: state
         entity_id: input_boolean.adhan_enabled
         state: "on"
+      - condition: state
+        entity_id: timer.adhan_pause
+        state: idle
       - condition: template
         value_template: "{{ states('sensor.living_room_adhan_asr_prayer') not in ['unknown', 'unavailable'] }}"
     actions:
@@ -350,6 +391,9 @@ automation:
       - condition: state
         entity_id: input_boolean.adhan_enabled
         state: "on"
+      - condition: state
+        entity_id: timer.adhan_pause
+        state: idle
       - condition: template
         value_template: "{{ states('sensor.living_room_adhan_maghrib_prayer') not in ['unknown', 'unavailable'] }}"
     actions:
@@ -371,6 +415,9 @@ automation:
       - condition: state
         entity_id: input_boolean.adhan_enabled
         state: "on"
+      - condition: state
+        entity_id: timer.adhan_pause
+        state: idle
       - condition: template
         value_template: "{{ states('sensor.living_room_adhan_isha_prayer') not in ['unknown', 'unavailable'] }}"
     actions:

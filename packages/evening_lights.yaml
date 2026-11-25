@@ -5,12 +5,18 @@
 automation:
   - id: evening_all_lights_on_at_sunset
     alias: "Evening: all lights on at sunset except Nursery"
-    description: "Turn on every light outside the Nursery area at sunset."
+    description: "At sunset, if someone is home, turn on every light outside the Nursery area (the Porch is handled by the outdoor package)."
     mode: single
+    trace:
+      stored_traces: 20
     triggers:
       - trigger: sun
         event: sunset
         offset: "0:00:00"
+    conditions:
+      - condition: numeric_state
+        entity_id: zone.home
+        above: 0
     actions:
       - action: light.turn_on
         target:
@@ -18,4 +24,5 @@ automation:
             {{ states.light
                | map(attribute='entity_id')
                | reject('in', area_entities('Nursery'))
+               | reject('eq', 'light.smart_wi_fi_light_switch')
                | list }}

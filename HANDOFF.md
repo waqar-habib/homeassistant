@@ -1,6 +1,12 @@
 # HANDOFF
 
-Last updated: 2026-11-25 16:20 CST (Pi 5). networkpi: unchanged, not touched.
+Last updated: 2026-11-25 17:00 CST (Pi 5). networkpi: unchanged, not touched.
+
+## End of session 2026-11-25 (Pi 5): resume point for the next session (new major features)
+1. **State:** `main` = `origin/main`. 16 automations on. `arrival_804_live` ON (owner GREEN LIGHT), `arrival_garage_live` OFF. Adhan volumes Fajr 0.45, others 0.55. Plug lamps in the sunset automation. Switches `switch.skip_evening_lights_tonight` ("Skip Evening Lights") and `switch.adhan_pause` ("Pause Prayer") on both dashboards and in Apple Home. HomeKit Bridge excludes the Matter Porch light and the 804 lock. HA Cloud logged out, no errors. Backups `4ad3c5a6`, `9e5b99f2`, `365507a7`. Details `docs/sessions/2026-11-25-lamps-804-live.md`.
+2. **Not yet observed (check first):** sunset 17:30 CST run (outdoor lights, evening lights incl. plugs; read traces), sunrise 11-26 outdoor off, Dhuhr 11-26 at 0.55 with volume restored, location refresh over several cycles, a real 804 arrival, dashboard buttons rendered.
+3. **Owner next:** in Apple Home delete the Siri-made automation and assign rooms to the two new accessories; Maham's phone (I74: Location Always and Precise, Background App Refresh, Sync); car test (I51); replace 804 lock batteries (27%); decide on the two Matter plugs bridged as duplicates.
+4. **Open:** I69 cloud repair (cannot be fixed), I10 Living Room TV (off, backlog), A5, A6, A7, A10; networkpi items unchanged.
 
 ## Skip switches (2026-11-25, Pi 5): `input_boolean.skip_evening_lights` (clears at 03:00) and `script.adhan_pause` / `timer.adhan_pause` (default 2 h) are live; dashboard buttons on both next dashboards and Apple Home switches (`switch.skip_evening_lights_tonight`, `switch.adhan_pause`) added, section 9 of the same note; owner checks Apple Home and the dashboards. Maham's phone still silent (checked 16:12). Note `docs/sessions/2026-11-25-lamps-804-live.md` section 8.
 

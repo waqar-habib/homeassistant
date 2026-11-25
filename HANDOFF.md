@@ -1,6 +1,14 @@
 # HANDOFF
 
-Last updated: 2026-11-25 17:00 CST (Pi 5). networkpi: unchanged, not touched.
+Last updated: 2026-11-25 17:3x CST (Pi 5). networkpi: unchanged, not touched.
+
+## End of session 2026-11-25 evening (Pi 5): notifications and Noor's bedtime live (D85), resume point
+1. **State:** `main` = merge `88d0b31`. `script.notify_household` sends plain-English notices (quiet/normal/urgent); lights and Adhan to Waqar only, garage and 804 to both. `script.nursery_bedtime` + `switch.noor_s_bedtime` (Apple Home, bridge reloaded) + "Noor's Bedtime" buttons on habib-mkh-next and habib-wh-next. Backup `pre-notifications` (c7e292b4). Note `docs/sessions/2026-11-25-notifications-bedtime.md`.
+2. **Verified at sunset 17:30:** porch/driveway, evening lights and Maghrib notices sent with no errors.
+3. **Garage live switch still OFF** although GREEN LIGHT given: Maham's delivery through the new script unconfirmed, car test (I51) pending, her Activity sensor unavailable (I74). Owner flips `input_boolean.arrival_garage_live` or says "go".
+4. **Owner next:** confirm the 3 quiet notices on the iPhone (Notification Center, no sound); assign "Noor's Bedtime" a room in Apple Home and test Siri; answer the dashboard direction: (a) convert the component library to Sections-native drag-and-drop, (b) pilot Drag & Drop Card on a throwaway dashboard, (c) accept looser packing on wide screens.
+5. **Claude next:** sunrise 11-26 outdoor-off notice and Fajr notice traces; earlier items below still open (804 real arrival, location refresh, Dhuhr 0.55).
+6. Manual notify test from ha-mcp was blocked by the permission classifier; not worked around.
 
 ## End of session 2026-11-25 (Pi 5): resume point for the next session (new major features)
 1. **State:** `main` = `origin/main`. 16 automations on. `arrival_804_live` ON (owner GREEN LIGHT), `arrival_garage_live` OFF. Adhan volumes Fajr 0.45, others 0.55. Plug lamps in the sunset automation. Switches `switch.skip_evening_lights_tonight` ("Skip Evening Lights") and `switch.adhan_pause` ("Pause Prayer") on both dashboards and in Apple Home. HomeKit Bridge excludes the Matter Porch light and the 804 lock. HA Cloud logged out, no errors. Backups `4ad3c5a6`, `9e5b99f2`, `365507a7`. Details `docs/sessions/2026-11-25-lamps-804-live.md`.
@@ -201,7 +209,7 @@ Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB 
 - **Router:** DHCP reservations done. Two DNS fields available (I1).
 
 ## Automations
-15 automations, all on (2026-11-25): 6 Adhan, 2 arrival garage (dry run), 2 arrival 804 (dry run), 804 low battery, evening all-lights, evening away, outdoor lights, location refresh. Sources in `packages/`.
+16 automations (2026-11-25 evening): notices via `script.notify_household` (D85); 6 Adhan, 2 arrival garage (dry run), 2 arrival 804 (dry run), 804 low battery, evening all-lights, evening away, outdoor lights, location refresh. Sources in `packages/`.
 
 ## Rules in force
 Autonomy tiers 0-3 and the session protocol in `CLAUDE.md`. Anything Tier 3 (restarts, tunnel, DNS, firewall, credentials, deletions, front door lock, garage door, enabling automations) waits for the owner's "GREEN LIGHT".

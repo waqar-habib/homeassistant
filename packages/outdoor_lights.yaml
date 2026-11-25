@@ -56,3 +56,32 @@ automation:
               entity_id:
                 - switch.outdoor_porch
                 - switch.outdoor_driveway
+      # Notices (owner 2026-11-25): quiet at sunset and sunrise, urgent if a switch did not
+      # follow. A restart resync is silent unless it fails.
+      - variables:
+          want: "{{ 'on' if want_on | trim | lower == 'true' else 'off' }}"
+      - wait_template: >-
+          {{ is_state('switch.outdoor_porch', want) and is_state('switch.outdoor_driveway', want) }}
+        timeout: "00:00:30"
+      - choose:
+          - conditions: "{{ not wait.completed }}"
+            sequence:
+              - action: script.notify_household
+                data:
+                  title: "Lights"
+                  message: >-
+                    {{ ['switch.outdoor_porch', 'switch.outdoor_driveway']
+                       | reject('is_state', want) | map('state_attr', 'friendly_name') | join(' and ') }}
+                    did not turn {{ want }}. Check the switch.
+                  to: waqar
+                  level: urgent
+                  group: lights
+          - conditions: "{{ trigger.id in ['sunset', 'sunrise'] }}"
+            sequence:
+              - action: script.notify_household
+                data:
+                  title: "Lights"
+                  message: "Porch and driveway lights are {{ want }}."
+                  to: waqar
+                  level: quiet
+                  group: lights

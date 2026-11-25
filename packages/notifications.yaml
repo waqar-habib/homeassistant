@@ -1,0 +1,92 @@
+# Household notifications (owner GREEN LIGHT 2026-11-25, plan v0.2 in docs/sessions/2026-11-25-notifications-bedtime.md).
+# One script sends every automation notice, so wording and recipients live in one place.
+#
+# Recipients (owner): garage and 804 notices go to both phones; lights, Adhan and all
+# other failures go to Waqar's phone only.
+# Levels (iOS interruption level):
+#   quiet  = passive: no sound, no banner wake, lands in Notification Center
+#   normal = active: default sound
+#   urgent = time-sensitive: breaks through Focus and Sleep (failures only)
+# Uses the per-device mobile_app actions, because notify.send_message cannot carry
+# iOS options (interruption level, grouping).
+
+script:
+  notify_household:
+    alias: "Notify household"
+    description: "Sends a plain-English notice to one or both iPhones with a quiet, normal or urgent level."
+    icon: mdi:bell-ring-outline
+    mode: parallel
+    max: 20
+    fields:
+      message:
+        name: Message
+        required: true
+        example: "Garage Door is opening now."
+        selector:
+          text:
+      title:
+        name: Title
+        required: false
+        default: "Home"
+        selector:
+          text:
+      to:
+        name: Recipients
+        required: false
+        default: waqar
+        selector:
+          select:
+            options:
+              - both
+              - waqar
+              - maham
+      level:
+        name: Level
+        required: false
+        default: normal
+        selector:
+          select:
+            options:
+              - quiet
+              - normal
+              - urgent
+      group:
+        name: Group
+        description: "Notices with the same group stack together on the lock screen."
+        required: false
+        default: home
+        selector:
+          text:
+    variables:
+      recipients: "{{ to | default('waqar') }}"
+      n_title: "{{ title | default('Home') }}"
+      n_group: "{{ group | default('home') }}"
+      n_level: >-
+        {{ {'quiet': 'passive', 'normal': 'active', 'urgent': 'time-sensitive'}.get(level | default('normal'), 'active') }}
+    sequence:
+      - if:
+          - condition: template
+            value_template: "{{ recipients in ['both', 'waqar'] }}"
+        then:
+          - action: notify.mobile_app_waqars_iphone
+            continue_on_error: true
+            data:
+              title: "{{ n_title }}"
+              message: "{{ message }}"
+              data:
+                group: "{{ n_group }}"
+                push:
+                  interruption-level: "{{ n_level }}"
+      - if:
+          - condition: template
+            value_template: "{{ recipients in ['both', 'maham'] }}"
+        then:
+          - action: notify.mobile_app_mahams_iphone
+            continue_on_error: true
+            data:
+              title: "{{ n_title }}"
+              message: "{{ message }}"
+              data:
+                group: "{{ n_group }}"
+                push:
+                  interruption-level: "{{ n_level }}"

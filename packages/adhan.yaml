@@ -86,6 +86,12 @@ script:
             min: 0
             max: 1
             step: 0.01
+      prayer:
+        name: Prayer
+        description: "Prayer name for the notice (Fajr, Dhuhr, Asr, Maghrib, Isha)."
+        required: false
+        selector:
+          text:
       speakers:
         name: Speakers
         required: true
@@ -95,6 +101,11 @@ script:
             multiple: true
     variables:
       target_volume: "{{ volume | default(0.35) | float(0.35) }}"
+      prayer_name: "{{ prayer | default('Fajr' if media_file == 'Fajr.mp3' else 'Prayer') }}"
+      rooms_text: >-
+        {% set names = {'media_player.living_room_living_room_homepod': 'Living Room', 'media_player.master_bedroom_homepod': 'Bedroom'} %}
+        {% set ns = namespace(r=[]) %}{% for sp in speakers %}{% if sp in names %}{% set ns.r = ns.r + [names[sp]] %}{% endif %}{% endfor %}
+        {{ 'the ' ~ (ns.r | join(' and ')) if ns.r else 'the HomePods' }}
       fail_reason: ""
       volume_touched: false
       play_started: 0
@@ -292,22 +303,28 @@ script:
                   entity_id: input_text.adhan_last_error
                 data:
                   value: ""
-              - action: notify.send_message
-                target:
-                  entity_id: notify.waqars_iphone
+              - action: script.notify_household
+                continue_on_error: true
                 data:
-                  message: "Adhan {{ media_file }} ran on {{ speakers | join(', ') }}, volume restored"
+                  title: "Adhan"
+                  message: "{{ prayer_name }} adhan played in {{ rooms_text }}."
+                  to: waqar
+                  level: quiet
+                  group: adhan
         default:
           - action: input_text.set_value
             target:
               entity_id: input_text.adhan_last_error
             data:
               value: "{{ (now().strftime('%Y-%m-%d %H:%M') ~ ' ' ~ media_file ~ ': ' ~ fail_reason)[:255] }}"
-          - action: notify.send_message
-            target:
-              entity_id: notify.waqars_iphone
+          - action: script.notify_household
+            continue_on_error: true
             data:
-              message: "Adhan {{ media_file }} FAILED on {{ speakers | join(', ') }}: {{ fail_reason }}. Check the speakers."
+              title: "Adhan"
+              message: "{{ prayer_name }} adhan failed: {{ fail_reason }}. Check the HomePods."
+              to: waqar
+              level: urgent
+              group: adhan
 
 automation:
   - id: adhan_fajr
@@ -328,6 +345,7 @@ automation:
     actions:
       - action: script.adhan_play
         data:
+          prayer: Fajr
           media_file: Fajr.mp3
           volume: 0.45
           speakers:
@@ -351,6 +369,7 @@ automation:
     actions:
       - action: script.adhan_play
         data:
+          prayer: Dhuhr
           media_file: Adhan.mp3
           volume: 0.55
           speakers:
@@ -375,6 +394,7 @@ automation:
     actions:
       - action: script.adhan_play
         data:
+          prayer: Asr
           media_file: Adhan.mp3
           volume: 0.55
           speakers:
@@ -399,6 +419,7 @@ automation:
     actions:
       - action: script.adhan_play
         data:
+          prayer: Maghrib
           media_file: Adhan.mp3
           volume: 0.55
           speakers:
@@ -423,6 +444,7 @@ automation:
     actions:
       - action: script.adhan_play
         data:
+          prayer: Isha
           media_file: Adhan.mp3
           volume: 0.55
           speakers:
@@ -463,17 +485,23 @@ automation:
             value_template: >-
               {% set ns = namespace(ok=true) %}{% for s in ['media_player.living_room_living_room_homepod', 'media_player.master_bedroom_homepod'] %}{% if not is_state(s, 'playing') and (state_attr(s, 'volume_level') | float(-1) - states('input_number.adhan_saved_volume') | float(0)) | abs > 0.02 %}{% set ns.ok = false %}{% endif %}{% endfor %}{{ not ns.ok }}
         then:
-          - action: notify.send_message
-            target:
-              entity_id: notify.waqars_iphone
+          - action: script.notify_household
+            continue_on_error: true
             data:
-              message: "Adhan startup: volume restore did not read back on one or more HomePods. Check them."
+              title: "Adhan"
+              message: "After a restart, the HomePod volume could not be restored. Check the HomePods."
+              to: waqar
+              level: urgent
+              group: adhan
         else:
-          - action: notify.send_message
-            target:
-              entity_id: notify.waqars_iphone
+          - action: script.notify_household
+            continue_on_error: true
             data:
-              message: "Adhan startup: stored volume restored on the HomePods."
+              title: "Adhan"
+              message: "After a restart, the HomePod volume was restored."
+              to: waqar
+              level: quiet
+              group: adhan
       - action: input_number.set_value
         target:
           entity_id: input_number.adhan_saved_volume

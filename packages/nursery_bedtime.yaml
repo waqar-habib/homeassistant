@@ -1,0 +1,40 @@
+# Noor's bedtime (owner GREEN LIGHT 2026-11-25). One tap for Maham:
+#   1. Changing Table to 7% brightness, red (dim by design, owner: no test needed).
+#   2. Every other Nursery light off.
+# The Hatch is never touched (owner: "Hatch does not get touched at all"): its entities are
+# removed by integration, so a new Hatch entity can never slip in. New non-Hatch Nursery
+# lights are included automatically through the area.
+# Started from the dashboards (ui-button) and from Apple Home / Siri through the template
+# switch "Noor's Bedtime" (UI helper), which runs this script and turns itself back off.
+
+script:
+  nursery_bedtime:
+    alias: "Noor's bedtime"
+    description: "Changing Table to 7% red, every other Nursery light off. Never touches the Hatch."
+    icon: mdi:weather-night
+    mode: single
+    max_exceeded: silent
+    sequence:
+      - variables:
+          others_off: >-
+            {{ area_entities('Nursery')
+               | select('match', 'light\.')
+               | reject('in', integration_entities('ha_hatch'))
+               | reject('eq', 'light.changing_table')
+               | list }}
+      # Changing Table first, in one call, so it never flashes at its last brightness.
+      - action: light.turn_on
+        continue_on_error: true
+        target:
+          entity_id: light.changing_table
+        data:
+          brightness_pct: 7
+          hs_color: [0, 100]
+      - if:
+          - condition: template
+            value_template: "{{ others_off | count > 0 }}"
+        then:
+          - action: light.turn_off
+            continue_on_error: true
+            target:
+              entity_id: "{{ others_off }}"

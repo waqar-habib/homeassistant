@@ -1,6 +1,12 @@
 # HANDOFF
 
-Last updated: 2026-11-24 21:46 CST (Pi 5). networkpi: unchanged, not touched.
+Last updated: 2026-11-25 14:30 CST (Pi 5). networkpi: unchanged, not touched.
+
+## Automation cleanup (2026-11-25, Pi 5, D82): merged `60c1fd5`, live, sunset check pending
+1. **Done:** entity check (359 entities); garage notices fixed (I62); Porch and Driveway on at sunset, off at sunrise (TP-Link switches, no presence rule); 30 min location refresh; evening all-lights only when someone is home; 804 lock arrival built in DRY RUN (`arrival_804_live` OFF); 3 stale one-time automations and 2 packages deleted; AiDot logger set to error (file applies after a restart). Backup `pre-automation-cleanup` (34e7962a). Note `docs/sessions/2026-11-25-automation-cleanup.md`.
+2. **Claude next:** after sunset 17:30 CST read the outdoor and evening traces; after sunrise 11-26 confirm both off; confirm location requests update the trackers.
+3. **Owner next:** enable Activity and Motion & Fitness in both Companion apps (I51); replace the 804 lock batteries (27%); repoint dashboards from the Matter Porch light if wanted (I71); answer A4 plug lamps (I53); 804 live only with GREEN LIGHT.
+4. **Open:** I69 cloud subscription expired (backups already skip it), Living Room TV unplugged (I10), A5, A6, A7, A10. Rollback: `git revert -m 1 60c1fd5` and reload, or backup `pre-automation-cleanup`.
 
 ## Remove Nabu Casa backup location (2026-11-24, Pi 5): partial stop at step 3
 1. **Done:** prompt `c943964` read and run through steps 1 and 2 (read-only). Backup config recorded: daily 03:00, keep 7, encryption on, locations `hassio.local`, `cloud.cloud`, `hassio.networkpiBackups`. Remote check: external URL `https://ha.thehabibfam.cc/`, HA Cloud remote disconnected. Last backup `d98b253c` landed on `hassio.local` and `cloud.cloud`, no errors.
@@ -173,7 +179,7 @@ Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB 
 - **Router:** DHCP reservations done. Two DNS fields available (I1).
 
 ## Automations
-All four D42 automations are on branch `feat/d42-automations` (`cecf379`), disabled, not merged: `d42_evening_on_sunset`, `d42_away_on_sunset`, `d42_away_off_after_2h`, `d42_notify_lights_and_front_door`. The live HA automation count is unchanged.
+15 automations, all on (2026-11-25): 6 Adhan, 2 arrival garage (dry run), 2 arrival 804 (dry run), 804 low battery, evening all-lights, evening away, outdoor lights, location refresh. Sources in `packages/`.
 
 ## Rules in force
 Autonomy tiers 0-3 and the session protocol in `CLAUDE.md`. Anything Tier 3 (restarts, tunnel, DNS, firewall, credentials, deletions, front door lock, garage door, enabling automations) waits for the owner's "GREEN LIGHT".

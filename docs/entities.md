@@ -280,3 +280,11 @@ Findings:
 - **Removed in the owner's cleanup (2026-11-14):** `light.study_study_floor_lamp`, `light.upstairs_guest_guest_nightstand`, `light.unk_1`, `light.unk_2`, `switch.nursery_hatch_toddler_lock`. Owner confirmed the cleanup.
 - **Nest thermostat switches:** `switch.nest_thermostat` (Game Room) and `switch.nest_thermostat_2` (Living Room) now have areas.
 - **Not part of this household, kept separate:** `switch.804_front_door_1_touch_locking` and `switch.804_front_door_keypress_beep`. Owner: "804 lock is NOT a part of this household, keep separate." Do not include in household scenes, automations or the household inventory.
+
+## Added since 2026-11-14 (checked 2026-11-25, addendum; full regeneration still due)
+- **TP-Link KS205 wall switches (area Outdoor unless noted):** `switch.outdoor_porch` (main porch control, D82), `switch.outdoor_driveway`, `switch.kitchen_kitchen` (Kitchen). Each also has `*_led`, `*_auto_off_enabled` (all off) and `*_auto_update_enabled` switches and a `number.*_turn_off_in` (120, unused).
+- **Rain Bird (integration 820-sprinkler):** `switch.rain_bird_sprinkler_1` to `_8`, all off, no area; `calendar.rain_sensor`; buttons `button.rain_sensor_run_pgm_a` to `_c`.
+- **GE Home (SmartHQ) and LG ThinQ appliances:** `switch.kitchen_oven_sngd094556q_control_lock`, `_hour_12_shutoff_enabled`, `_sabbath_mode`; `switch.kitchen_dishwasher_fd867033b_sabbath_mode`; `switch.kitchen_refrigerator_express_mode`; `switch.laundry_washer_power`; `switch.laundry_dryer_power`; microwave, dishwasher, washer and dryer sensors.
+- **Automation-owned helpers (2026-11-25):** `input_boolean.arrival_804_live` (owner only, OFF), `arrival_804_armed_waqar`, `arrival_804_armed_maham`, `input_datetime.arrival_804_last_action`, `script.arrival_804_notify`.
+- **Removed 2026-11-25:** `automation.one_time_re_enable_*` (three entries).
+- Living Room TV entities stay `unavailable` (TV unplugged, I10).

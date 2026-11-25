@@ -10,7 +10,7 @@ A second host, **networkpi** (Raspberry Pi 3B+), is the always-on support backen
 | Item | Value |
 |---|---|
 | Host | Raspberry Pi 5, 8 GB RAM, SD card (SSD upgrade planned if write load grows) |
-| OS | Home Assistant OS 2026.10.2 |
+| OS | Home Assistant OS 18.5, Core 2026.11.3 (checked 2026-11-25) |
 | Device source | Apple Home (HomeKit) devices already exposed to HA |
 | Speakers | HomePods (entity IDs: see `docs/entities.md`) |
 | Live access | `ha-mcp` add-on (MCP server) + `ha` CLI |

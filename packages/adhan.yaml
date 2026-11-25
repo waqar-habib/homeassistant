@@ -1,5 +1,5 @@
 # Adhan automation. Built with the toggle OFF (D34, D49, D50).
-# Spec: docs/adhan-spec.md. Production volume 0.35. Each speaker is restored
+# Spec: docs/adhan-spec.md. Volume is a script field: Fajr 0.45, Dhuhr/Asr/Maghrib/Isha 0.55 (2026-11-25), default 0.35. Each speaker is restored
 # to the volume read at trigger time (V0). Failure: stop, restore, notify.
 # Finish: the script waits for the track length (media_duration, or the table
 # below), not for the HomePod to report idle. A HomePod can stay "playing"
@@ -44,6 +44,16 @@ script:
             options:
               - Adhan.mp3
               - Fajr.mp3
+      volume:
+        name: Volume
+        description: "Playback volume 0 to 1 (owner 2026-11-25: Fajr 0.45, others 0.55). Defaults to 0.35 if omitted."
+        required: false
+        default: 0.35
+        selector:
+          number:
+            min: 0
+            max: 1
+            step: 0.01
       speakers:
         name: Speakers
         required: true
@@ -52,7 +62,7 @@ script:
             domain: media_player
             multiple: true
     variables:
-      target_volume: 0.35
+      target_volume: "{{ volume | default(0.35) | float(0.35) }}"
       fail_reason: ""
       volume_touched: false
       play_started: 0
@@ -284,6 +294,7 @@ automation:
       - action: script.adhan_play
         data:
           media_file: Fajr.mp3
+          volume: 0.45
           speakers:
             - media_player.living_room_living_room_homepod
 
@@ -303,6 +314,7 @@ automation:
       - action: script.adhan_play
         data:
           media_file: Adhan.mp3
+          volume: 0.55
           speakers:
             - media_player.living_room_living_room_homepod
             - media_player.master_bedroom_homepod
@@ -323,6 +335,7 @@ automation:
       - action: script.adhan_play
         data:
           media_file: Adhan.mp3
+          volume: 0.55
           speakers:
             - media_player.living_room_living_room_homepod
             - media_player.master_bedroom_homepod
@@ -343,6 +356,7 @@ automation:
       - action: script.adhan_play
         data:
           media_file: Adhan.mp3
+          volume: 0.55
           speakers:
             - media_player.living_room_living_room_homepod
             - media_player.master_bedroom_homepod
@@ -363,6 +377,7 @@ automation:
       - action: script.adhan_play
         data:
           media_file: Adhan.mp3
+          volume: 0.55
           speakers:
             - media_player.living_room_living_room_homepod
             - media_player.master_bedroom_homepod

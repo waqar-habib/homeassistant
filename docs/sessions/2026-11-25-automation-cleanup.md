@@ -43,4 +43,11 @@ Also: garage `service_not_found` repair ignored (cause fixed).
 4. **Verified 15:25:** Activity `Stationary` (High), Audio Output `Built-in Speaker`, Focus `off`, Connection `Wi-Fi`, Location permission `Authorized Always`, Steps 632, Last Update Trigger `Periodic`, tracker `home` (accuracy 12 m, report 15:24).
 5. **Maham (I74):** no location since 2026-11-15 23:43. Earlier claim "home since 11-21" was wrong: the history window was 4 days. Owner configures her phone when she returns.
 6. **Resume:** (a) car test when the owner next leaves: Activity should read `Automotive`, Audio Output should change to the car or CarPlay; then Claude recommends the final garage rule (Activity or Audio Output); `arrival_garage_live` stays OFF; (b) Maham's phone (I74); (c) the sunset and sunrise checks from section 4; (d) optional 6 hour silent-tracker alert; (e) the two pending updates (Hatch v1.34.0, Claude Terminal Pro 2.5.10) wait for a prayer-safe restart window.
+7. **Reminders sync (owner, 2026-11-25 15:00 CST):** the owner enabled two-way sync between the Home Assistant app and iOS Reminders for the shopping list, for later dashboard work. HA wrote `.shopping_list.json` (9 items); it is now in `.gitignore` (`e46886e`) because the repo is public until D25. To confirm when the dashboard work resumes: one list only (`todo.shopping_list`), edits both ways, and whether Maham's phone needs the same setup (I74).
+
+## 8. End of session state (2026-11-25, Pi 5)
+- `main` and `origin/main` match; branch `fix/automation-cleanup` is merged (`60c1fd5`) and can be deleted later.
+- Backups: `pre-automation-cleanup` (34e7962a), `pre-cloud-logout` (3d31a84b).
+- Live switches `arrival_garage_live` and `arrival_804_live`: OFF. Nothing was opened or unlocked.
+- Not yet observed: first sunset and sunrise runs of the outdoor lights (section 4), the 30 minute location refresh over several cycles, and the car test.
 

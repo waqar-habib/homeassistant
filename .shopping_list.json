@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Tea bags",
+    "id": "7634e734407d40cf93b34dda549a886a",
+    "complete": false
+  },
+  {
+    "name": "Shredded cheese",
+    "id": "9d7522badd824d5c94136dea74f3e65d",
+    "complete": false
+  },
+  {
+    "name": "Reg milk",
+    "id": "1c359840ad134941a684cfbafae3a1e0",
+    "complete": false
+  },
+  {
+    "name": "Reg eggs",
+    "id": "dce3f6916be64be0bfa3a68b7aac9a84",
+    "complete": false
+  },
+  {
+    "name": "Yogurt reg",
+    "id": "620c151f68dd4764ad7982418ac0a131",
+    "complete": false
+  },
+  {
+    "name": "Pomegranate",
+    "id": "9a0f4e05e00d41488207dc9f6873c3d1",
+    "complete": false
+  },
+  {
+    "name": "Noor’s milk",
+    "id": "cbe12f7bdbd541918988b8035e3a80ef",
+    "complete": false
+  },
+  {
+    "name": "Nescafé espresso gold (soon, await coupon)",
+    "id": "d739c394a9a543d185dbc1821aa1a63d",
+    "complete": false
+  },
+  {
+    "name": "Bananas",
+    "id": "3d91ddb08a3542eca540f35544e33dbf",
+    "complete": false
+  }
+]

@@ -35,3 +35,12 @@ Also: garage `service_not_found` repair ignored (cause fixed).
 2. After sunrise 2026-11-26 confirm both are off (and whether the Matter 07:05 off conflicts).
 3. Confirm the 30 minute location requests move `device_tracker` timestamps.
 4. Owner: Activity and Motion & Fitness, then 3 real arrivals per person (I51); decide on the evening plug lamps (I53); 804 live switch only with an explicit GREEN LIGHT.
+
+## 5. Afternoon: phone sensors, cloudhook, cloud logout (partial stop, 2026-11-25 about 15:30 CST)
+1. **Activity sensor:** unavailable since 11-15 and `unknown` in the app. Owner turned on Fitness Tracking and Motion & Fitness; the app still said `unknown`. Other phone sensors were disabled in HA (`disabled_by: integration`); Claude enabled 9 on `waqars_iphone` (D83 list).
+2. **Root cause of no data (I73):** the Webhook screen showed Currently used = Cloudhook (`hooks.nabu.casa`). With Cloud lapsed the cloudhook is dead, so nothing from the app reached HA after about 11-24 13:05. Dashboard still loaded because the WebSocket uses the tunnel URL.
+3. **Fix (owner GREEN LIGHT, D83):** backup `pre-cloud-logout` (3d31a84b); owner logged HA Cloud out, tapped Sync, saw Webhook switch to the External URL, set the home Wi-Fi for the Internal URL and switched the sensors on in the app. HA restarted 15:14 CST (not by Claude). After: 15 automations all on, live switches OFF.
+4. **Verified 15:25:** Activity `Stationary` (High), Audio Output `Built-in Speaker`, Focus `off`, Connection `Wi-Fi`, Location permission `Authorized Always`, Steps 632, Last Update Trigger `Periodic`, tracker `home` (accuracy 12 m, report 15:24).
+5. **Maham (I74):** no location since 2026-11-15 23:43. Earlier claim "home since 11-21" was wrong: the history window was 4 days. Owner configures her phone when she returns.
+6. **Resume:** (a) car test when the owner next leaves: Activity should read `Automotive`, Audio Output should change to the car or CarPlay; then Claude recommends the final garage rule (Activity or Audio Output); `arrival_garage_live` stays OFF; (b) Maham's phone (I74); (c) the sunset and sunrise checks from section 4; (d) optional 6 hour silent-tracker alert; (e) the two pending updates (Hatch v1.34.0, Claude Terminal Pro 2.5.10) wait for a prayer-safe restart window.
+

@@ -288,3 +288,6 @@ Findings:
 - **Automation-owned helpers (2026-11-25):** `input_boolean.arrival_804_live` (owner only, OFF), `arrival_804_armed_waqar`, `arrival_804_armed_maham`, `input_datetime.arrival_804_last_action`, `script.arrival_804_notify`.
 - **Removed 2026-11-25:** `automation.one_time_re_enable_*` (three entries).
 - Living Room TV entities stay `unavailable` (TV unplugged, I10).
+
+## Phone sensors enabled 2026-11-25 (Waqar's iPhone, `mobile_app`)
+`sensor.waqars_iphone_activity` (working since 15:16 CST), `sensor.waqars_iphone_audio_output`, `binary_sensor.waqars_iphone_focus`, `sensor.waqars_iphone_focus_name` (unavailable while no Focus is on), `sensor.waqars_iphone_connection_type`, `sensor.waqars_iphone_ssid`, `sensor.waqars_iphone_last_update_trigger`, `sensor.waqars_iphone_location_permission`, `sensor.waqars_iphone_steps`, `sensor.waqars_iphone_current_pace` (unavailable until moving). The other 24 sensors on each phone stay disabled. Maham's phone: none enabled yet (I74).

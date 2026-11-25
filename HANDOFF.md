@@ -1,6 +1,12 @@
 # HANDOFF
 
-Last updated: 2026-11-25 14:30 CST (Pi 5). networkpi: unchanged, not touched.
+Last updated: 2026-11-25 15:35 CST (Pi 5). networkpi: unchanged, not touched.
+
+## Phone sensors and cloud logout (2026-11-25 afternoon, Pi 5, D83): Waqar's phone fixed, car test and Maham pending
+1. **Done:** Waqar's iPhone had been sending everything to the dead Nabu Casa cloudhook (I73). Owner logged HA Cloud out (backup `pre-cloud-logout` 3d31a84b), synced the app, set home Wi-Fi. Activity now reports (`Stationary`), plus 9 sensors enabled in HA. HA restarted 15:14 CST; 15 automations on; both live switches OFF.
+2. **Owner next:** (a) the car test next time you leave the house: refresh sensors in the app after driving, then tell Claude; (b) configure Maham's phone when she returns (I74: Location Always and Precise, Background App Refresh, Sync, Webhook screenshot, sensor toggles).
+3. **Claude next:** read Activity and Audio Output after the car test and recommend the final garage rule; enable Maham's sensors; the sunset and sunrise checks from the cleanup section below.
+4. Note `docs/sessions/2026-11-25-automation-cleanup.md` section 5.
 
 ## Automation cleanup (2026-11-25, Pi 5, D82): merged `60c1fd5`, live, sunset check pending
 1. **Done:** entity check (359 entities); garage notices fixed (I62); Porch and Driveway on at sunset, off at sunrise (TP-Link switches, no presence rule); 30 min location refresh; evening all-lights only when someone is home; 804 lock arrival built in DRY RUN (`arrival_804_live` OFF); 3 stale one-time automations and 2 packages deleted; AiDot logger set to error (file applies after a restart). Backup `pre-automation-cleanup` (34e7962a). Note `docs/sessions/2026-11-25-automation-cleanup.md`.

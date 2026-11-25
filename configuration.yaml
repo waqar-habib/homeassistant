@@ -5,6 +5,12 @@ default_config:
 homeassistant:
   packages: !include_dir_named packages
 
+# Keep the AiDot library quiet: it logs per-device local passwords at WARNING (audit A8).
+logger:
+  default: warning
+  logs:
+    aidot: error
+
 # Load frontend themes from the themes folder
 frontend:
   themes: !include_dir_merge_named themes

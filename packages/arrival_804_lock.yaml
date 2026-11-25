@@ -1,0 +1,191 @@
+# Arrival 804 lock: unlock lock.804_front_door when Waqar or Maham arrives at zone.sasural.
+# Separate residence, separate from the primary house garage (D60, D66, D68).
+# Owner request 2026-11-25 ("yes, let's set up"). BUILT IN DRY RUN: while
+# input_boolean.arrival_804_live is OFF the automation only sends a notice saying what it
+# would do and never calls lock.unlock. Only the owner turns the switch ON, and that is a
+# Tier 3 step that needs the owner's explicit GREEN LIGHT.
+#
+# Rules (all must hold to act):
+#   1. Armed: the person was outside zone.sasural for at least 10 minutes (anti-jitter).
+#      Armed state is cleared on every arrival run.
+#   2. GPS accuracy better than 50 m, person state not unknown or unavailable.
+#   3. The lock is reachable and currently locked (nothing to do if already unlocked).
+#   4. At least 30 minutes since the last run (any person).
+# Never relocks. No lock codes, coordinates or addresses are stored here.
+# Radius note: zone.sasural is 200 m (D65). That is large for a door unlock; before going
+# live, consider a smaller dedicated arrival zone (owner creates it in the UI).
+#
+# Also here: a low-battery notice for the 804 lock (battery read 27% on 2026-11-25).
+
+input_boolean:
+  arrival_804_live:
+    name: "Arrival 804 lock LIVE (owner only)"
+    icon: mdi:lock-open-variant
+  arrival_804_armed_waqar:
+    name: "Arrival 804 armed: Waqar"
+    icon: mdi:shield-check
+  arrival_804_armed_maham:
+    name: "Arrival 804 armed: Maham"
+    icon: mdi:shield-check
+
+input_datetime:
+  arrival_804_last_action:
+    name: "Arrival 804 last run"
+    has_date: true
+    has_time: true
+    initial: "2000-01-01 00:00:00"
+
+script:
+  arrival_804_notify:
+    alias: "Arrival 804: notify both phones"
+    mode: queued
+    fields:
+      message:
+        description: "Notification text"
+        example: "Dry run: would unlock the 804 door"
+    sequence:
+      - action: notify.send_message
+        continue_on_error: true
+        target:
+          entity_id: notify.waqars_iphone
+        data:
+          title: "Arrival 804"
+          message: "{{ message }}"
+      - action: notify.send_message
+        continue_on_error: true
+        target:
+          entity_id: notify.mahams_iphone
+        data:
+          title: "Arrival 804"
+          message: "{{ message }}"
+
+automation:
+  - id: arrival_804_arm
+    alias: "Arrival 804: arm a person after 10 minutes outside the zone"
+    description: "Sets the person's armed switch once they have been outside zone.sasural for 10 minutes."
+    mode: parallel
+    max: 4
+    trace:
+      stored_traces: 20
+    triggers:
+      - trigger: template
+        id: waqar
+        value_template: >-
+          {% set d = distance('person.waqar_habib', 'zone.sasural') %}
+          {{ d is number and d * 1000 > (state_attr('zone.sasural', 'radius') | float(0)) }}
+        for: "00:10:00"
+      - trigger: template
+        id: maham
+        value_template: >-
+          {% set d = distance('person.maham_habib', 'zone.sasural') %}
+          {{ d is number and d * 1000 > (state_attr('zone.sasural', 'radius') | float(0)) }}
+        for: "00:10:00"
+    actions:
+      - action: input_boolean.turn_on
+        target:
+          entity_id: "input_boolean.arrival_804_armed_{{ trigger.id }}"
+
+  - id: arrival_804_unlock
+    alias: "Arrival 804: unlock on arrival (dry run unless live)"
+    description: "Armed person enters zone.sasural: unlock the 804 door if live, otherwise notify only."
+    mode: single
+    max_exceeded: silent
+    trace:
+      stored_traces: 20
+    triggers:
+      - trigger: zone
+        id: waqar
+        entity_id: person.waqar_habib
+        zone: zone.sasural
+        event: enter
+      - trigger: zone
+        id: maham
+        entity_id: person.maham_habib
+        zone: zone.sasural
+        event: enter
+    conditions:
+      - condition: template
+        value_template: "{{ is_state('input_boolean.arrival_804_armed_' ~ trigger.id, 'on') }}"
+    actions:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: "input_boolean.arrival_804_armed_{{ trigger.id }}"
+      - variables:
+          who: "{{ 'Waqar' if trigger.id == 'waqar' else 'Maham' }}"
+          person_id: "person.{{ trigger.id }}_habib"
+          door: lock.804_front_door
+          dist_m: >-
+            {% set d = distance(person_id, 'zone.sasural') %}
+            {{ (d * 1000) | round(0) | int if d is number else 'unknown' }}
+          problems: >-
+            {%- set p = [] -%}
+            {%- if (state_attr(person_id, 'gps_accuracy') | float(9999)) >= 50 -%}
+              {%- set p = p + ['GPS accuracy worse than 50 m'] -%}
+            {%- endif -%}
+            {%- if states(person_id) in ['unknown', 'unavailable'] -%}
+              {%- set p = p + ['person state ' ~ states(person_id)] -%}
+            {%- endif -%}
+            {%- if states(door) in ['unknown', 'unavailable'] -%}
+              {%- set p = p + ['lock is ' ~ states(door)] -%}
+            {%- elif states(door) != 'locked' -%}
+              {%- set p = p + ['lock is already ' ~ states(door)] -%}
+            {%- endif -%}
+            {%- if now().timestamp() - (state_attr('input_datetime.arrival_804_last_action', 'timestamp') | float(0)) < 1800 -%}
+              {%- set p = p + ['ran less than 30 minutes ago'] -%}
+            {%- endif -%}
+            {{ p | join('; ') }}
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ problems == '' }}"
+            sequence:
+              - action: input_datetime.set_datetime
+                target:
+                  entity_id: input_datetime.arrival_804_last_action
+                data:
+                  datetime: "{{ now().strftime('%Y-%m-%d %H:%M:%S') }}"
+              - choose:
+                  - conditions:
+                      - condition: state
+                        entity_id: input_boolean.arrival_804_live
+                        state: "on"
+                    sequence:
+                      - action: lock.unlock
+                        target:
+                          entity_id: lock.804_front_door
+                      - action: script.arrival_804_notify
+                        data:
+                          message: "{{ who }} is {{ dist_m }} m from the 804 zone edge. Unlocking the 804 door."
+                      - wait_template: "{{ is_state('lock.804_front_door', 'unlocked') }}"
+                        timeout: "00:01:00"
+                        continue_on_timeout: true
+                      - if:
+                          - condition: template
+                            value_template: "{{ not is_state('lock.804_front_door', 'unlocked') }}"
+                        then:
+                          - action: script.arrival_804_notify
+                            data:
+                              message: "The 804 door did not unlock within 1 minute (state: {{ states('lock.804_front_door') }}). Check the door."
+                default:
+                  - action: script.arrival_804_notify
+                    data:
+                      message: "DRY RUN: {{ who }} entered the 804 zone. Would unlock the 804 door. Nothing was unlocked."
+        default:
+          - action: script.arrival_804_notify
+            data:
+              message: "Arrival 804: {{ who }} entered the zone but no action was taken: {{ problems }}."
+
+  - id: arrival_804_low_battery
+    alias: "804 lock: low battery notice"
+    description: "Tells both phones once when the 804 lock battery falls below 20%."
+    mode: single
+    trace:
+      stored_traces: 20
+    triggers:
+      - trigger: numeric_state
+        entity_id: sensor.804_front_door_battery
+        below: 20
+    actions:
+      - action: script.arrival_804_notify
+        data:
+          message: "The 804 front door lock battery is at {{ states('sensor.804_front_door_battery') }}%. Replace the batteries soon."

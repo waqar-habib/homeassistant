@@ -9,14 +9,16 @@ automation:
     alias: "Evening Away: lights on for 2 hours when no one is home"
     description: "At sunset, if no person is home, turn on the console lamp, game room, dresser and side table (no Nursery lights, owner 2026-11-15), then turn them off after 120 minutes."
     mode: single
+    trace:
+      stored_traces: 20
     triggers:
       - trigger: sun
         event: sunset
         offset: "0:00:00"
     conditions:
-      - condition: template
-        value_template: >-
-          {{ states.person | selectattr('state', 'eq', 'home') | list | count == 0 }}
+      - condition: numeric_state
+        entity_id: zone.home
+        below: 1
     actions:
       - action: light.turn_on
         target:

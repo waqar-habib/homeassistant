@@ -1,0 +1,58 @@
+# Outdoor lights: Porch and Driveway on at sunset, off at sunrise, every day.
+# Owner GREEN LIGHT 2026-11-25. No presence condition: runs whoever is home or away.
+# Devices are the TP-Link KS205 switches (owner: switch.outdoor_porch is the main porch
+# control; the Matter porch entities are ignored).
+#
+# Reconcile design: sunset and sunrise set the state directly. If HA starts, or a switch
+# comes back from unavailable, the automation sets the state the sun implies right now,
+# so a missed edge never leaves the lights wrong all night or all day.
+# A manual change during the night is NOT fought: nothing triggers on a plain on/off.
+
+automation:
+  - id: outdoor_lights_sunset_sunrise
+    alias: "Outdoor: porch and driveway on at sunset, off at sunrise"
+    description: "Porch and Driveway switches follow the sun every day, regardless of who is home."
+    mode: restart
+    trace:
+      stored_traces: 20
+    triggers:
+      - trigger: sun
+        event: sunset
+        offset: "0:00:00"
+        id: sunset
+      - trigger: sun
+        event: sunrise
+        offset: "0:00:00"
+        id: sunrise
+      - trigger: homeassistant
+        event: start
+        id: resync
+      - trigger: state
+        entity_id:
+          - switch.outdoor_porch
+          - switch.outdoor_driveway
+        from: unavailable
+        id: resync
+    actions:
+      - variables:
+          want_on: >-
+            {% if trigger.id == 'sunset' %}true
+            {% elif trigger.id == 'sunrise' %}false
+            {% else %}{{ is_state('sun.sun', 'below_horizon') }}
+            {% endif %}
+      - choose:
+          - conditions: "{{ want_on | trim | lower == 'true' }}"
+            sequence:
+              - action: switch.turn_on
+                continue_on_error: true
+                target:
+                  entity_id:
+                    - switch.outdoor_porch
+                    - switch.outdoor_driveway
+        default:
+          - action: switch.turn_off
+            continue_on_error: true
+            target:
+              entity_id:
+                - switch.outdoor_porch
+                - switch.outdoor_driveway

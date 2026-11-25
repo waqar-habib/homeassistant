@@ -25,7 +25,7 @@ Prompt: `docs/prompts/pi5/2026-11-23-remove-cloud-backup-location.md` (commit `c
 
 ## Open questions
 - Why `hassio.networkpiBackups` does not appear as a copy target in the last two automatic backups, although HA lists it as a location. Check the networkpi share (`/srv/ha-backups`) and the mount.
-- The Nabu Casa subscription is still active, so the step 3 change is what stops cloud uploads. Owner decides when to cancel the subscription (D26, D39).
+- Owner reports (2026-11-24): Nabu Casa is on the free plan, no card on file, no charge. The cloud backup location is removed in step 3 regardless. Keep or cancel stays the owner's call (D26, D39).
 
 ## Rollback
 Backup settings, Locations: tick Home Assistant Cloud again. No backups were deleted or changed in this session.

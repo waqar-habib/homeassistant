@@ -5,7 +5,7 @@ Last updated: 2026-11-24 21:46 CST (Pi 5). networkpi: unchanged, not touched.
 ## Remove Nabu Casa backup location (2026-11-24, Pi 5): partial stop at step 3
 1. **Done:** prompt `c943964` read and run through steps 1 and 2 (read-only). Backup config recorded: daily 03:00, keep 7, encryption on, locations `hassio.local`, `cloud.cloud`, `hassio.networkpiBackups`. Remote check: external URL `https://ha.thehabibfam.cc/`, HA Cloud remote disconnected. Last backup `d98b253c` landed on `hassio.local` and `cloud.cloud`, no errors.
 2. **Owner next (step 3, UI only):** Settings, System, Backups, Backup settings, Locations. Untick Home Assistant Cloud only. Leave This system and networkpiBackups ticked. Save. Then tell Claude.
-3. **Open:** `hassio.networkpiBackups` is not a copy target on the last two automatic backups (`d98b253c`, `de3be299`). Check the share before step 5. Nabu Casa subscription still shows active.
+3. **Open:** `hassio.networkpiBackups` is not a copy target on the last two automatic backups (`d98b253c`, `de3be299`). Check the share before step 5. Owner: Nabu Casa on the free plan, no card, no charge (2026-11-24).
 4. Rollback: tick Home Assistant Cloud again. Note `docs/sessions/2026-11-24-remove-cloud-backup.md`.
 
 ## Overnight: WH-next phone redesign, defects, audit (2026-11-19, Pi 5): merged `161f1f0`, loader v17 live

@@ -1,6 +1,12 @@
 # HANDOFF
 
-Last updated: 2026-11-19 ~00:50 CST (Pi 5, overnight run). networkpi: unchanged, not touched.
+Last updated: 2026-11-24 21:46 CST (Pi 5). networkpi: unchanged, not touched.
+
+## Remove Nabu Casa backup location (2026-11-24, Pi 5): partial stop at step 3
+1. **Done:** prompt `c943964` read and run through steps 1 and 2 (read-only). Backup config recorded: daily 03:00, keep 7, encryption on, locations `hassio.local`, `cloud.cloud`, `hassio.networkpiBackups`. Remote check: external URL `https://ha.thehabibfam.cc/`, HA Cloud remote disconnected. Last backup `d98b253c` landed on `hassio.local` and `cloud.cloud`, no errors.
+2. **Owner next (step 3, UI only):** Settings, System, Backups, Backup settings, Locations. Untick Home Assistant Cloud only. Leave This system and networkpiBackups ticked. Save. Then tell Claude.
+3. **Open:** `hassio.networkpiBackups` is not a copy target on the last two automatic backups (`d98b253c`, `de3be299`). Check the share before step 5. Nabu Casa subscription still shows active.
+4. Rollback: tick Home Assistant Cloud again. Note `docs/sessions/2026-11-24-remove-cloud-backup.md`.
 
 ## Overnight: WH-next phone redesign, defects, audit (2026-11-19, Pi 5): merged `161f1f0`, loader v17 live
 1. **Done:** Home line no longer truncated ("All secure · Down 72° · Up 71°"); Prayer counts down to Fajr after Isha; MKH next empty scroll and cut-off wallpaper fixed (stale header offset); WH-next phone: dense hero (-24 to -33%), Prayer and Home open on launch, Porch in Home, Floors chips, Rooms drawer. Wide screens measured unchanged.
@@ -151,7 +157,7 @@ Baseline 2026-11-08: healthy. Up 15 days, throttle `0x0` (I11 resolved), 389 MB 
 - GitHub token (repo-only) expires 2027-04-24.
 
 ## Open items
-1. Nabu Casa trial: decide keep or cancel by about 2026-11-20 (bills about 2026-11-23). Do not cancel until the tunnel and geofencing are tested.
+1. Nabu Casa: cloud backup location removal waits on owner step 3 (see top). Subscription keep or cancel: owner decides; do not cancel until the tunnel and geofencing are tested.
 2. Make the repo private (D25), when the owner chooses.
 3. Owner on hold: redact the owner email in the aidot note in `docs/sessions/2026-10-23-pi5-cleanup-handoff.md`.
 4. Watch: `vcgencmd get_throttled` on networkpi (I11).

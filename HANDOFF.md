@@ -1,6 +1,13 @@
 # HANDOFF
 
-Last updated: 2026-11-25 18:20 CST (Pi 5). networkpi: unchanged, not touched.
+Last updated: 2026-11-25 19:27 CST (Mac). Pi 5: Ultra dashboards audited, no config changed. networkpi: unchanged, not touched.
+
+## Ultra vs WH-next e2e audit (2026-11-25 19:27 CST, Mac)
+1. **Done:** full UI/UX audit in Chrome, report `docs/design/audit-2026-11-25-ultra-vs-wh-next.md` (`e51625f`). Scorecard Ultra / WH-next: function 2/4, editability 4/1, others 3–4. Nothing left changed; both dashboard configs equal their pre-test copies.
+2. **Blocker I79:** HA cards inside Ultra Cards never refresh their state; toggles work only once; lock and garage tiles can show stale state. No cutover until fixed.
+3. **Other top defects (I77):** wallpaper lost after tab switches, hidden tabs keep a stale layout after resize, Hero x Home 3 px overlap, prayer table after Isha, small targets, opaque media cards.
+4. **Note:** garage opened 18:48:49 and closed 18:54:49 outside HA (no HA context); owner informed.
+5. **Next (Claude):** I79 test on one card (Ultra modules instead of `native_card`), then audit defects 2–10. Note `docs/sessions/2026-11-25-ultra-uiux-e2e.md`.
 
 ## Ultra Card MVP (2026-11-25 ~18:20 CST, Pi 5, D86): built, owner review next
 1. **State:** Ultra Card v3.14.6 + Connect v1.12.6 (not signed in) installed by the owner from the Marketplace; HA restarted ~18:08 CST; backup `pre-ultra-card` (cbccac46). New dashboard `habib-home-uc` "Habib Home (Ultra)" (admin only): Home, Lights, Media tabs, FreeSpace, Liquid Glass. Merge `d48c28e`. Old dashboards untouched.

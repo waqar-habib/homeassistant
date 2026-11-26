@@ -227,8 +227,11 @@ def bar(entity, height=34):
 
 def swatch(label, colour, tap):
     # A 40 px disc (empty block with a background) over its label; the ● glyph rendered at ~20 px.
-    return stack([stack([], width="40px", height="40px", min_height="40px", background_color=colour,
-                        border_radius="50%", border_style="solid", border_width="1px", border_color=BORDER),
+    # The disc is a text block with a background; its one character is painted in the disc's own colour
+    # (an empty block shows Ultra's "No modules added yet").
+    return stack([text("\u00b7", "state", colour, align="center", width="40px", height="40px", min_height="40px",
+                       background_color=colour, border_radius="50%", border_style="solid", border_width="1px",
+                       border_color=BORDER, margin_left="auto", margin_right="auto", overflow="hidden"),
                   text(label, "state", DIM, align="center", white_space="nowrap")],
                  gap=6, align="center", tap=tap)
 
@@ -261,7 +264,7 @@ def icon_col(entity):
     return "{{ '%s' if is_state('%s','on') else '%s' }}" % (WARM, entity, DIM)
 
 
-def light_tile(entity, name, members=None, icon="mdi:lightbulb-outline", with_drawer=False):
+def light_tile(entity, name, members=None, icon="mdi:lightbulb-outline", with_drawer=False, title=None):
     """One light or a group. Tap toggles, long press opens HA's dialog. Only group tiles (a floor or a
     room's "All lights") carry the themed drawer: one shared drawer per room keeps the config small."""
     st = light_state(entity, members)
@@ -274,7 +277,7 @@ def light_tile(entity, name, members=None, icon="mdi:lightbulb-outline", with_dr
         row([bar(entity)], gap=0, padding_top="4px"),
     ]
     if with_drawer:  # a row splits its children 50/50 in Ultra, so the ••• sits in the tile's corner instead
-        d = light_drawer(entity, name, st)
+        d = light_drawer(entity, title or name, st)
         d["design"] = {"position": "absolute", "top": "8px", "right": "8px", "z_index": "2"}
         mods.append(d)
     return well(mods, position="relative")
@@ -311,7 +314,7 @@ def room(name, group, members, lights, plugs=(), icon="mdi:sofa-outline"):
                expand_style="push", open_mode="manual",
                design={**FLAT, "border_style": "none", "border_width": "0px", "background_color": "transparent",
                        "font_family": FT, "font_weight": "600", "color": DIM},
-               modules=[stack([light_tile(group, "All lights", mlist, "mdi:lamps-outline", True), grid(tiles)], gap=GAP,
+               modules=[stack([light_tile(group, "All lights", mlist, "mdi:lamps-outline", True, title=name), grid(tiles)], gap=GAP,
                             # cancel the accordion's fixed 16 px content padding: tiles line up with the header
                             margin_left="-16px", margin_right="-16px", margin_top="-6px", margin_bottom="-16px")])
     return ucard(name, [head, acc])

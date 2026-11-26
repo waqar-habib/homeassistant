@@ -1,4 +1,4 @@
-# Ultra Card dashboard plan: Draft v0.1 (2026-11-25)
+# Ultra Card dashboard plan: v0.2 (2026-11-25, owner answers in D86)
 
 Owner goal: build and change dashboards by hand in a UI (pick components, drag and drop, add and remove items, create tabs), not by YAML or prompting. Owner chose Ultra Card (https://github.com/WJDDesigns/Ultra-Card) for its builder and Liquid Glass theme.
 
@@ -47,3 +47,11 @@ Claude's role after cutover: entities, automations, safety review, git exports, 
 4. Lock and garage on the new dashboards: open HA's own dialog (current rule) or an Ultra button with a confirmation step. Recommend: HA dialog.
 5. Start from the generated Ultra Dashboard or from blank. Recommend: generate in the sandbox to learn the modules, build the real dashboards blank.
 6. Old dashboards stay live until cutover. Recommend: yes.
+
+## 5. Owner answers (D86, 2026-11-25 ~18:00 CST) and status
+1. Liquid Glass as shipped, minimal customisation; functional, simple, layout editable. 2. FreeSpace, self-adjusting and responsive. 3. No Pro. 4. Lock and garage open HA's dialog (recommendation). 5. Claude builds the MVP from the docs; owner reviews and rearranges after use. 6. Current dashboards stay until cutover, which needs a GREEN LIGHT.
+
+Status 2026-11-25 18:2x CST:
+- Phase 0 done (targeted review: Connect endpoints all need HA login, proxy admin-only to ultracard.io, feed blocks LAN for non-admins, no calls while signed out; card bundle contacts outside hosts only from map, preset, account and media modules).
+- Phase 1 done: owner installed both from the Marketplace (Claude's warning acceptance was blocked by the permission classifier); Connect entry "Ultra Card (not signed in)"; HA restarted 18:1x CST after `ha core check`; backup `pre-ultra-card` (cbccac46).
+- Phase 2/3 MVP built: dashboard `habib-home-uc` "Habib Home (Ultra)", admin only, tabs Home, Lights, Media; FreeSpace (Desktop 1200 master, Phone stacks); Liquid Glass Ultra Cards wrapping native heading, tile, thermostat, markdown and media-control cards; clock and weather modules. Generator and export `dashboards/ultra/`. How-to `docs/ultra-card-howto.md`. Not seen rendered by Claude (screenshots disabled).

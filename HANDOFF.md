@@ -1,6 +1,12 @@
 # HANDOFF
 
-Last updated: 2026-11-25 17:3x CST (Pi 5). networkpi: unchanged, not touched.
+Last updated: 2026-11-25 18:20 CST (Pi 5). networkpi: unchanged, not touched.
+
+## Ultra Card MVP (2026-11-25 ~18:20 CST, Pi 5, D86): built, owner review next
+1. **State:** Ultra Card v3.14.6 + Connect v1.12.6 (not signed in) installed by the owner from the Marketplace; HA restarted ~18:08 CST; backup `pre-ultra-card` (cbccac46). New dashboard `habib-home-uc` "Habib Home (Ultra)" (admin only): Home, Lights, Media tabs, FreeSpace, Liquid Glass. Merge `d48c28e`. Old dashboards untouched.
+2. **Owner next:** open it on the Mac and iPhone (Reset frontend cache on the iPhone if blank); rearrange by hand (`docs/ultra-card-howto.md`); report anything broken. Confirm the unknown HaCasa Nova resource (I78).
+3. **Claude next:** fixes from the owner review (I77: Claude cannot see renders); git export after owner edits; MKH dashboard; kiosk after its scope; cutover only on GREEN LIGHT.
+4. Note `docs/sessions/2026-11-25-ultra-card-mvp.md`.
 
 ## End of session 2026-11-25 evening (Pi 5): notifications and Noor's bedtime live (D85), resume point
 1. **State:** `main` = merge `88d0b31`. `script.notify_household` sends plain-English notices (quiet/normal/urgent); lights and Adhan to Waqar only, garage and 804 to both. `script.nursery_bedtime` + `switch.noor_s_bedtime` (Apple Home, bridge reloaded) + "Noor's Bedtime" buttons on habib-mkh-next and habib-wh-next. Backup `pre-notifications` (c7e292b4). Note `docs/sessions/2026-11-25-notifications-bedtime.md`.

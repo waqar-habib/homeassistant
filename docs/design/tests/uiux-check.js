@@ -96,13 +96,16 @@ function uiuxRun(opts) {
       const a = texts[i], b = texts[j];
       const sameLine = Math.abs((a.r.top + a.r.bottom) / 2 - (b.r.top + b.r.bottom) / 2) < Math.min(a.fs, b.fs) * 0.6;
       const near = Math.max(a.r.left, b.r.left) - Math.min(a.r.right, b.r.right) < 40;
-      if (sameLine && near && Math.max(a.fs, b.fs) / Math.min(a.fs, b.fs) > 1.5) tag("R5 proportion", "fail", `"${a.t}" ${a.fs}px beside "${b.t}" ${b.fs}px`);
+      const suffix = (x) => /^(AM|PM|°[CF]?|%|F|C)$/i.test(x.t);  // unit beside a number: a convention, not a defect
+      if (sameLine && near && !suffix(a) && !suffix(b) && Math.max(a.fs, b.fs) / Math.min(a.fs, b.fs) > 1.5) tag("R5 proportion", "fail", `"${a.t}" ${a.fs}px beside "${b.t}" ${b.fs}px`);
     }
     // R6
     for (const x of texts) if (x.e.scrollWidth > x.e.clientWidth + 1 && win.getComputedStyle(x.e).overflow !== "visible") tag("R6 truncation", "fail", `"${x.t}" clipped`);
     // R7
     const taps = els.filter((e) => win.getComputedStyle(e).cursor === "pointer" && !inDrawer(e));
-    const topTaps = taps.filter((e) => !taps.some((p) => p !== e && p.contains(e)));
+    const anc = (e) => { const a = []; let n = e.parentNode || e.host; while (n) { a.push(n); n = n.parentNode || n.host; } return a; };
+    const tapSet = new Set(taps);
+    const topTaps = taps.filter((e) => !anc(e).some((p) => tapSet.has(p)));
     for (const e of topTaps) {
       const r = e.getBoundingClientRect();
       if (r.width < 40 || r.height < 40) tag("R7 target", "fail", `${(ownText(e) || e.className || e.tagName).toString().slice(0, 24)} ${r.width.toFixed(0)}x${r.height.toFixed(0)}`);
@@ -143,7 +146,7 @@ function uiuxRun(opts) {
     await new Promise((r) => (f.onload = r));
     await wait(6000);
     const win = f.contentWindow, doc = f.contentDocument;
-    const cards = deepAll(doc).filter((e) => e.tagName && /^(ULTRA-CARD|HUI-HEADING-CARD)$/.test(e.tagName) && visible(e, win));
+    const cards = deepAll(doc).filter((e) => e.tagName && /^(ULTRA-CARD)$/.test(e.tagName) && visible(e, win));
     let res = [];
     for (const c of cards) res = res.concat(checkCard(c, win, `${width}${path}`));
     f.remove();

@@ -162,6 +162,109 @@ hero = ucard("Hero", [
 ])
 
 
+# ---- Lights tab (D88, D89; wireframes v0.4) ----------------------------------------------
+# A tile: icon + name + state, ••• opens a themed bottom drawer (Ultra drawer module),
+# full-width brightness bar. A tap on the name row toggles. HA's own dialog is only
+# behind "Open full controls" (D90).
+TINT_OFF = "rgba(236,240,252,0.62)"
+PANE = "linear-gradient(160deg, rgba(232,238,255,0.72), rgba(240,232,250,0.55))"
+WHITES = [("Candle", 2200, "#FF9329"), ("Warm", 2700, "#FFB060"), ("Neutral", 4000, "#FFE4CE"), ("Daylight", 6500, "#EBF0FF")]
+COLOURS = [("Coral", [255, 120, 90]), ("Amber", [255, 190, 70]), ("Green", [120, 220, 140]),
+           ("Blue", [90, 160, 255]), ("Violet", [190, 120, 255]), ("Pink", [255, 110, 190])]
+
+
+def act(service, entity, **data):
+    return {"action": "perform-action", "perform_action": service, "target": {"entity_id": entity}, "data": data}
+
+
+def bar(entity, height=34):
+    return base("slider_control", bars=[{
+        "id": nid("bar"), "type": "brightness", "entity": entity, "min_value": 0, "max_value": 100, "step": 1,
+        "slider_style": "theme", "show_icon": False, "show_name": False, "show_value": True,
+        "icon_position": "left", "name_position": "left", "value_position": "left", "invert_direction": False}],
+        orientation="horizontal", layout_mode="overlay", slider_style="theme", slider_height=height,
+        slider_radius="round", border_radius=height // 2, slider_track_color="rgba(16,34,77,0.08)",
+        dynamic_fill_color=True, show_icon=False, show_name=False, show_state=False, show_value=True,
+        value_size=13, value_suffix="%", show_toggle=False, show_color_picker=False, haptic_feedback=True)
+
+
+def swatch(label, colour, tap):
+    return text(label, size=12, align="center", icon="mdi:circle", icon_color=colour, icon_size=40, tap=tap,
+                design={"color": "var(--secondary-text-color)"})
+
+
+def drawer(entity, title, sub):
+    eyebrow = {"color": "var(--secondary-text-color)", "letter_spacing": "0.6px", "text_transform": "uppercase"}
+    return base("drawer", drawer_position="bottom", drawer_title=title, show_close_button=True,
+                close_on_overlay_click=True, trigger_style="icon", trigger_label=title + " colour and details",
+                trigger_icon="mdi:dots-horizontal", trigger_alignment="right", trigger_icon_size=18,
+                trigger_icon_background="circle", trigger_icon_background_color="rgba(255,255,255,0.75)",
+                drawer_size="auto", drawer_background="rgba(246,248,255,0.96)", modules=[
+                    text(template=sub, size=13, design={"color": "var(--secondary-text-color)"}),
+                    text("Brightness", size=12, weight="600", design=eyebrow),
+                    bar(entity, 52),
+                    text("White", size=12, weight="600", design=eyebrow),
+                    row([swatch(n, c, act("light.turn_on", entity, color_temp_kelvin=k)) for n, k, c in WHITES], align="justify"),
+                    text("Colour", size=12, weight="600", design=eyebrow),
+                    row([swatch(n, "rgb(%d,%d,%d)" % tuple(c), act("light.turn_on", entity, rgb_color=c)) for n, c in COLOURS], align="justify"),
+                    text("Open full controls", size=14, weight="600", align="center", tap=more_info(entity)),
+                ])
+
+
+def tile_state(entity, members=None):
+    if members:  # group: "2 of 4 on · 60%"
+        on = "(%s | select('is_state', 'on') | list | count)" % members
+        return ("{{ (%s ~ ' of %d on · ' ~ ((state_attr('%s','brightness') or 0) / 2.55) | round(0) | int ~ '%%') "
+                "if is_state('%s','on') else 'All off' }}") % (on, len(eval(members)), entity, entity)
+    return ("{{ ((state_attr('%s','brightness') or 0) / 2.55) | round(0) | int ~ '%%' if is_state('%s','on') else 'Off' }}"
+            % (entity, entity))
+
+
+def tile(entity, name, members=None, icon="mdi:lightbulb"):
+    head = row([
+        base("vertical", alignment="left", gap=2, gap_unit="px", modules=[
+            text(name, size=15, weight="600", icon=icon, icon_size=22,
+                 icon_color="{{ 'var(--state-light-active-color)' if is_state('%s','on') else 'var(--secondary-text-color)' }}" % entity),
+            text(template=tile_state(entity, members), size=13, design={"color": "var(--secondary-text-color)"}),
+        ], tap_action={"action": "toggle", "entity": entity}),
+        drawer(entity, name, tile_state(entity, members)),
+    ], align="justify", gap=4)
+    return base("vertical", alignment="left", gap=10, gap_unit="px", modules=[head, bar(entity)],
+                design={"background_color": TINT_OFF, "border_radius": "24px", "padding_top": "12px",
+                        "padding_bottom": "12px", "padding_left": "14px", "padding_right": "12px"})
+
+
+def grid(tiles):
+    return base("grid_layout", modules=tiles, column_mode="fixed", columns=2, gap=10, item_alignment="stretch",
+                mobile_breakpoint=0, mobile_columns=2, item_spans={})
+
+
+LIVING = [("light.floor_lamp", "Floor Lamp"), ("light.buffet", "Buffet"), ("light.side_table", "Side Table"),
+          ("light.console_lamp", "Console Lamp")]
+DOWN_M = "['light.buffet','light.console_lamp','light.floor_lamp','light.side_table','light.dresser','light.mahams_lamp','light.waqars_lamp']"
+UP_M = "['light.game_room','light.upstairs_guest','light.study_lamp']"
+LIV_M = "[" + ",".join("'%s'" % e for e, _ in LIVING) + "]"
+
+floors = ucard("Floors", [
+    row([text("Floors", size=20, weight="700")]),
+    grid([tile("light.downstairs_lights", "Downstairs", DOWN_M, "mdi:home-floor-1"),
+          tile("light.upstairs_lights", "Upstairs", UP_M, "mdi:home-floor-2")]),
+])
+
+living = ucard("Living Room", [
+    base("accordion", title_mode="custom", title_text="Living Room", icon="mdi:chevron-down", header_alignment="apart",
+         icon_side="right", default_open=True, expand_direction="down", expand_style="push", open_mode="manual",
+         modules=[
+             tile("light.living_room_lights", "All lights", LIV_M, "mdi:lamps"),
+             grid([tile(e, n) for e, n in LIVING]),
+         ]),
+])
+
+lights_view = {"type": "sections", "title": "Lights", "path": "lights", "icon": "mdi:lightbulb-group",
+               "max_columns": 3, "dense_section_placement": True,
+               "sections": [{"type": "grid", "cards": [floors]}, {"type": "grid", "cards": [living]}]}
+
+
 def section(card):
     return {"type": "grid", "cards": [card]}
 
@@ -170,6 +273,6 @@ config = {"views": [{
     "type": "sections", "title": "Home", "path": "home", "icon": "mdi:home", "max_columns": 3,
     "dense_section_placement": True,
     "sections": [section(hero), section(prayer), section(climate)],
-}]}
+}, lights_view]}
 
 json.dump(config, sys.stdout, indent=1, ensure_ascii=False)

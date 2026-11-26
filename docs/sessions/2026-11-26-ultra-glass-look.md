@@ -38,3 +38,14 @@ Owner: review `/habib-home-uc` (and `/uc-home-test`) on the iPhone; OK a daytime
 
 ## Resume point (updated)
 Owner: review `/habib-home-uc` on the iPhone; OK a daytime lamp test. Claude next: `script.climate_step` + steppers (I81); MKH dashboard; Media tab without `native_card` (I79); hide `uc-home-test` before cutover.
+
+## UI/UX defects and measured check (~08:20 to 08:45 CST)
+1. Owner iPhone review of D92: date cramped under the clock, "Dhuhr" out of proportion, margins off in Home, Floors and room headers, the two climate tiles not separated, Home card unreadable. Claude had passed it on screenshots alone, without measuring. Owner asked for an end-to-end UI/UX test.
+2. New check `docs/design/tests/uiux-check.js` (13 rules: overlap, cramped headings, 12 px inset, left edges, size proportion, truncation, 40 px targets, repeated-control offset, tile demarcation, size count, box-in-box inset, equal row heights, row rhythm). Runs every card in same-origin iframes at 430, 820, 1440. Baseline on the D92 build: 83 failures at 430 alone.
+3. Rebuild (Ultra styling as shipped, D92 kept): one Ultra card per tile in HA's section grid; HA heading cards for section titles, room power as heading badges; one type scale 12/13/15/17/22/32; every tile = name / footer [state, •••]; brightness bars only inside drawers (Liquid Glass wraps each slider in its own pane with 16 px padding); like tiles share a row and an odd tile spans it (Ultra cards do not stretch to grid rows); 2 section columns; Ultra `lock` and `cover` modules in the drawers; date as its own line under the clock. "Skip Evening Lights" tile renamed "Skip Lights" (only name that wrapped at 430). Pause badge on Prayer removed (duplicate of the tile).
+4. Result: 0 failures at 430, 820 and 1440 on `uc-home-test` and `habib-home-uc`; 6 warnings, all inside Ultra's weather module (left as shipped). Visual pass of every screen at 430 in light mode and of the lock, garage and thermostat drawers (view only). `main` = `2e7d652`.
+5. Limits: HA heading text follows the device's light/dark mode, so on a dark-mode device the section titles are pale on the light Liquid Glass page (owner's iPhone is light mode: dark text). Ultra's cover module opens the garage with one tap inside its drawer (the earlier build needed a long press); the lock module has `require_confirmation` set but it is untested (no taps on lock or garage without GREEN LIGHT).
+6. Test harness note: switching the HA theme to light inside the checker's iframes rewrote this browser's `selectedTheme`; restored to `{"theme":"Material You"}`.
+
+## Resume point (updated)
+Owner: review `/habib-home-uc` on the iPhone; decide on the garage one-tap Open (keep Ultra's cover module, or back to a long-press button) and GREEN LIGHT a lock confirmation test; OK a daytime lamp test. Claude next: run `uiux-check.js` after every dashboard change; climate steppers (I81); MKH; Media tab (I79).

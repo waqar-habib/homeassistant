@@ -1,39 +1,23 @@
 #!/usr/bin/env python3
-"""Test dashboard `uc-home-test` for the Ultra rebuild (D87-D90): Home and Lights tabs on
-HA's Sections view, built from Ultra Card modules.
+"""Ultra Home and Lights tabs (D87-D90, D92) on HA's Sections view.
 
-v2 (2026-11-26, owner review of the iPhone render):
-  1. Habib Glass look instead of Ultra's Liquid Glass: the view uses the "Habib Glass" theme
-     (evergreen wallpaper), cards use uc_theme "none" and the Habib Glass surface tokens, so
-     every card is a light tint of the page and not a pale panel on it.
-  2. Nesting as habib-wh-next: card padding 12, inner wells inset 12, one well level only.
-  3. Type scale from docs/design/habib-tokens.yaml: big numbers thin (Habib Display 200),
-     names bold (600), state lines dim (500), section labels spaced capitals.
-  4. Lights: all rooms, Upstairs plugs, Outdoor, a power button per room, bigger colour dots,
-     lean per-light drawers. Home: security card with themed lock and garage drawers
-     (unlock and open need a long press), themed thermostat drawer.
+v3 (2026-11-26, D92): Ultra out of the box. Every card uses Ultra's Liquid Glass theme as
+shipped. No custom colours, fonts, backgrounds, borders, shadows, padding or margins: the
+theme draws the glass panes and spacing. Only Ultra's own module options are used (text
+size, weight, alignment, icons, templates, actions). Data colours are the only colours set:
+colour swatches, and green/red/amber state icons.
+One exception, functional: the drawer content ends with 84 px bottom padding so HA's bottom
+tab bar does not cover "Open full controls".
 
-Tokens: www/habib/glass/base.js (TOKENS) and docs/design/habib-tokens.yaml. Values here are
-copies; change them there first.
 Usage: python3 build_home_sections_test.py > uc-home-test.json
+       python3 build_habib_home_uc_v2.py > habib-home-uc.json
 """
 import json
 import sys
 
-# ---- Tokens (habib-tokens.yaml, color.dark, type, radius, space) --------------------------
-FD = "'Habib Display',Outfit,sans-serif"  # display (fonts are declared globally by www/habib)
-FT = "'Habib Text',Inter,sans-serif"       # text; the Habib Glass theme already sets it, so text styles omit it
-TEXT, DIM, FAINT = "#eef4ee", "rgba(238,244,238,.84)", "rgba(238,244,238,.5)"
-WARM, MINT, ROSE = "#ffc978", "#9fd6b5", "#ff8a80"
-HEAT, COOL = "#ffb36b", "#8fc9ff"
-SURFACE = "linear-gradient(160deg, rgba(255,255,255,.13), rgba(255,255,255,.04) 55%, rgba(255,255,255,.07))"
-BORDER = "rgba(255,255,255,.14)"
-WELL, WELL_BORDER = "rgba(0,0,0,.14)", "rgba(255,255,255,.08)"
-RAISED, TRACK = "rgba(255,255,255,.10)", "rgba(255,255,255,.12)"
-SHEET = "#1c3126"  # color.dark.dialog; the drawer panel is outside the card, so it must be solid
-PAD = 12           # card padding = inner inset (habib-wh-next: 12 px steps)
-GAP = 10           # gap.tile-grid
-
+THEME = "liquid_glass"
+ON, OFF_C = "#F59E0B", ""            # state icon colour: amber when on, theme default when off
+OK_C, ALERT_C = "#15803D", "#C2410C"  # secure / needs attention (same as the v1 Adhan chip)
 _ids = {}
 
 
@@ -60,192 +44,116 @@ def act(service, entity, **data):
     return {"action": "perform-action", "perform_action": service, "target": {"entity_id": entity}, "data": data}
 
 
-def pad(v, h=None):
-    h = v if h is None else h
-    return {"padding_top": f"{v}px", "padding_bottom": f"{v}px", "padding_left": f"{h}px", "padding_right": f"{h}px"}
-
-
-# Ultra puts no pane on a block without a theme, but zero the shadow anyway (numbers, not "0px").
-# Ultra gives blocks default padding; zero it so the 12 px steps come only from PAD and the wells.
-FLAT = {"padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px", "padding_right": "0px",
-        "margin_top": "0px", "margin_bottom": "0px", "margin_left": "0px", "margin_right": "0px"}
-
-# Type styles: (family, weight, size, letter spacing, transform)
-TYPE = {
-    "metric-xl": (FD, "200", 56, "-0.04em", None),
-    "metric-lg": (FD, "200", 44, "-0.03em", None),
-    "metric-sm": (FD, "300", 30, "-0.02em", None),
-    "title-lg": (FD, "600", 18, None, None),
-    "title": (FD, "600", 17, "-0.01em", None),
-    "title-sm": (FD, "600", 15, "-0.01em", None),
-    "section": (FD, "600", 13, "0.22em", "uppercase"),
-    "eyebrow": (FT, "600", 12, "0.14em", "uppercase"),
-    "body": (FT, "500", 15, None, None),
-    "label": (FT, "500", 13, None, None),
-    "state": (FT, "600", 12, None, None),
-}
-
-
-def ts(style, color=TEXT, **extra):
-    fam, w, size, ls, tr = TYPE[style]
-    d = {"font_weight": w}
-    if fam == FD:
-        d["font_family"] = fam
-    if color != TEXT:  # TEXT is the theme's primary-text-color
-        d["color"] = color
-    if ls:
-        d["letter_spacing"] = ls
-    if tr:
-        d["text_transform"] = tr
-    d.update(extra)
-    return size, w, d
-
-
-def text(content=None, style="body", color=TEXT, template=None, tap=None, hold=None, icon="", icon_color="",
-         icon_size=None, align="left", **design):
-    size, w, d = ts(style, color, **design)
-    d["text_align"] = align
-    m = base("text", text=content or " ", text_size=size, design=d)
+def text(content=None, size=15, weight="400", align="left", template=None, tap=None, hold=None,
+         icon="", icon_color="", icon_size=None):
+    m = base("text", text=content or "", text_size=size, design={"text_align": align, "font_weight": weight})
     if icon:
         m.update(icon=icon, icon_color=icon_color, icon_position="before")
+        if icon_size:
+            m["icon_size"] = icon_size
     if template:
         m.update(unified_template_mode=True, unified_template=template)
     if tap:
         m["tap_action"] = tap
     if hold:
         m["hold_action"] = hold
-    if icon_size:
-        m["icon_size"] = icon_size
     return m
 
 
-def markdown(content, tap=None):
-    m = base("markdown", markdown_content=content, enable_html=True, enable_tables=False,
-             enable_code_highlighting=False, unified_template_mode=False, unified_template="")
+def tpl_text(template, **kw):
+    return text(template=template, **kw)
+
+
+def markdown(content):
+    return base("markdown", markdown_content=content, enable_html=True, enable_tables=False,
+                enable_code_highlighting=False, unified_template_mode=False, unified_template="")
+
+
+def row(modules, align="justify", gap=8, tap=None):
+    m = base("horizontal", alignment=align, vertical_alignment="center", gap=gap, gap_unit="px",
+             wrap=False, modules=modules)
     if tap:
         m["tap_action"] = tap
     return m
 
 
-def row(modules, align="justify", tap=None, gap=8, valign="center", **design):
-    m = base("horizontal", alignment=align, vertical_alignment=valign, gap=gap, gap_unit="px",
-             wrap=False, modules=modules, design={**FLAT, **design})
+def stack(modules, gap=4, align="left", tap=None):
+    """A vertical block. Liquid Glass gives it its glass pane."""
+    m = base("vertical", alignment=align, gap=gap, gap_unit="px", modules=modules)
     if tap:
         m["tap_action"] = tap
     return m
-
-
-def stack(modules, gap=4, align="left", tap=None, **design):
-    m = base("vertical", alignment=align, gap=gap, gap_unit="px", modules=modules, design={**FLAT, **design})
-    if tap:
-        m["tap_action"] = tap
-    return m
-
-
-def well(modules, gap=6, radius=20, tap=None, p=(12, 14), **design):
-    """Inset tile inside a card: color.dark.well, one level deep only."""
-    return stack(modules, gap=gap, tap=tap, background_color=WELL, border_radius=f"{radius}px",
-                 border_style="solid", border_width="1px", border_color=WELL_BORDER, **pad(*p), **design)
 
 
 def grid(tiles, columns=2):
-    return base("grid_layout", modules=tiles, column_mode="fixed", columns=columns, gap=GAP,
-                item_alignment="stretch", mobile_breakpoint=0, mobile_columns=columns, item_spans={}, design=dict(FLAT))
+    return base("grid_layout", modules=tiles, column_mode="fixed", columns=columns, gap=10,
+                item_alignment="stretch", mobile_breakpoint=0, mobile_columns=columns, item_spans={})
 
 
 def ucard(name, modules):
-    return {
-        "type": "custom:ultra-card",
-        "_config_version": 2,
-        "card_name": name,
-        "uc_theme": "none",
-        "card_background": SURFACE,
-        "card_border_radius": 26,
-        "card_border_color": BORDER,
-        "card_border_width": 1,
-        "card_padding": PAD,
-        "card_shadow_enabled": True,
-        "card_shadow_color": "rgba(0,0,0,0.45)",
-        "card_shadow_horizontal": 0, "card_shadow_vertical": 18, "card_shadow_blur": 40, "card_shadow_spread": -18,
-        "layout": {"rows": [{"id": (rid := nid("row")), "gap": GAP,
-                             "columns": [{"id": f"{rid}-col", "modules": modules}]}]},
-        "grid_options": {"columns": "full"},
-    }
+    return {"type": "custom:ultra-card", "_config_version": 2, "card_name": name, "uc_theme": THEME,
+            "layout": {"rows": [{"id": (rid := nid("row")), "columns": [{"id": f"{rid}-col", "modules": modules}]}]},
+            "grid_options": {"columns": "full"}}
 
 
-def heading(label, right=None):
-    """Section label as habib-wh-next: spaced capitals, optional dim value on the right."""
-    mods = [text(label, "section", padding_left="4px")]
+def title(label, right=None):
+    mods = [text(label, 17, "600")]
     if right:
         mods.append(right)
-    return row(mods, padding_top="4px", padding_bottom="2px")
+    return row(mods)
 
 
 def section(*cards):
     return {"type": "grid", "cards": list(cards)}
 
 
-# ---- Drawer (bottom sheet) ---------------------------------------------------------------
 def drawer(label, modules, entity=None, icon="mdi:dots-horizontal"):
-    tail = [text("Open full controls", "body", TEXT, tap=more_info(entity), align="center",
-                 padding_top="10px")] if entity else []
-    # 84 px bottom padding clears HA's bottom tab bar.
+    tail = [text("Open full controls", 15, "600", "center", tap=more_info(entity))] if entity else []
+    body = base("vertical", alignment="left", gap=12, gap_unit="px", modules=modules + tail,
+                design={"padding_bottom": "84px"})  # clears HA's bottom tab bar (the one exception)
     return base("drawer", drawer_position="bottom", drawer_title="", show_close_button=True,
-                close_on_overlay_click=True, trigger_style="icon", trigger_label=label,
-                trigger_icon=icon, trigger_alignment="right", trigger_icon_size=18, trigger_color=TEXT,
-                trigger_icon_background="circle", trigger_icon_background_color=RAISED,
-                drawer_size="auto", drawer_background=SHEET,
-                modules=[stack(modules + tail, gap=12, padding_bottom="84px")])
+                close_on_overlay_click=True, trigger_style="icon", trigger_label=label, trigger_icon=icon,
+                trigger_alignment="right", drawer_size="auto", modules=[body])
 
 
-def drawer_head(title, sub_template):
-    return stack([text(title, "title-lg"), text(template=sub_template, style="label", color=DIM)], gap=2)
+def drawer_head(name, sub_template):
+    return stack([text(name, 20, "700"), tpl_text(sub_template, size=13)], gap=2)
+
+
+def on_col(entity):
+    return "{{ '%s' if is_state('%s','on') else '%s' }}" % (ON, entity, OFF_C)
 
 
 # ---- Lights ------------------------------------------------------------------------------
 WHITES = [("Candle", 2200, "#FF9329"), ("Warm", 2700, "#FFB060"), ("Neutral", 4000, "#FFE4CE"), ("Daylight", 6500, "#EBF0FF")]
-COLOURS = [("Coral", "255,120,90"), ("Amber", "255,190,70"), ("Green", "120,220,140"),
-           ("Blue", "90,160,255"), ("Violet", "190,120,255"), ("Pink", "255,110,190")]
+COLOURS = [("Coral", [255, 120, 90]), ("Amber", [255, 190, 70]), ("Green", [120, 220, 140]),
+           ("Blue", [90, 160, 255]), ("Violet", [190, 120, 255]), ("Pink", [255, 110, 190])]
 
 
 def bar(entity, height=34):
     return base("slider_control", bars=[{
         "id": nid("bar"), "type": "brightness", "entity": entity, "min_value": 0, "max_value": 100, "step": 1,
-        "slider_style": "flat", "show_icon": False, "show_name": False, "show_value": True, "show_bar_label": False,
-        "icon_position": "left", "name_position": "left", "value_position": "left", "invert_direction": False}],
-        orientation="horizontal", layout_mode="overlay", slider_style="flat", slider_height=height,
-        slider_radius="round", border_radius=height // 2, slider_track_color=TRACK,
-        dynamic_fill_color=True, show_icon=False, show_name=False, show_state=False, show_value=True,
-        value_size=13, value_suffix="%", show_toggle=False, show_color_picker=False, haptic_feedback=True,
-        show_bar_label=False, value_color=TEXT,
-        # Ultra hard-codes padding: 16px on the slider; negative margins cancel it.
-        design={"padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px", "padding_right": "0px",
-                # content-box: 16 px padding each side; the bar itself is 100% of its row
-                "margin_top": "-12px", "margin_bottom": "-12px", "margin_left": "-16px",
-                "margin_right": "-16px", "width": "100%"})
+        "show_icon": False, "show_name": False, "show_value": True, "show_bar_label": False}],
+        orientation="horizontal", layout_mode="overlay", slider_height=height, dynamic_fill_color=True,
+        show_icon=False, show_name=False, show_state=False, show_value=True, value_suffix="%",
+        show_toggle=False, show_color_picker=False, haptic_feedback=True, show_bar_label=False)
 
 
 def swatch(label, colour, tap):
-    # A 40 px disc (empty block with a background) over its label; the ● glyph rendered at ~20 px.
-    # The disc is a text block with a background; its one character is painted in the disc's own colour
-    # (an empty block shows Ultra's "No modules added yet").
-    return stack([text("\u00b7", "state", colour, align="center", width="40px", height="40px", min_height="40px",
-                       background_color=colour, border_radius="50%", border_style="solid", border_width="1px",
-                       border_color=BORDER, margin_left="auto", margin_right="auto", overflow="hidden"),
-                  text(label, "state", DIM, align="center", white_space="nowrap")],
-                 gap=6, align="center", tap=tap)
+    # Icon + label; the icon colour is the swatch colour (data, not styling).
+    return text(label, 12, "500", "center", icon="mdi:circle", icon_color=colour, icon_size=32, tap=tap)
 
 
-def light_drawer(entity, title, state_tpl, colour=True):
-    body = [drawer_head(title, state_tpl),
-            text("Brightness", "eyebrow", DIM), bar(entity, 48)]
-    if colour:
-        body += [text("White", "eyebrow", DIM),
-                 row([swatch(n, c, act("light.turn_on", entity, color_temp_kelvin=k)) for n, k, c in WHITES]),
-                 text("Colour", "eyebrow", DIM),
-                 row([swatch(n, f"rgb({c})", act("light.turn_on", entity, rgb_color=[int(x) for x in c.split(",")]))
-                      for n, c in COLOURS])]
-    return drawer(title + " controls", body, entity)
+def light_drawer(entity, name, state_tpl):
+    return drawer(name + " controls", [
+        drawer_head(name, state_tpl),
+        text("Brightness", 12, "600"), bar(entity, 48),
+        text("White", 12, "600"),
+        grid([swatch(n, c, act("light.turn_on", entity, color_temp_kelvin=k)) for n, k, c in WHITES], columns=4),
+        text("Colour", 12, "600"),
+        grid([swatch(n, "rgb(%d,%d,%d)" % tuple(c), act("light.turn_on", entity, rgb_color=c)) for n, c in COLOURS],
+             columns=3),
+    ], entity)
 
 
 def pct(entity):
@@ -260,64 +168,43 @@ def light_state(entity, members=None):
     return "{{ %s if is_state('%s','on') else 'Off' }}" % (pct(entity), entity)
 
 
-def icon_col(entity):
-    return "{{ '%s' if is_state('%s','on') else '%s' }}" % (WARM, entity, DIM)
-
-
-def light_tile(entity, name, members=None, icon="mdi:lightbulb-outline", with_drawer=False, title=None):
-    """One light or a group. Tap toggles, long press opens HA's dialog. Only group tiles (a floor or a
-    room's "All lights") carry the themed drawer: one shared drawer per room keeps the config small."""
+def light_tile(entity, name, members=None, icon="mdi:lightbulb", with_drawer=False, drawer_name=None):
+    """Tap toggles, long press opens HA's dialog. Group tiles carry the room's one shared drawer,
+    on its own line under the bar (an Ultra row splits its children 50/50)."""
     st = light_state(entity, members)
-    hold = more_info(entity)
-    mods = [
-        text(name, "title-sm", icon=icon, icon_size=20, icon_color=icon_col(entity), tap=toggle(entity), hold=hold,
-             white_space="nowrap", overflow="hidden", text_overflow="ellipsis",
-             padding_right="40px" if with_drawer else "0px"),
-        text(template=st, style="label", color=DIM, tap=toggle(entity), hold=hold),
-        row([bar(entity)], gap=0, padding_top="4px"),
-    ]
-    if with_drawer:  # a row splits its children 50/50 in Ultra, so the ••• sits in the tile's corner instead
-        d = light_drawer(entity, title or name, st)
-        d["design"] = {"position": "absolute", "top": "8px", "right": "8px", "z_index": "2"}
-        mods.append(d)
-    return well(mods, position="relative")
+    mods = [text(name, 15, "600", icon=icon, icon_size=20, icon_color=on_col(entity),
+                 tap=toggle(entity), hold=more_info(entity)),
+            tpl_text(st, size=13, tap=toggle(entity), hold=more_info(entity)),
+            bar(entity)]
+    if with_drawer:
+        mods.append(light_drawer(entity, drawer_name or name, st))
+    return stack(mods, gap=6)
 
 
-def plug_tile(entity, name, icon="mdi:floor-lamp-outline"):
-    return well([
-        text(name, "title-sm", icon=icon, icon_size=20, icon_color=icon_col(entity), tap=toggle(entity),
-             white_space="nowrap"),
-        text(template="{{ 'On' if is_state('%s','on') else 'Off' }} · plug" % entity, style="label", color=DIM,
-             tap=toggle(entity)),
-    ], tap=toggle(entity))
+def plug_tile(entity, name, icon="mdi:floor-lamp"):
+    return stack([text(name, 15, "600", icon=icon, icon_size=20, icon_color=on_col(entity), tap=toggle(entity)),
+                  tpl_text("{{ 'On' if is_state('%s','on') else 'Off' }} · plug" % entity, size=13,
+                           tap=toggle(entity))], gap=6, tap=toggle(entity))
 
 
 def power(entities, group):
     tap = (toggle(group) if len(entities) == 1 else
            {"action": "perform-action", "perform_action": "homeassistant.toggle",
             "target": {"entity_id": entities}, "data": {}})
-    # Pill: power icon + On/Off (Ultra shows its editor placeholder for an empty text).
-    return text(template="{{ 'On' if is_state('%s','on') else 'Off' }}" % group, style="state", icon="mdi:power",
-                icon_size=18, icon_color=icon_col(group), tap=tap, align="center", background_color=RAISED,
-                border_radius="999px", white_space="nowrap", width="fit-content", margin_left="auto", **pad(10, 14))
+    return tpl_text("{{ 'On' if is_state('%s','on') else 'Off' }}" % group, size=13, weight="600", align="right",
+                    icon="mdi:power", icon_size=20, icon_color=on_col(group), tap=tap)
 
 
-def room(name, group, members, lights, plugs=(), icon="mdi:sofa-outline"):
+def room(name, group, lights, plugs=(), icon="mdi:sofa"):
     mlist = "[" + ",".join("'%s'" % e for e, _ in lights) + "]"
-    st = light_state(group, mlist)
-    head = row([stack([text(name, "title", icon=icon, icon_size=20, icon_color=icon_col(group)),
-                       text(template=st, style="label", color=DIM)], gap=2),
-                power([group] + [e for e, _ in plugs], group)], padding_left="4px")
+    head = row([text(name, 17, "600", icon=icon, icon_size=20, icon_color=on_col(group)),
+                power([group] + [e for e, _ in plugs], group)])
     tiles = [light_tile(e, n) for e, n in lights] + [plug_tile(e, n) for e, n in plugs]
-    acc = base("accordion", title_mode="custom", title_text="%d lights" % (len(lights) + len(plugs)), icon="mdi:chevron-down",
-               header_alignment="apart", icon_side="right", default_open=False, expand_direction="down",
-               expand_style="push", open_mode="manual",
-               design={**FLAT, "border_style": "none", "border_width": "0px", "background_color": "transparent",
-                       "font_family": FT, "font_weight": "600", "color": DIM},
-               modules=[stack([light_tile(group, "All lights", mlist, "mdi:lamps-outline", True, title=name), grid(tiles)], gap=GAP,
-                            # cancel the accordion's fixed 16 px content padding: tiles line up with the header
-                            margin_left="-16px", margin_right="-16px", margin_top="-6px", margin_bottom="-16px")])
-    return ucard(name, [head, acc])
+    acc = base("accordion", title_mode="custom", title_text="%d lights" % (len(lights) + len(plugs)),
+               icon="mdi:chevron-down", header_alignment="apart", icon_side="right", default_open=False,
+               expand_direction="down", expand_style="push", open_mode="manual",
+               modules=[light_tile(group, "All lights", mlist, "mdi:lamps", True, name), grid(tiles)])
+    return ucard(name, [head, tpl_text(light_state(group, mlist), size=13), acc])
 
 
 LIVING = [("light.floor_lamp", "Floor Lamp"), ("light.buffet", "Buffet"), ("light.side_table", "Side Table"),
@@ -331,54 +218,39 @@ DOWN_M = "['" + "','".join(e for e, _ in LIVING + BEDROOM) + "']"
 UP_M = "['" + "','".join(e for e, _ in UPSTAIRS) + "']"
 
 floors = ucard("Floors", [
-    heading("Floors", text("Nursery not included", "label", DIM, align="right")),
+    title("Floors", text("Nursery not included", 13, align="right")),
     grid([light_tile("light.downstairs_lights", "Downstairs", DOWN_M, "mdi:home-floor-1", True),
           light_tile("light.upstairs_lights", "Upstairs", UP_M, "mdi:home-floor-2", True)]),
 ])
 
 OUT = "switch.outdoor_lights"
 outdoor = ucard("Outdoor", [
-    row([stack([text("Outdoor", "title", icon="mdi:outdoor-lamp", icon_size=20, icon_color=icon_col(OUT)),
-                text(template="{{ 'Porch and driveway on' if is_state('%s','on') else 'Porch and driveway off' }}" % OUT,
-                     style="label", color=DIM)], gap=2),
-         power([OUT], OUT)], padding_left="4px"),
+    row([text("Outdoor", 17, "600", icon="mdi:outdoor-lamp", icon_size=20, icon_color=on_col(OUT)), power([OUT], OUT)]),
+    text("Porch and driveway", 13),
 ])
 
 lights_view = {
-    "type": "sections", "title": "Lights", "path": "lights", "icon": "mdi:lightbulb-group", "theme": "Habib Glass",
+    "type": "sections", "title": "Lights", "path": "lights", "icon": "mdi:lightbulb-group",
     "max_columns": 3, "dense_section_placement": True,
     "sections": [section(floors, outdoor),
-                 section(room("Living Room", "light.living_room_lights", None, LIVING)),
-                 section(room("Bedroom", "light.bedroom_lights", None, BEDROOM, icon="mdi:bed-outline")),
-                 section(room("Nursery", "light.nursery_lights", None, NURSERY, icon="mdi:baby-carriage")),
-                 section(room("Upstairs", "light.upstairs_lights", None, UPSTAIRS, UP_PLUGS, icon="mdi:stairs"))],
+                 section(room("Living Room", "light.living_room_lights", LIVING)),
+                 section(room("Bedroom", "light.bedroom_lights", BEDROOM, icon="mdi:bed")),
+                 section(room("Nursery", "light.nursery_lights", NURSERY, icon="mdi:baby-carriage")),
+                 section(room("Upstairs", "light.upstairs_lights", UPSTAIRS, UP_PLUGS, icon="mdi:stairs"))],
 }
 
 
-# ---- Home: Hero ---------------------------------------------------------------------------
-HERO_MD = (
-    "<div style=\"display:flex;align-items:flex-end;justify-content:space-between;gap:12px;color:%s\">"
-    "<div><div style=\"font-family:%s;font-weight:200;font-size:64px;line-height:.92;letter-spacing:-.04em;"
-    "font-variant-numeric:tabular-nums\">{{ now().strftime('%%-I:%%M') }}"
-    "<span style=\"font-weight:300;font-size:20px;letter-spacing:.02em;color:%s;margin-left:6px\">{{ now().strftime('%%p') }}</span></div>"
-    "<div style=\"font-family:%s;font-weight:500;font-size:17px;margin-top:10px\">{{ now().strftime('%%A, %%B %%-d') }}</div></div>"
-    "<div style=\"text-align:right\"><div style=\"font-family:%s;font-weight:200;font-size:44px;line-height:1;letter-spacing:-.03em\">"
-    "{{ state_attr('weather.forecast_home','temperature') | round(0) | int }}<span style=\"font-size:22px;vertical-align:top\">°</span></div>"
-    "<div style=\"font-family:%s;font-weight:500;font-size:13px;color:%s;margin-top:6px\">"
-    "{{ states('weather.forecast_home') | replace('-', ' ') | replace('partlycloudy', 'partly cloudy') | replace('clear night', 'clear') | capitalize }}"
-    "</div></div></div>"
-) % (TEXT, FD, DIM, FD, FD, FT, DIM)
-
+# ---- Home: Hero (Ultra clock + weather modules, as shipped) ---------------------------------
 hero = ucard("Hero", [
-    markdown(HERO_MD),
-    base("weather", weather_entity="weather.forecast_home", name="", show_current=False, show_condition_label=False,
-         show_humidity=False, show_wind=False, show_wind_direction=False, show_forecast=True, forecast_type="daily",
-         forecast_count=5, icon_color=TEXT, temp_color=TEXT, text_color=DIM, secondary_text_color=FAINT,
-         card_background_color=WELL, tap_action=more_info("weather.forecast_home"), design={**FLAT}),
+    base("clock", time_format="12", show_seconds=False, show_ampm=True, show_date=True, date_style="long",
+         alignment="left", time_size=52, date_size=15),
+    base("weather", weather_entity="weather.forecast_home", show_current=True, show_condition_label=True,
+         show_humidity=True, show_wind=True, show_forecast=True, forecast_type="daily", forecast_count=5,
+         tap_action=more_info("weather.forecast_home")),
 ])
 
 
-# ---- Home: Prayer -------------------------------------------------------------------------
+# ---- Home: Prayer (markdown: layout only, colours from the theme) ----------------------------
 PRAYER = [("Fajr", "fajr"), ("Dhuhr", "dhuhr"), ("Asr", "asr"), ("Maghrib", "maghrib"), ("Isha", "isha")]
 P_LIST = "[" + ",".join(f"['{n}','sensor.living_room_adhan_{k}_prayer']" for n, k in PRAYER) + "]"
 PRAYER_MD = (
@@ -388,114 +260,90 @@ PRAYER_MD = (
     "{%- set n = as_timestamp(now()) -%}"
     "{%- for x in ns.t -%}{%- if ns.i < 0 and x > n -%}{%- set ns.i = loop.index0 -%}{%- endif -%}{%- endfor -%}"
     "{%- if ns.t[4] == 0 -%}<div>Prayer times unavailable</div>{%- else -%}"
-    "{%- if ns.i < 0 -%}{%- set nx, tn, pv, tp, tmw = 'Fajr', ns.t[0] + 86400, 'Isha', ns.t[4], true -%}"
-    "{%- elif ns.i == 0 -%}{%- set nx, tn, pv, tp, tmw = 'Fajr', ns.t[0], 'Isha', ns.t[4] - 86400, false -%}"
-    "{%- else -%}{%- set nx, tn, pv, tp, tmw = P[ns.i][0], ns.t[ns.i], P[ns.i - 1][0], ns.t[ns.i - 1], false -%}{%- endif -%}"
+    "{%- if ns.i < 0 -%}{%- set nx, tn, tmw = 'Fajr', ns.t[0] + 86400, true -%}"
+    "{%- else -%}{%- set nx, tn, tmw = P[ns.i][0], ns.t[ns.i], false -%}{%- endif -%}"
     "{%- set m = ((tn - n) / 60) | round(0, 'ceil') | int -%}"
-    "{%- set pct = (((n - tp) / (tn - tp)) * 100) | round(0) | int -%}"
-    f"<div style=\"display:flex;flex-direction:column;gap:12px;color:{TEXT};font-family:{FT}\">"
-    # next-prayer panel: name bold, time thin and large, countdown medium-thin
-    f"<div style=\"background:{WELL};border:1px solid {WELL_BORDER};border-radius:18px;padding:14px 16px\">"
-    f"<div style=\"font-weight:600;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:{DIM}\">"
-    "Next prayer{{ ' · tomorrow' if tmw }}</div>"
-    "<div style=\"display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:6px\">"
-    f"<div><div style=\"font-family:{FD};font-weight:600;font-size:22px;line-height:1.1;color:{WARM}\">{{{{ nx }}}}</div>"
-    f"<div style=\"font-family:{FD};font-weight:200;font-size:44px;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums\">"
-    "{{ tn | timestamp_custom('%-I:%M') }}"
-    f"<span style=\"font-weight:300;font-size:17px;letter-spacing:.02em;color:{DIM};margin-left:4px\">{{{{ tn | timestamp_custom('%p') }}}}</span></div></div>"
-    f"<div style=\"text-align:right\"><div style=\"font-weight:500;font-size:12px;color:{DIM}\">in</div>"
-    f"<div style=\"font-family:{FD};font-weight:300;font-size:30px;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums\">"
-    "{{ (m // 60 ~ ':' ~ '%02d' % (m % 60)) if m >= 60 else m ~ ' min' }}</div></div></div>"
-    f"<div style=\"margin-top:12px;height:4px;border-radius:2px;background:{TRACK};overflow:hidden\">"
-    f"<div style=\"height:4px;width:{{{{ pct }}}}%;border-radius:2px;background:{WARM}\"></div></div></div>"
-    # five prayers: name bold small, time medium; next in warm, past dim
-    "<div style=\"display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px\">"
-    "{%- for p in P -%}{%- set x = ns.t[loop.index0] -%}"
-    "{%- set st = 'next' if loop.index0 == ns.i else ('past' if x < n else 'later') -%}"
-    "<div style=\"padding:8px 0;border-radius:14px;text-align:center;border:1px solid "
-    "{{ 'rgba(255,201,120,.5);background:rgba(255,201,120,.2);color:" + WARM + "' if st == 'next' "
-    "else ('transparent;opacity:.5' if st == 'past' else '" + WELL_BORDER + ";background:" + WELL + "') }}\">"
-    "<div style=\"font-weight:600;font-size:12px\">{{ p[0] }}</div>"
-    f"<div style=\"font-family:{FD};font-weight:500;font-size:16px;margin-top:2px;font-variant-numeric:tabular-nums\">"
-    "{{ x | timestamp_custom('%-I:%M') }}</div></div>"
+    "{%- set rel = 'in ' ~ ((m // 60) ~ ' h ' if m >= 60 else '') ~ (m % 60) ~ ' min' -%}"
+    "<div style=\"display:flex;flex-direction:column;gap:12px\">"
+    "<div><div style=\"font-size:13px\">Next prayer{{ ' · tomorrow' if tmw }}</div>"
+    "<div style=\"display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap\">"
+    "<span style=\"display:inline-flex;align-items:baseline;gap:10px\"><span style=\"font-size:34px;font-weight:700\">{{ nx }}</span>"
+    "<span style=\"font-size:22px;font-weight:600\">{{ tn | timestamp_custom('%-I:%M %p') }}</span></span>"
+    "<span style=\"font-size:15px;font-weight:600\">{{ rel }}</span></div></div>"
+    "<div style=\"display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;text-align:center\">"
+    "{%- for p in P -%}{%- set x = ns.t[loop.index0] -%}{%- set nxt = loop.index0 == ns.i -%}"
+    "<div style=\"{{ 'font-weight:700' if nxt else ('opacity:.5' if x < n else '') }}\">"
+    "<div style=\"font-size:12px\">{{ p[0] }}</div>"
+    "<div style=\"font-size:15px\">{{ x | timestamp_custom('%-I:%M') }}</div>"
+    "{{ '<div style=\"font-size:10px\">●</div>' if nxt }}</div>"
     "{%- endfor -%}</div>"
-    f"<div style=\"font-weight:500;font-size:12px;color:{DIM};padding-left:4px\">"
-    "Sunrise {{ as_timestamp(states('sensor.living_room_adhan_sunrise_time'), 0) | timestamp_custom('%-I:%M %p') }}</div>"
+    "<div style=\"font-size:12px\">Sunrise "
+    "{{ as_timestamp(states('sensor.living_room_adhan_sunrise_time'), 0) | timestamp_custom('%-I:%M %p') }}</div>"
     "</div>{%- endif -%}"
 )
 ADHAN_CHIP = ("{{ {'content': 'Adhan paused' if is_state('switch.adhan_pause', 'on') else 'Adhan on', "
-              "'icon': 'mdi:circle', 'icon_color': '" + ROSE + "' if is_state('switch.adhan_pause', 'on') else '" + MINT + "'} | tojson }}")
+              "'icon': 'mdi:circle', 'icon_color': '" + ALERT_C + "' if is_state('switch.adhan_pause', 'on') else '"
+              + OK_C + "'} | tojson }}")
 
 prayer = ucard("Prayer", [
-    heading("Prayer", text(template=ADHAN_CHIP, style="state", align="right", tap=more_info("switch.adhan_pause"),
-                           icon="mdi:circle", icon_size=10, width="fit-content", max_width="130px", margin_left="auto",
-                           white_space="nowrap", background_color=RAISED, border_radius="999px", **pad(6, 12))),
+    title("Prayer", tpl_text(ADHAN_CHIP, size=13, weight="500", align="right", icon="mdi:circle",
+                             tap=more_info("switch.adhan_pause"))),
     markdown(PRAYER_MD),
 ])
 
 
-# ---- Home: security (lock, garage, porch) and quick switches ------------------------------
+# ---- Home: security and quick switches -----------------------------------------------------
 LOCK, GARAGE = "lock.living_room_front_door", "cover.general_garage_door_garage_door"
-SECURE = ("{{ 'All secure' if is_state('%s','locked') and is_state('%s','closed') else 'Check doors' }}" % (LOCK, GARAGE))
-SECURE_COL = ("{{ '%s' if is_state('%s','locked') and is_state('%s','closed') else '%s' }}" % (MINT, LOCK, GARAGE, ROSE))
+SECURE = "{{ 'All secure' if is_state('%s','locked') and is_state('%s','closed') else 'Check doors' }}" % (LOCK, GARAGE)
+SECURE_COL = "{{ '%s' if is_state('%s','locked') and is_state('%s','closed') else '%s' }}" % (OK_C, LOCK, GARAGE, ALERT_C)
 
 
 def item(name, state_tpl, icon, col_tpl, tap=None, extra=None):
-    mods = [text(name, "title-sm", align="center", icon=icon, icon_size=18, icon_color=col_tpl),
-            text(template=state_tpl, style="label", color=DIM, align="center")]
+    mods = [text(name, 15, "600", "center", icon=icon, icon_size=20, icon_color=col_tpl),
+            tpl_text(state_tpl, size=13, align="center")]
     if extra:
         mods.append(extra)
-    return well(mods, gap=2, radius=16, tap=tap, p=(12, 8), align_items="center")
-
-
-def big_button(label, tap=None, hold=None, color=TEXT, bg=RAISED):
-    return text(label, "title-sm", color, align="center", tap=tap, hold=hold, background_color=bg,
-                border_radius="14px", **pad(13, 12))
+    return stack(mods, gap=2, align="center", tap=tap)
 
 
 lock_drawer = drawer("Front door controls", [
     drawer_head("Front door", "{{ states('%s') | capitalize }}" % LOCK),
-    row([big_button("Lock", tap=act("lock.lock", LOCK)),
-         big_button("Hold to unlock", hold=act("lock.unlock", LOCK), color=ROSE)], gap=GAP),
-    text("Unlock needs a long press so a stray tap cannot open the door.", "label", DIM),
+    grid([text("Lock", 15, "600", "center", icon="mdi:lock", tap=act("lock.lock", LOCK)),
+          text("Hold to unlock", 15, "600", "center", icon="mdi:lock-open-variant", icon_color=ALERT_C,
+               hold=act("lock.unlock", LOCK))]),
+    text("Unlock needs a long press so a stray tap cannot open the door.", 13),
 ], LOCK)
 
 garage_drawer = drawer("Garage controls", [
     drawer_head("Garage", "{{ states('%s') | capitalize }}" % GARAGE),
-    row([big_button("Hold to open", hold=act("cover.open_cover", GARAGE), color=ROSE),
-         big_button("Hold to close", hold=act("cover.close_cover", GARAGE))], gap=GAP),
-    text("Both need a long press. Close only with a clear view of the door.", "label", DIM),
+    grid([text("Hold to open", 15, "600", "center", icon="mdi:garage-open-variant", icon_color=ALERT_C,
+               hold=act("cover.open_cover", GARAGE)),
+          text("Hold to close", 15, "600", "center", icon="mdi:garage-variant", hold=act("cover.close_cover", GARAGE))]),
+    text("Both need a long press. Close only with a clear view of the door.", 13),
 ], GARAGE)
 
 
-def lock_state():
-    return "{{ states('%s') | capitalize }}" % LOCK
+def switch_tile(entity, name, icon, tap, state_tpl=None):
+    return stack([text(name, 15, "600", icon=icon, icon_size=20, icon_color=on_col(entity)),
+                  tpl_text(state_tpl or "{{ states('%s') | capitalize }}" % entity, size=13)], gap=2, tap=tap)
 
 
 home = ucard("Home", [
-    heading("Home"),
-    # Ultra pads a top-level vertical block twice (wrapper and content); inside a grid it is padded once.
-    grid([well([stack([text(template=SECURE, style="title", icon="mdi:shield-check-outline", icon_size=22,
-                      icon_color=SECURE_COL),
-                 text("Doors and garage", "label", DIM, padding_left="30px")], gap=0),
-          grid([
-              item("Front door", lock_state(), "mdi:lock-outline",
-                   "{{ '%s' if is_state('%s','locked') else '%s' }}" % (MINT, LOCK, ROSE), extra=lock_drawer),
-              item("Garage", "{{ states('%s') | capitalize }}" % GARAGE, "mdi:garage-variant",
-                   "{{ '%s' if is_state('%s','closed') else '%s' }}" % (MINT, GARAGE, ROSE), extra=garage_drawer),
-              item("Porch", "{{ states('%s') | capitalize }}" % OUT, "mdi:lightbulb-outline", icon_col(OUT),
-                   tap=toggle(OUT)),
-          ], columns=3)], gap=12, radius=22, p=(12, 12))], columns=1),
+    title("Home"),
+    tpl_text(SECURE, size=17, weight="600", icon="mdi:shield-check", icon_size=22, icon_color=SECURE_COL),
     grid([
-        well([text("Skip Evening Lights", "title-sm", icon="mdi:weather-night", icon_size=20,
-                   icon_color=icon_col("switch.skip_evening_lights_tonight")),
-              text(template="{{ states('switch.skip_evening_lights_tonight') | capitalize }}", style="label", color=DIM)],
-             gap=2, tap=toggle("switch.skip_evening_lights_tonight")),
-        well([text("Pause Prayer", "title-sm", icon="mdi:pause", icon_size=20, icon_color=icon_col("switch.adhan_pause")),
-              text(template="{{ states('switch.adhan_pause') | capitalize }}", style="label", color=DIM)],
-             gap=2, tap=more_info("switch.adhan_pause")),
-        well([text("Noor's Bedtime", "title-sm", icon="mdi:sleep", icon_size=20, icon_color=icon_col("switch.noor_s_bedtime")),
-              text("Run", "label", DIM)], gap=2, tap=toggle("switch.noor_s_bedtime")),
+        item("Front door", "{{ states('%s') | capitalize }}" % LOCK, "mdi:lock",
+             "{{ '%s' if is_state('%s','locked') else '%s' }}" % (OK_C, LOCK, ALERT_C), extra=lock_drawer),
+        item("Garage", "{{ states('%s') | capitalize }}" % GARAGE, "mdi:garage-variant",
+             "{{ '%s' if is_state('%s','closed') else '%s' }}" % (OK_C, GARAGE, ALERT_C), extra=garage_drawer),
+        item("Porch", "{{ states('%s') | capitalize }}" % OUT, "mdi:lightbulb", on_col(OUT), tap=toggle(OUT)),
+    ], columns=3),
+    grid([
+        switch_tile("switch.skip_evening_lights_tonight", "Skip Evening Lights", "mdi:weather-night",
+                    toggle("switch.skip_evening_lights_tonight")),
+        switch_tile("switch.adhan_pause", "Pause Prayer", "mdi:pause", more_info("switch.adhan_pause")),
+        switch_tile("switch.noor_s_bedtime", "Noor's Bedtime", "mdi:sleep", toggle("switch.noor_s_bedtime"),
+                    "{{ 'Running' if is_state('switch.noor_s_bedtime','on') else 'Run' }}"),
     ]),
 ])
 
@@ -505,57 +353,38 @@ MODES = [("heat_cool", "Auto", "mdi:thermostat-auto"), ("heat", "Heat", "mdi:fir
          ("cool", "Cool", "mdi:snowflake"), ("off", "Off", "mdi:power")]
 
 
-def mode_chip(entity, mode, label, icon):
-    col = "{{ '%s' if is_state('%s','%s') else '%s' }}" % (WARM, entity, mode, DIM)
-    return text(label, "state", align="center", icon=icon, icon_size=18, icon_color=col,
-                tap=act("climate.set_hvac_mode", entity, hvac_mode=mode),
-                background_color=RAISED, border_radius="14px", white_space="nowrap", **pad(12, 4))
-
-
-def setpoint(entity, attr, label, colour):
-    return well([text(label, "label", DIM),
-                 text(template="{{ state_attr('%s','%s') | int(0) }}°" % (entity, attr), style="metric-sm", color=colour)],
-                gap=2, radius=16)
-
-
 def climate_tile(entity, name):
     rng = ("{{ (state_attr('%s','target_temp_low') | int ~ '–' ~ state_attr('%s','target_temp_high') | int ~ '°') "
            "if state_attr('%s','target_temp_low') is not none else ((state_attr('%s','temperature') | int(0)) ~ '°') }}"
            % ((entity,) * 4))
-    mode = ("{{ {'heat_cool':'Auto','heat':'Heat','cool':'Cool','off':'Off'}.get(states('%s'), states('%s') | capitalize) }}"
-            "{{ ' · heating' if state_attr('%s','hvac_action') == 'heating' else (' · cooling' if state_attr('%s','hvac_action') == 'cooling' else '') }}"
-            % ((entity,) * 4))
-    temp_md = (f"<div style=\"text-align:center;color:{TEXT}\">"
-               f"<div style=\"font-family:{FD};font-weight:200;font-size:56px;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums\">"
-               "{{ state_attr('%s','current_temperature') | round(0) | int }}"
-               "<span style=\"font-size:28px;vertical-align:top;margin-left:2px\">°</span></div>"
-               f"<div style=\"font-family:{FT};font-weight:600;font-size:12px;margin-top:6px;color:{DIM}\">" % entity
-               + rng + "</div></div>")
+    mode = "{{ {'heat_cool':'Auto','heat':'Heat','cool':'Cool','off':'Off'}.get(states('%s'), states('%s') | capitalize) }}" % (entity, entity)
+    temp = "{{ state_attr('%s','current_temperature') | round(0) | int }}°" % entity
+    chips = [text(lbl, 13, "600", "center", icon=ic, icon_size=18,
+                  icon_color="{{ '%s' if is_state('%s','%s') else '' }}" % (ON, entity, m),
+                  tap=act("climate.set_hvac_mode", entity, hvac_mode=m)) for m, lbl, ic in MODES]
+    # Ultra's climate module is Pro (D86), so the drawer has mode buttons and the setpoints;
+    # steppers wait for a step script on the Pi (I81).
     c_drawer = drawer(name + " thermostat", [
         drawer_head(name, "{{ state_attr('%s','current_temperature') | round(0) | int }}° now · " % entity + mode),
-        # Ultra's climate module is Pro (D86: none), so: mode chips + setpoint readout. Steppers need a
-        # step script on the Pi (perform-action data cannot be templated); until then setpoints sit behind
-        # "Open full controls".
-        text("Mode", "eyebrow", DIM),
-        grid([mode_chip(entity, m, lbl, ic) for m, lbl, ic in MODES], columns=4),
-        text("Setpoints", "eyebrow", DIM),
-        grid([setpoint(entity, "target_temp_low", "Heat to", HEAT), setpoint(entity, "target_temp_high", "Cool to", COOL)]),
+        text("Mode", 12, "600"), grid(chips, columns=4),
+        text("Setpoints", 12, "600"),
+        tpl_text("Heat to {{ state_attr('%s','target_temp_low') | int(0) }}° · Cool to "
+                 "{{ state_attr('%s','target_temp_high') | int(0) }}°" % (entity, entity), size=17, weight="600"),
     ], entity, icon="mdi:tune-variant")
-    return well([
-        markdown(temp_md, tap=more_info(entity)),
-        row([stack([text(name, "title", white_space="nowrap"),
-                    text(template=mode, style="label", color=DIM)], gap=0),
-             c_drawer], padding_top="6px"),
-    ], gap=4, p=(16, 14))
+    return stack([tpl_text(temp, size=44, weight="300", align="center", tap=more_info(entity)),
+                  tpl_text(rng, size=13, align="center"),
+                  text(name, 17, "600", "center"),
+                  tpl_text(mode, size=13, align="center"),
+                  c_drawer], gap=2, align="center")
 
 
 climate = ucard("Climate", [
-    heading("Climate"),
+    title("Climate"),
     grid([climate_tile("climate.downstairs", "Downstairs"), climate_tile("climate.upstairs", "Upstairs")]),
 ])
 
 
-home_view = {"type": "sections", "title": "Home", "path": "home", "icon": "mdi:home", "theme": "Habib Glass",
+home_view = {"type": "sections", "title": "Home", "path": "home", "icon": "mdi:home",
              "max_columns": 3, "dense_section_placement": True,
              "sections": [section(hero), section(prayer), section(home), section(climate)]}
 

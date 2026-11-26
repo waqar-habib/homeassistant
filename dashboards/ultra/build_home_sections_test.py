@@ -229,7 +229,7 @@ OUT = "switch.outdoor_lights"
 
 lights_view = {
     "type": "sections", "title": "Lights", "path": "lights", "icon": "mdi:lightbulb-group",
-    "max_columns": 3, "dense_section_placement": True,
+    "max_columns": 2, "dense_section_placement": True,
     "sections": [
         section(heading("Floors"), heading("Nursery not included", style="subtitle"),
                 light_tile("light.downstairs_lights", "Downstairs", DOWN_M, "mdi:home-floor-1"),
@@ -343,7 +343,7 @@ def climate_tile(e, name):
 
 
 home_view = {"type": "sections", "title": "Home", "path": "home", "icon": "mdi:home",
-             "max_columns": 3, "dense_section_placement": True,
+             "max_columns": 2, "dense_section_placement": True,
              "sections": [section(hero),
                           section(heading("Prayer"), prayer),
                           section(*home_cards),

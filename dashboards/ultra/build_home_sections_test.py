@@ -265,14 +265,18 @@ def light_tile(entity, name, members=None, icon="mdi:lightbulb-outline", with_dr
     room's "All lights") carry the themed drawer: one shared drawer per room keeps the config small."""
     st = light_state(entity, members)
     hold = more_info(entity)
-    last = row([bar(entity), light_drawer(entity, name, st)], gap=6) if with_drawer \
-        else row([bar(entity)], gap=0, padding_top="4px", padding_right="4px")
-    return well([
+    mods = [
         text(name, "title-sm", icon=icon, icon_size=20, icon_color=icon_col(entity), tap=toggle(entity), hold=hold,
-             white_space="nowrap", overflow="hidden", text_overflow="ellipsis"),
+             white_space="nowrap", overflow="hidden", text_overflow="ellipsis",
+             padding_right="40px" if with_drawer else "0px"),
         text(template=st, style="label", color=DIM, tap=toggle(entity), hold=hold),
-        last,
-    ])
+        row([bar(entity)], gap=0, padding_top="4px", padding_right="4px"),
+    ]
+    if with_drawer:  # a row splits its children 50/50 in Ultra, so the ••• sits in the tile's corner instead
+        d = light_drawer(entity, name, st)
+        d["design"] = {"position": "absolute", "top": "8px", "right": "8px", "z_index": "2"}
+        mods.append(d)
+    return well(mods, position="relative")
 
 
 def plug_tile(entity, name, icon="mdi:floor-lamp-outline"):
@@ -301,7 +305,7 @@ def room(name, group, members, lights, plugs=(), icon="mdi:sofa-outline"):
                        text(template=st, style="label", color=DIM)], gap=2),
                 power([group] + [e for e, _ in plugs], group)], padding_left="4px")
     tiles = [light_tile(e, n) for e, n in lights] + [plug_tile(e, n) for e, n in plugs]
-    acc = base("accordion", title_mode="custom", title_text="Lights", icon="mdi:chevron-down",
+    acc = base("accordion", title_mode="custom", title_text="%d lights" % (len(lights) + len(plugs)), icon="mdi:chevron-down",
                header_alignment="apart", icon_side="right", default_open=False, expand_direction="down",
                expand_style="push", open_mode="manual",
                design={**FLAT, "border_style": "none", "border_width": "0px", "background_color": "transparent",

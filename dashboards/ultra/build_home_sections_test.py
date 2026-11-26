@@ -311,7 +311,9 @@ def room(name, group, members, lights, plugs=(), icon="mdi:sofa-outline"):
                expand_style="push", open_mode="manual",
                design={**FLAT, "border_style": "none", "border_width": "0px", "background_color": "transparent",
                        "font_family": FT, "font_weight": "600", "color": DIM},
-               modules=[stack([light_tile(group, "All lights", mlist, "mdi:lamps-outline", True), grid(tiles)], gap=GAP)])
+               modules=[stack([light_tile(group, "All lights", mlist, "mdi:lamps-outline", True), grid(tiles)], gap=GAP,
+                            # cancel the accordion's fixed 16 px content padding: tiles line up with the header
+                            margin_left="-16px", margin_right="-16px", margin_top="-6px", margin_bottom="-16px")])
     return ucard(name, [head, acc])
 
 

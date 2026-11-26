@@ -21,8 +21,8 @@ import json
 import sys
 
 # ---- Tokens (habib-tokens.yaml, color.dark, type, radius, space) --------------------------
-FD = '"Habib Display",Outfit,sans-serif'  # display (fonts are declared globally by www/habib)
-FT = '"Habib Text",Inter,sans-serif'       # text; the Habib Glass theme already sets it, so text styles omit it
+FD = "'Habib Display',Outfit,sans-serif"  # display (fonts are declared globally by www/habib)
+FT = "'Habib Text',Inter,sans-serif"       # text; the Habib Glass theme already sets it, so text styles omit it
 TEXT, DIM, FAINT = "#eef4ee", "rgba(238,244,238,.84)", "rgba(238,244,238,.5)"
 WARM, MINT, ROSE = "#ffc978", "#9fd6b5", "#ff8a80"
 HEAT, COOL = "#ffb36b", "#8fc9ff"
@@ -66,7 +66,9 @@ def pad(v, h=None):
 
 
 # Ultra puts no pane on a block without a theme, but zero the shadow anyway (numbers, not "0px").
-FLAT = {}  # uc_theme "none" draws no pane, so blocks need no opt-out (Liquid Glass needed numeric zero shadows)
+# Ultra gives blocks default padding; zero it so the 12 px steps come only from PAD and the wells.
+FLAT = {"padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px", "padding_right": "0px",
+        "margin_top": "0px", "margin_bottom": "0px"}
 
 # Type styles: (family, weight, size, letter spacing, transform)
 TYPE = {
@@ -102,9 +104,8 @@ def ts(style, color=TEXT, **extra):
 def text(content=None, style="body", color=TEXT, template=None, tap=None, hold=None, icon="", icon_color="",
          icon_size=None, align="left", **design):
     size, w, d = ts(style, color, **design)
-    if align != "left":
-        d["text_align"] = align
-    m = base("text", text=content or "", text_size=size, design=d)
+    d["text_align"] = align
+    m = base("text", text=content or " ", text_size=size, design=d)
     if icon:
         m.update(icon=icon, icon_color=icon_color, icon_position="before")
     if template:
@@ -218,7 +219,8 @@ def bar(entity, height=34):
         value_size=13, value_suffix="%", show_toggle=False, show_color_picker=False, haptic_feedback=True,
         show_bar_label=False, value_color=TEXT,
         # Ultra hard-codes padding: 16px on the slider; negative margins cancel it.
-        design={**FLAT, "margin_top": "-12px", "margin_bottom": "-12px", "margin_left": "-16px",
+        design={"padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px", "padding_right": "0px",
+                "margin_top": "-12px", "margin_bottom": "-12px", "margin_left": "-16px",
                 "margin_right": "-12px", "width": "calc(100% + 28px)"})
 
 
@@ -263,8 +265,8 @@ def light_tile(entity, name, members=None, icon="mdi:lightbulb-outline", with_dr
     room's "All lights") carry the themed drawer: one shared drawer per room keeps the config small."""
     st = light_state(entity, members)
     hold = more_info(entity)
-    last = row([bar(entity), light_drawer(entity, name, st)], gap=6, padding_top="4px") if with_drawer \
-        else stack([bar(entity)], padding_top="4px", padding_right="4px")
+    last = row([bar(entity), light_drawer(entity, name, st)], gap=6) if with_drawer \
+        else row([bar(entity)], gap=0, padding_top="4px", padding_right="4px")
     return well([
         text(name, "title-sm", icon=icon, icon_size=20, icon_color=icon_col(entity), tap=toggle(entity), hold=hold,
              white_space="nowrap", overflow="hidden", text_overflow="ellipsis"),
@@ -286,9 +288,10 @@ def power(entities, group):
     tap = (toggle(group) if len(entities) == 1 else
            {"action": "perform-action", "perform_action": "homeassistant.toggle",
             "target": {"entity_id": entities}, "data": {}})
-    return text("", "label", icon="mdi:power", icon_size=20, icon_color=icon_col(group), tap=tap,
-                background_color=RAISED, border_radius="50%", width="40px", height="40px",
-                min_width="40px", display="flex", align_items="center", justify_content="center")
+    # Pill: power icon + On/Off (Ultra shows its editor placeholder for an empty text).
+    return text(template="{{ 'On' if is_state('%s','on') else 'Off' }}" % group, style="state", icon="mdi:power",
+                icon_size=18, icon_color=icon_col(group), tap=tap, align="center", background_color=RAISED,
+                border_radius="999px", white_space="nowrap", width="fit-content", margin_left="auto", **pad(10, 14))
 
 
 def room(name, group, members, lights, plugs=(), icon="mdi:sofa-outline"):
@@ -301,7 +304,7 @@ def room(name, group, members, lights, plugs=(), icon="mdi:sofa-outline"):
     acc = base("accordion", title_mode="custom", title_text="Lights", icon="mdi:chevron-down",
                header_alignment="apart", icon_side="right", default_open=False, expand_direction="down",
                expand_style="push", open_mode="manual",
-               design={**FLAT, "border_style": "none", "border_width": "0px", "padding_left": "4px",
+               design={**FLAT, "border_style": "none", "border_width": "0px", "background_color": "transparent",
                        "font_family": FT, "font_weight": "600", "color": DIM},
                modules=[stack([light_tile(group, "All lights", mlist, "mdi:lamps-outline", True), grid(tiles)], gap=GAP)])
     return ucard(name, [head, acc])
@@ -428,8 +431,7 @@ SECURE_COL = ("{{ '%s' if is_state('%s','locked') and is_state('%s','closed') el
 
 
 def item(name, state_tpl, icon, col_tpl, tap=None, extra=None):
-    mods = [text("", "label", icon=icon, icon_size=22, icon_color=col_tpl, align="center"),
-            text(name, "title-sm", align="center", white_space="nowrap"),
+    mods = [text(name, "title-sm", align="center", white_space="nowrap", icon=icon, icon_size=18, icon_color=col_tpl),
             text(template=state_tpl, style="label", color=DIM, align="center")]
     if extra:
         mods.append(extra)
@@ -462,11 +464,9 @@ def lock_state():
 
 home = ucard("Home", [
     heading("Home"),
-    well([row([text("", "label", icon="mdi:shield-check-outline", icon_size=24, icon_color=SECURE_COL,
-                     background_color=RAISED, border_radius="14px", width="44px", height="44px", min_width="44px",
-                     display="flex", align_items="center", justify_content="center"),
-               stack([text(template=SECURE, style="title"), text("Doors and garage", "label", DIM)], gap=0)],
-              align="left", gap=12),
+    well([stack([text(template=SECURE, style="title", icon="mdi:shield-check-outline", icon_size=22,
+                      icon_color=SECURE_COL),
+                 text("Doors and garage", "label", DIM, padding_left="30px")], gap=0),
           grid([
               item("Front door", lock_state(), "mdi:lock-outline",
                    "{{ '%s' if is_state('%s','locked') else '%s' }}" % (MINT, LOCK, ROSE), extra=lock_drawer),
@@ -509,7 +509,7 @@ def climate_tile(entity, name):
     ], entity, icon="mdi:tune-variant")
     return well([
         markdown(temp_md, tap=more_info(entity)),
-        row([stack([text(name, "title", align="left"),
+        row([stack([text(name, "title", white_space="nowrap"),
                     text(template=mode, style="label", color=DIM)], gap=0),
              c_drawer], padding_top="6px"),
     ], gap=4, p=(16, 14))

@@ -454,7 +454,7 @@ def big_button(label, tap=None, hold=None, color=TEXT, bg=RAISED):
 
 
 lock_drawer = drawer("Front door controls", [
-    drawer_head("Front door", "{{ states('%s') | capitalize }} · {{ state_attr('%s','battery_level') or '' }}" % (LOCK, LOCK)),
+    drawer_head("Front door", "{{ states('%s') | capitalize }}" % LOCK),
     row([big_button("Lock", tap=act("lock.lock", LOCK)),
          big_button("Hold to unlock", hold=act("lock.unlock", LOCK), color=ROSE)], gap=GAP),
     text("Unlock needs a long press so a stray tap cannot open the door.", "label", DIM),
@@ -501,6 +501,23 @@ home = ucard("Home", [
 
 
 # ---- Home: Climate --------------------------------------------------------------------------
+MODES = [("heat_cool", "Auto", "mdi:thermostat-auto"), ("heat", "Heat", "mdi:fire"),
+         ("cool", "Cool", "mdi:snowflake"), ("off", "Off", "mdi:power")]
+
+
+def mode_chip(entity, mode, label, icon):
+    col = "{{ '%s' if is_state('%s','%s') else '%s' }}" % (WARM, entity, mode, DIM)
+    return text(label, "state", align="center", icon=icon, icon_size=18, icon_color=col,
+                tap=act("climate.set_hvac_mode", entity, hvac_mode=mode),
+                background_color=RAISED, border_radius="14px", white_space="nowrap", **pad(12, 4))
+
+
+def setpoint(entity, attr, label, colour):
+    return well([text(label, "label", DIM),
+                 text(template="{{ state_attr('%s','%s') | int(0) }}°" % (entity, attr), style="metric-sm", color=colour)],
+                gap=2, radius=16)
+
+
 def climate_tile(entity, name):
     rng = ("{{ (state_attr('%s','target_temp_low') | int ~ '–' ~ state_attr('%s','target_temp_high') | int ~ '°') "
            "if state_attr('%s','target_temp_low') is not none else ((state_attr('%s','temperature') | int(0)) ~ '°') }}"
@@ -516,7 +533,13 @@ def climate_tile(entity, name):
                + rng + "</div></div>")
     c_drawer = drawer(name + " thermostat", [
         drawer_head(name, "{{ state_attr('%s','current_temperature') | round(0) | int }}° now · " % entity + mode),
-        base("climate", entity=entity, design={**FLAT}),
+        # Ultra's climate module is Pro (D86: none), so: mode chips + setpoint readout. Steppers need a
+        # step script on the Pi (perform-action data cannot be templated); until then setpoints sit behind
+        # "Open full controls".
+        text("Mode", "eyebrow", DIM),
+        grid([mode_chip(entity, m, lbl, ic) for m, lbl, ic in MODES], columns=4),
+        text("Setpoints", "eyebrow", DIM),
+        grid([setpoint(entity, "target_temp_low", "Heat to", HEAT), setpoint(entity, "target_temp_high", "Cool to", COOL)]),
     ], entity, icon="mdi:tune-variant")
     return well([
         markdown(temp_md, tap=more_info(entity)),

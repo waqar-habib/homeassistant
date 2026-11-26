@@ -192,10 +192,15 @@ def bar(entity, height=34):
                 "box_shadow_spread": "0px", "box_shadow_color": "transparent"})
 
 
+CLEAR = {"background_color": "transparent", "padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px",
+         "padding_right": "0px", "box_shadow_h": "0px", "box_shadow_v": "0px", "box_shadow_blur": "0px",
+         "box_shadow_spread": "0px", "box_shadow_color": "transparent", "backdrop_filter": "none"}
+
+
 def swatch(label, colour, tap):
     # Text icons sit only before/after the text, so the dot and its label are two stacked modules.
-    return base("vertical", alignment="center", gap=2, gap_unit="px", tap_action=tap, modules=[
-        text("", align="center", icon="mdi:circle", icon_color=colour, icon_size=44),
+    return base("vertical", alignment="center", gap=0, gap_unit="px", tap_action=tap, design=CLEAR, modules=[
+        text("\u25CF", size=48, align="center", design={"color": colour, "line_height": "1"}),
         text(label, size=12, align="center", design={"color": "var(--secondary-text-color)", "white_space": "nowrap"}),
     ])
 

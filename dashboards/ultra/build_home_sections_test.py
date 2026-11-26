@@ -140,7 +140,7 @@ COLOURS = [("Coral", [255, 120, 90]), ("Amber", [255, 190, 70]), ("Green", [120,
            ("Blue", [90, 160, 255]), ("Violet", [190, 120, 255]), ("Pink", [255, 110, 190])]
 
 
-def bar(entity, height=34):
+def bar(entity, height=44):  # 44 px: touch standard
     return base("slider_control", bars=[{
         "id": nid("bar"), "type": "brightness", "entity": entity, "min_value": 0, "max_value": 100, "step": 1,
         "show_icon": False, "show_name": False, "show_value": True, "show_bar_label": False}],
@@ -231,9 +231,10 @@ lights_view = {
 
 
 # ---- Home ------------------------------------------------------------------------------------
+# The clock module sets its date 5 px under the time; the date is a separate line so the column gap applies.
 hero = ucard("Hero", [
-    base("clock", time_format="12", show_seconds=False, show_ampm=True, show_date=True, date_style="long",
-         alignment="left"),
+    stack([base("clock", time_format="12", show_seconds=False, show_ampm=True, show_date=False, alignment="left"),
+           tpl("{{ now().strftime('%A, %B %-d') }}", size=NAME)], gap=8),
     base("weather", weather_entity="weather.forecast_home", show_current=True, show_condition_label=True,
          show_humidity=True, show_wind=True, show_forecast=True, forecast_type="daily", forecast_count=5,
          tap_action=more_info("weather.forecast_home")),
@@ -321,8 +322,7 @@ def climate_tile(e, name):
         tpl("Heat to {{ state_attr('%s','target_temp_low') | int(0) }}° · Cool to "
             "{{ state_attr('%s','target_temp_high') | int(0) }}°" % (e, e), size=TITLE, weight="600"),
     ], e, icon="mdi:tune-variant")
-    value = stack([tpl("{{ state_attr('%s','current_temperature') | round(0) | int }}°" % e, size=METRIC, weight="300",
-                       tap=more_info(e)),
+    value = stack([tpl("{{ state_attr('%s','current_temperature') | round(0) | int }}°" % e, size=METRIC, weight="300"),
                    tpl("Set " + rng, size=STATE)], gap=2)
     return tile(name, "mdi:thermostat", "", value=value, state=mode, ctrl=c_drawer)
 

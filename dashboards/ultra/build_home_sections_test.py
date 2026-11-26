@@ -68,7 +68,7 @@ def pad(v, h=None):
 # Ultra puts no pane on a block without a theme, but zero the shadow anyway (numbers, not "0px").
 # Ultra gives blocks default padding; zero it so the 12 px steps come only from PAD and the wells.
 FLAT = {"padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px", "padding_right": "0px",
-        "margin_top": "0px", "margin_bottom": "0px"}
+        "margin_top": "0px", "margin_bottom": "0px", "margin_left": "0px", "margin_right": "0px"}
 
 # Type styles: (family, weight, size, letter spacing, transform)
 TYPE = {

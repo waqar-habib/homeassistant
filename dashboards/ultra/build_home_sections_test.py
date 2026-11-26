@@ -180,12 +180,16 @@ def act(service, entity, **data):
 def bar(entity, height=34):
     return base("slider_control", bars=[{
         "id": nid("bar"), "type": "brightness", "entity": entity, "min_value": 0, "max_value": 100, "step": 1,
-        "slider_style": "theme", "show_icon": False, "show_name": False, "show_value": True,
+        "slider_style": "theme", "show_icon": False, "show_name": False, "show_value": True, "show_bar_label": False,
         "icon_position": "left", "name_position": "left", "value_position": "left", "invert_direction": False}],
         orientation="horizontal", layout_mode="overlay", slider_style="theme", slider_height=height,
         slider_radius="round", border_radius=height // 2, slider_track_color="rgba(16,34,77,0.08)",
         dynamic_fill_color=True, show_icon=False, show_name=False, show_state=False, show_value=True,
-        value_size=13, value_suffix="%", show_toggle=False, show_color_picker=False, haptic_feedback=True)
+        value_size=13, value_suffix="%", show_toggle=False, show_color_picker=False, haptic_feedback=True,
+        show_bar_label=False, value_color="var(--primary-text-color)",
+        design={"padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px", "padding_right": "0px",
+                "background_color": "transparent", "box_shadow_h": "0px", "box_shadow_v": "0px", "box_shadow_blur": "0px",
+                "box_shadow_spread": "0px", "box_shadow_color": "transparent"})
 
 
 def swatch(label, colour, tap):
@@ -197,7 +201,7 @@ def drawer(entity, title, sub):
     eyebrow = {"color": "var(--secondary-text-color)", "letter_spacing": "0.6px", "text_transform": "uppercase"}
     return base("drawer", drawer_position="bottom", drawer_title=title, show_close_button=True,
                 close_on_overlay_click=True, trigger_style="icon", trigger_label=title + " colour and details",
-                trigger_icon="mdi:dots-horizontal", trigger_alignment="right", trigger_icon_size=18,
+                trigger_icon="mdi:dots-horizontal", trigger_alignment="right", trigger_icon_size=18, trigger_color="#10224D",
                 trigger_icon_background="circle", trigger_icon_background_color="rgba(255,255,255,0.75)",
                 drawer_size="auto", drawer_background="rgba(246,248,255,0.96)", modules=[
                     text(template=sub, size=13, design={"color": "var(--secondary-text-color)"}),
@@ -223,7 +227,7 @@ def tile_state(entity, members=None):
 def tile(entity, name, members=None, icon="mdi:lightbulb"):
     head = row([
         base("vertical", alignment="left", gap=2, gap_unit="px", modules=[
-            text(name, size=15, weight="600", icon=icon, icon_size=22,
+            text(name, size=15, weight="600", icon=icon, icon_size=22, design={"white_space": "nowrap"},
                  icon_color="{{ 'var(--state-light-active-color)' if is_state('%s','on') else 'var(--secondary-text-color)' }}" % entity),
             text(template=tile_state(entity, members), size=13, design={"color": "var(--secondary-text-color)"}),
         ], tap_action={"action": "toggle", "entity": entity}),

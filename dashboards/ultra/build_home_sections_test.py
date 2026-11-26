@@ -197,7 +197,8 @@ def bar(entity, height=34, ink="var(--primary-text-color)"):
         value_size=13, value_suffix="%", show_toggle=False, show_color_picker=False, haptic_feedback=True,
         show_bar_label=False, value_color=ink,
         # Ultra hard-codes padding: 16px on the slider pane after the design styles; negative margins cancel it.
-        design={**CLEAR, "margin_top": "-12px", "margin_bottom": "-12px", "margin_left": "-16px", "margin_right": "-12px"})
+        design={**CLEAR, "margin_top": "-12px", "margin_bottom": "-12px", "margin_left": "-16px", "margin_right": "-12px",
+                "width": "calc(100% + 28px)"})
 
 
 def swatch(label, colour, tap):
@@ -272,7 +273,7 @@ floors = ucard("Floors", [
 living = ucard("Living Room", [
     base("accordion", title_mode="custom", title_text="Living Room", icon="mdi:chevron-down", header_alignment="apart",
          icon_side="right", default_open=True, expand_direction="down", expand_style="push", open_mode="manual",
-         design=dict(CLEAR),
+         design={**CLEAR, "border_style": "none", "border_width": "0px"},
          modules=[
              tile("light.living_room_lights", "All lights", LIV_M, "mdi:lamps"),
              grid([tile(e, n) for e, n in LIVING]),

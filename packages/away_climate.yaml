@@ -1,0 +1,52 @@
+# Away climate: while either person (or both) is away, both Nest thermostats stay in
+# heat_cool with a 68 to 78 F range. Owner GREEN LIGHT 2026-11-25.
+# Nothing happens on return: the mode is never switched back to cool-only, and the
+# range stays as set until someone changes it. "Away" = person state not `home`
+# for 10 minutes (anti-jitter). Thermostats turned `off` are left off.
+
+automation:
+  - id: away_climate_heat_cool_68_78
+    alias: "Away climate: heat/cool 68 to 78 when either person is away"
+    description: "10 minutes after Waqar or Maham leaves home, both thermostats go to heat/cool, low 68, high 78. No action on return."
+    mode: restart
+    trace:
+      stored_traces: 20
+    triggers:
+      - trigger: state
+        entity_id:
+          - person.waqar_habib
+          - person.maham_habib
+        not_to:
+          - home
+          - unknown
+          - unavailable
+        for:
+          minutes: 10
+    actions:
+      - repeat:
+          for_each:
+            - climate.upstairs
+            - climate.downstairs
+          sequence:
+            - if:
+                - condition: template
+                  value_template: "{{ not is_state(repeat.item, 'off') and not is_state(repeat.item, 'unavailable') }}"
+              then:
+                - action: climate.set_hvac_mode
+                  target:
+                    entity_id: "{{ repeat.item }}"
+                  data:
+                    hvac_mode: heat_cool
+                - action: climate.set_temperature
+                  target:
+                    entity_id: "{{ repeat.item }}"
+                  data:
+                    target_temp_low: 68
+                    target_temp_high: 78
+      - action: script.notify_household
+        data:
+          title: "Thermostats"
+          message: "Someone is away. Both thermostats are on heat/cool, 68 to 78."
+          to: waqar
+          level: quiet
+          group: climate

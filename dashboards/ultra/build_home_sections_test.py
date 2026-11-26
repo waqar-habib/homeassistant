@@ -193,8 +193,11 @@ def bar(entity, height=34):
 
 
 def swatch(label, colour, tap):
-    return text(label, size=12, align="center", icon="mdi:circle", icon_color=colour, icon_size=40, tap=tap,
-                design={"color": "var(--secondary-text-color)"})
+    # Text icons sit only before/after the text, so the dot and its label are two stacked modules.
+    return base("vertical", alignment="center", gap=2, gap_unit="px", tap_action=tap, modules=[
+        text("", align="center", icon="mdi:circle", icon_color=colour, icon_size=44),
+        text(label, size=12, align="center", design={"color": "var(--secondary-text-color)", "white_space": "nowrap"}),
+    ])
 
 
 def drawer(entity, title, sub):
@@ -203,7 +206,7 @@ def drawer(entity, title, sub):
                 close_on_overlay_click=True, trigger_style="icon", trigger_label=title + " colour and details",
                 trigger_icon="mdi:dots-horizontal", trigger_alignment="right", trigger_icon_size=18, trigger_color="#10224D",
                 trigger_icon_background="circle", trigger_icon_background_color="rgba(255,255,255,0.75)",
-                drawer_size="auto", drawer_background="rgba(246,248,255,0.96)", modules=[
+                drawer_size="auto", drawer_background="#F4F6FD", modules=[
                     text(template=sub, size=13, design={"color": "var(--secondary-text-color)"}),
                     text("Brightness", size=12, weight="600", design=eyebrow),
                     bar(entity, 52),
@@ -211,7 +214,8 @@ def drawer(entity, title, sub):
                     row([swatch(n, c, act("light.turn_on", entity, color_temp_kelvin=k)) for n, k, c in WHITES], align="justify"),
                     text("Colour", size=12, weight="600", design=eyebrow),
                     row([swatch(n, "rgb(%d,%d,%d)" % tuple(c), act("light.turn_on", entity, rgb_color=c)) for n, c in COLOURS], align="justify"),
-                    text("Open full controls", size=14, weight="600", align="center", tap=more_info(entity)),
+                    text("Open full controls", size=14, weight="600", align="center", tap=more_info(entity),
+                         design={"padding_top": "8px", "padding_bottom": "84px"}),  # clears HA's bottom tab bar
                 ])
 
 

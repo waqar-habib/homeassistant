@@ -90,7 +90,7 @@ PRAYER_MD = (
     "<div>"
     f"<div style=\"font-size:13px;font-weight:500;{SUB}\">Next prayer{{{{ ' · tomorrow' if tmw }}}}</div>"
     "<div style=\"display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap\">"
-    "<span><span style=\"font-size:34px;font-weight:700;line-height:1.15\">{{ nx }}</span> "
+    "<span style=\"display:inline-flex;align-items:baseline;gap:10px\"><span style=\"font-size:34px;font-weight:700;line-height:1.15\">{{ nx }}</span>"
     "<span style=\"font-size:22px;font-weight:600\">{{ tn | timestamp_custom('%-I:%M') }}"
     "<span style=\"font-size:14px\"> {{ tn | timestamp_custom('%p') }}</span></span></span>"
     "<span style=\"font-size:15px;font-weight:600\">{{ rel }}</span></div>"
@@ -109,7 +109,7 @@ PRAYER_MD = (
     "<div style=\"font-size:15px;font-weight:600;margin-top:2px\">{{ x | timestamp_custom('%-I:%M') }}</div></div>"
     "{%- endfor -%}</div>"
     f"<div style=\"font-size:12px;{SUB}\">"
-    "{{ \"Today's prayers complete · \" if ns.i < 0 }}{{ 'Adhan paused · ' if paused }}"
+    "{{ 'Adhan paused · ' if paused }}"
     "Sunrise {{ as_timestamp(states('sensor.living_room_adhan_sunrise_time'), 0) | timestamp_custom('%-I:%M %p') }}</div>"
     "</div>{%- endif -%}"
 )
@@ -119,7 +119,7 @@ ADHAN_CHIP = ("{{ {'content': 'Adhan paused' if is_state('switch.adhan_pause', '
 prayer = ucard("Prayer", [
     row([text("Prayer", size=17, weight="600"),
          text(template=ADHAN_CHIP, size=13, weight="500", align="right", tap=more_info("switch.adhan_pause"), icon="mdi:circle",
-              design={"max_width": "150px", "background_color": "rgba(255,255,255,0.45)", "border_radius": "15px",
+              design={"width": "fit-content", "max_width": "130px", "margin_left": "auto", "white_space": "nowrap", "background_color": "rgba(255,255,255,0.45)", "border_radius": "15px",
                       "padding_top": "6px", "padding_bottom": "6px", "padding_left": "12px", "padding_right": "12px"})]),
     markdown(PRAYER_MD),
 ])
@@ -177,27 +177,25 @@ def act(service, entity, **data):
     return {"action": "perform-action", "perform_action": service, "target": {"entity_id": entity}, "data": data}
 
 
+CLEAR = {"background_color": "transparent", "padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px",
+         "padding_right": "0px", "box_shadow_h": "0px", "box_shadow_v": "0px", "box_shadow_blur": "0px",
+         "box_shadow_spread": "0px", "box_shadow_color": "transparent", "backdrop_filter": "none"}
+
+
 INK, INK2 = "#10224D", "#4A5675"  # drawers sit outside the card, so theme text colours fall back to HA's
 
 
 def bar(entity, height=34, ink="var(--primary-text-color)"):
     return base("slider_control", bars=[{
         "id": nid("bar"), "type": "brightness", "entity": entity, "min_value": 0, "max_value": 100, "step": 1,
-        "slider_style": "theme", "show_icon": False, "show_name": False, "show_value": True, "show_bar_label": False,
+        "slider_style": "flat", "show_icon": False, "show_name": False, "show_value": True, "show_bar_label": False,
         "icon_position": "left", "name_position": "left", "value_position": "left", "invert_direction": False}],
-        orientation="horizontal", layout_mode="overlay", slider_style="theme", slider_height=height,
+        orientation="horizontal", layout_mode="overlay", slider_style="flat", slider_height=height,
         slider_radius="round", border_radius=height // 2, slider_track_color="rgba(16,34,77,0.08)",
         dynamic_fill_color=True, show_icon=False, show_name=False, show_state=False, show_value=True,
         value_size=13, value_suffix="%", show_toggle=False, show_color_picker=False, haptic_feedback=True,
         show_bar_label=False, value_color=ink,
-        design={"padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px", "padding_right": "0px",
-                "background_color": "transparent", "box_shadow_h": "0px", "box_shadow_v": "0px", "box_shadow_blur": "0px",
-                "box_shadow_spread": "0px", "box_shadow_color": "transparent"})
-
-
-CLEAR = {"background_color": "transparent", "padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px",
-         "padding_right": "0px", "box_shadow_h": "0px", "box_shadow_v": "0px", "box_shadow_blur": "0px",
-         "box_shadow_spread": "0px", "box_shadow_color": "transparent", "backdrop_filter": "none"}
+        design=dict(CLEAR))
 
 
 def swatch(label, colour, tap):
@@ -238,22 +236,24 @@ def tile_state(entity, members=None):
 
 
 def tile(entity, name, members=None, icon="mdi:lightbulb"):
-    head = row([
-        base("vertical", alignment="left", gap=2, gap_unit="px", modules=[
-            text(name, size=15, weight="600", icon=icon, icon_size=22, design={"white_space": "nowrap"},
-                 icon_color="{{ 'var(--state-light-active-color)' if is_state('%s','on') else 'var(--secondary-text-color)' }}" % entity),
-            text(template=tile_state(entity, members), size=13, design={"color": "var(--secondary-text-color)"}),
-        ], tap_action={"action": "toggle", "entity": entity}),
-        drawer(entity, name, tile_state(entity, members)),
-    ], align="justify", gap=4)
-    return base("vertical", alignment="left", gap=10, gap_unit="px", modules=[head, bar(entity)],
-                design={"background_color": TINT_OFF, "border_radius": "24px", "padding_top": "12px",
-                        "padding_bottom": "12px", "padding_left": "14px", "padding_right": "12px"})
+    # Owner 2026-11-25: fewer boxes. One tinted tile (no glass rim or shadow), a flat bar inside it.
+    # Top row: icon left, ••• right; the name gets the full width below, so it never sits under the dots.
+    on_col = "{{ 'var(--state-light-active-color)' if is_state('%s','on') else 'var(--secondary-text-color)' }}" % entity
+    top = row([text("\u00A0", icon=icon, icon_size=24, icon_color=on_col, design=dict(CLEAR)),
+               drawer(entity, name, tile_state(entity, members))], align="justify", gap=4, design=dict(CLEAR))
+    label = base("vertical", alignment="left", gap=0, gap_unit="px", design=dict(CLEAR),
+                 tap_action={"action": "toggle", "entity": entity}, modules=[
+                     text(name, size=15, weight="600", design={**CLEAR, "white_space": "nowrap"}),
+                     text(template=tile_state(entity, members), size=13, design={**CLEAR, "color": "var(--secondary-text-color)"}),
+                 ])
+    return base("vertical", alignment="left", gap=8, gap_unit="px", modules=[top, label, bar(entity)],
+                design={**CLEAR, "background_color": TINT_OFF, "border_radius": "22px", "padding_top": "10px",
+                        "padding_bottom": "12px", "padding_left": "14px", "padding_right": "10px"})
 
 
 def grid(tiles):
     return base("grid_layout", modules=tiles, column_mode="fixed", columns=2, gap=10, item_alignment="stretch",
-                mobile_breakpoint=0, mobile_columns=2, item_spans={})
+                mobile_breakpoint=0, mobile_columns=2, item_spans={}, design=dict(CLEAR))
 
 
 LIVING = [("light.floor_lamp", "Floor Lamp"), ("light.buffet", "Buffet"), ("light.side_table", "Side Table"),
@@ -271,6 +271,7 @@ floors = ucard("Floors", [
 living = ucard("Living Room", [
     base("accordion", title_mode="custom", title_text="Living Room", icon="mdi:chevron-down", header_alignment="apart",
          icon_side="right", default_open=True, expand_direction="down", expand_style="push", open_mode="manual",
+         design=dict(CLEAR),
          modules=[
              tile("light.living_room_lights", "All lights", LIV_M, "mdi:lamps"),
              grid([tile(e, n) for e, n in LIVING]),

@@ -15,6 +15,8 @@
 //  R8 repeat       the same control in sibling tiles sits at a different offset (±3 px)           fail
 //  R9 demarcation  sibling tiles in a grid/row with no visible edge (background, border, shadow)  fail
 //  R10 scale       more than 6 distinct font sizes in one card                                    warn
+//  R11 inset       a bar or control track starts > 6 px right of the card's text edge (box in box) fail
+//  R12 row height  cards side by side in one row differ in height by > 2 px                      fail
 function uiuxRun(opts) {
   const widths = opts.widths || [430, 820, 1440];
   const paths = opts.paths;
@@ -132,6 +134,12 @@ function uiuxRun(opts) {
       const edged = items.filter((c) => [c, ...deepAll(c).slice(0, 6)].some((x) => hasEdge(x, win) && Math.abs(x.getBoundingClientRect().width - c.getBoundingClientRect().width) < 4));
       if (edged.length < items.length) tag("R9 demarcation", "fail", `${items.length - edged.length} of ${items.length} grid tiles without a visible edge`);
     }
+    // R11: tracks (sliders, bars) must line up with the text edge
+    const textLeft = Math.min(...texts.filter((x) => x.align === "left" || x.align === "start").map((x) => x.r.left));
+    for (const tr of els.filter((e) => e.getAttribute && e.getAttribute("data-uc-role") === "track" && !inDrawer(e))) {
+      const d = tr.getBoundingClientRect().left - textLeft;
+      if (isFinite(d) && d > 6) tag("R11 inset", "fail", `bar starts ${d.toFixed(0)} px right of the text edge`);
+    }
     // R10
     const distinct = [...new Set(sizes)];
     if (distinct.length > 6) tag("R10 scale", "warn", `${distinct.length} font sizes: ${distinct.join(",")}`);
@@ -149,6 +157,14 @@ function uiuxRun(opts) {
     const cards = deepAll(doc).filter((e) => e.tagName && /^(ULTRA-CARD)$/.test(e.tagName) && visible(e, win));
     let res = [];
     for (const c of cards) res = res.concat(checkCard(c, win, `${width}${path}`));
+    // R12: cards side by side must have equal heights
+    const rects = cards.map((c) => ({ c, r: c.getBoundingClientRect() }));
+    for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
+      const a = rects[i], b = rects[j];
+      if (Math.abs(a.r.top - b.r.top) <= 2 && Math.abs(a.r.height - b.r.height) > 2 && Math.abs(a.r.left - b.r.left) < 700)
+        res.push({ ctx: `${width}${path}`, card: `${a.c.config?.card_name}|${b.c.config?.card_name}`, rule: "R12 row height", sev: "fail",
+          msg: `${a.r.height.toFixed(0)} vs ${b.r.height.toFixed(0)} px` });
+    }
     f.remove();
     return { ctx: `${width}${path}`, cards: cards.length, res };
   }

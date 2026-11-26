@@ -161,7 +161,9 @@ function uiuxRun(opts) {
     const rects = cards.map((c) => ({ c, r: c.getBoundingClientRect() }));
     for (let i = 0; i < rects.length; i++) for (let j = i + 1; j < rects.length; j++) {
       const a = rects[i], b = rects[j];
-      if (Math.abs(a.r.top - b.r.top) <= 2 && Math.abs(a.r.height - b.r.height) > 2 && Math.abs(a.r.left - b.r.left) < 700)
+      const sec = (c) => { let n = c; while (n && !(n.tagName && /GRID-SECTION|HUI-SECTION/.test(n.tagName))) n = n.parentNode || n.host; return n; };
+      if (sec(a.c) !== sec(b.c)) continue;  // different sections are separate groups
+      if (Math.abs(a.r.top - b.r.top) <= 2 && Math.abs(a.r.height - b.r.height) > 2)
         res.push({ ctx: `${width}${path}`, card: `${a.c.config?.card_name}|${b.c.config?.card_name}`, rule: "R12 row height", sev: "fail",
           msg: `${a.r.height.toFixed(0)} vs ${b.r.height.toFixed(0)} px` });
     }

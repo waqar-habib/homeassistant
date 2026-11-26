@@ -204,8 +204,16 @@ def room(name, group, lights, plugs=()):
         "target": {"entity_id": [group] + [e for e, _ in plugs]}, "data": {}}
     cards = [heading(name, [badge(group, tap, "mdi:power")]),
              light_tile(group, "All lights", mlist, "mdi:lamps", drawer_name=name, cols=12)]
-    cards += [light_tile(e, n) for e, n in lights] + [plug_tile(e, n) for e, n in plugs]
+    cards += pairs([light_tile(e, n) for e, n in lights]) + pairs([plug_tile(e, n) for e, n in plugs])
     return section(*cards)
+
+
+def pairs(tiles):
+    """Tiles of one kind sit side by side; an odd last tile spans the row (Ultra cards do not
+    stretch to the grid height, so only like tiles share a row)."""
+    if len(tiles) % 2:
+        tiles[-1]["grid_options"]["columns"] = 12
+    return tiles
 
 
 LIVING = [("light.floor_lamp", "Floor Lamp"), ("light.buffet", "Buffet"), ("light.side_table", "Side Table"),
@@ -301,7 +309,7 @@ home_cards = [
     tile("Garage", "mdi:garage-variant", "{{ '%s' if is_state('%s','closed') else '%s' }}" % (OK_C, GARAGE, ALERT_C),
          state=cap(GARAGE), ctrl=garage_drawer),
     tile("Porch", "mdi:lightbulb", on_col(OUT), state=cap(OUT), tap=toggle(OUT)),
-    tile("Skip Evening Lights", "mdi:weather-night", on_col("switch.skip_evening_lights_tonight"),
+    tile("Skip Lights", "mdi:weather-night", on_col("switch.skip_evening_lights_tonight"),
          state=cap("switch.skip_evening_lights_tonight"), tap=toggle("switch.skip_evening_lights_tonight")),
     tile("Pause Prayer", "mdi:pause", on_col("switch.adhan_pause"), state=cap("switch.adhan_pause"),
          tap=more_info("switch.adhan_pause")),

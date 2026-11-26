@@ -4,7 +4,7 @@ Last updated: 2026-11-25 23:10 CST (Mac). Pi 5: 6 group helpers added (D90, back
 
 ## Lights tab and themed drawers (2026-11-25 23:10 CST, Mac, D88-D90)
 1. **Done:** wireframes v0.4 approved; GREEN LIGHT. Groups live: `light.{living_room,bedroom,nursery,upstairs,downstairs}_lights`, `switch.outdoor_lights`. Lights prototype (Floors + Living Room, themed bottom drawer) on `/uc-home-test`, branch `feat/ultra-home-sections` (`f3e7917`).
-2. **Owner next:** look at `/uc-home-test/lights` on the iPhone; OK a daytime test of one lamp (toggle, swatch).
+2. **Owner next:** look at `/uc-home-test/lights` on the iPhone (now in the sidebar as "UC Home test", admin only; hide again before cutover); OK a daytime test of one lamp (toggle, swatch).
 3. **Claude next:** remaining rooms, Outdoor, room power buttons, smaller config; then themed climate, lock, garage drawers (D90, view-only tests); then into `habib-home-uc`. Squash-merge the branch (see the session note on `31a90a0`).
 
 ## Ultra Home tab on Sections (2026-11-25 21:30 CST, Mac, D87)

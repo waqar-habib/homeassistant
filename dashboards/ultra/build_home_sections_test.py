@@ -220,8 +220,9 @@ def bar(entity, height=34):
         show_bar_label=False, value_color=TEXT,
         # Ultra hard-codes padding: 16px on the slider; negative margins cancel it.
         design={"padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px", "padding_right": "0px",
+                # content-box: 16 px padding each side; the bar itself is 100% of its row
                 "margin_top": "-12px", "margin_bottom": "-12px", "margin_left": "-16px",
-                "margin_right": "-12px", "width": "calc(100% + 28px)"})
+                "margin_right": "-16px", "width": "100%"})
 
 
 def swatch(label, colour, tap):
@@ -270,7 +271,7 @@ def light_tile(entity, name, members=None, icon="mdi:lightbulb-outline", with_dr
              white_space="nowrap", overflow="hidden", text_overflow="ellipsis",
              padding_right="40px" if with_drawer else "0px"),
         text(template=st, style="label", color=DIM, tap=toggle(entity), hold=hold),
-        row([bar(entity)], gap=0, padding_top="4px", padding_right="4px"),
+        row([bar(entity)], gap=0, padding_top="4px"),
     ]
     if with_drawer:  # a row splits its children 50/50 in Ultra, so the ••• sits in the tile's corner instead
         d = light_drawer(entity, name, st)

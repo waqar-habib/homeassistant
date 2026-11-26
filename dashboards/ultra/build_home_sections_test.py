@@ -8,7 +8,9 @@ Structure instead of styling:
   - each section starts with HA's own heading card; room power and Adhan state are heading badges;
   - one type scale: 12 caption, 13 state, 15 tile name, 17 card name, 22 headline, 32 metric
     (Ultra's clock module keeps its own sizes);
-  - a tile is: name (with icon) / value / footer row [state, •••] so every ••• sits in the same place.
+  - a tile is: name (with icon) / value / footer row [state, •••] so every ••• sits in the same place;
+    tiles side by side get the same grid rows (2, climate 3) so heights match;
+  - no brightness bar on tiles (Liquid Glass gives each slider its own pane); bars live in the drawers.
 No custom colours, fonts, backgrounds, borders, padding or margins. Data colours only (swatches,
 state icons). One functional exception: 84 px bottom padding in drawers clears HA's tab bar.
 Checked with docs/design/tests/uiux-check.js at 430, 820 and 1440.
@@ -81,10 +83,13 @@ def stack(modules, gap=6, align="left", tap=None, hold=None):
     return m
 
 
-def ucard(name, modules, cols=12):
+def ucard(name, modules, cols=12, rows=None):
+    g = {"columns": cols}
+    if rows:
+        g["rows"] = rows  # HA section grid rows (56 px each, 8 px gap): equal heights side by side
     return {"type": "custom:ultra-card", "_config_version": 2, "card_name": name, "uc_theme": THEME,
             "layout": {"rows": [{"id": (rid := nid("row")), "columns": [{"id": f"{rid}-col", "modules": modules}]}]},
-            "grid_options": {"columns": cols}}
+            "grid_options": g}
 
 
 def heading(title, badges=None, style="title"):
@@ -123,7 +128,7 @@ def on_col(e):
     return "{{ '%s' if is_state('%s','on') else '' }}" % (ON, e)
 
 
-def tile(name, icon, icon_col, value=None, state=None, ctrl=None, tap=None, hold=None, cols=6):
+def tile(name, icon, icon_col, value=None, state=None, ctrl=None, tap=None, hold=None, cols=6, rows=2):
     """name / value / footer [state, ctrl]. The footer is a 50/50 row, so ctrl sits at the same
     place in every tile."""
     mods = [text(name, NAME, "600", icon=icon, icon_size=20, icon_color=icon_col)]
@@ -131,7 +136,7 @@ def tile(name, icon, icon_col, value=None, state=None, ctrl=None, tap=None, hold
         mods.append(value)
     if state or ctrl:
         mods.append(row([tpl(state, size=STATE) if state else text(" ", STATE), ctrl] if ctrl else [tpl(state, size=STATE)]))
-    return ucard(name, [stack(mods, gap=8, tap=tap, hold=hold)], cols)
+    return ucard(name, [stack(mods, gap=8, tap=tap, hold=hold)], cols, rows)
 
 
 # ---- Lights ------------------------------------------------------------------------------
@@ -182,8 +187,10 @@ def light_state(e, members=None):
 
 def light_tile(e, name, members=None, icon="mdi:lightbulb", drawer_name=None, cols=6):
     st = light_state(e, members)
-    ctrl = light_drawer(e, drawer_name or name, st) if (members or drawer_name) else None
-    return tile(name, icon, on_col(e), value=bar(e), state=st, ctrl=ctrl, tap=None, cols=cols)
+    # No bar on the tile: Liquid Glass wraps every slider in its own pane with 16 px padding (box in box).
+    # Tap toggles, long press opens HA's dialog, ••• opens the light's drawer (brightness, white, colour).
+    return tile(name, icon, on_col(e), state=st, ctrl=light_drawer(e, drawer_name or name, st),
+                tap=toggle(e), hold=more_info(e), cols=cols)
 
 
 def plug_tile(e, name, icon="mdi:floor-lamp"):
@@ -324,13 +331,13 @@ def climate_tile(e, name):
     ], e, icon="mdi:tune-variant")
     value = stack([tpl("{{ state_attr('%s','current_temperature') | round(0) | int }}°" % e, size=METRIC, weight="300"),
                    tpl("Set " + rng, size=STATE)], gap=2)
-    return tile(name, "mdi:thermostat", "", value=value, state=mode, ctrl=c_drawer)
+    return tile(name, "mdi:thermostat", "", value=value, state=mode, ctrl=c_drawer, rows=3)
 
 
 home_view = {"type": "sections", "title": "Home", "path": "home", "icon": "mdi:home",
              "max_columns": 3, "dense_section_placement": True,
              "sections": [section(hero),
-                          section(heading("Prayer", [adhan_badge]), prayer),
+                          section(heading("Prayer"), prayer),
                           section(*home_cards),
                           section(heading("Climate"), climate_tile("climate.downstairs", "Downstairs"),
                                   climate_tile("climate.upstairs", "Upstairs"))]}

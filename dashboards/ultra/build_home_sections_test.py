@@ -236,19 +236,18 @@ def tile_state(entity, members=None):
 
 
 def tile(entity, name, members=None, icon="mdi:lightbulb"):
-    # Owner 2026-11-25: fewer boxes. One tinted tile (no glass rim or shadow), a flat bar inside it.
-    # Top row: icon left, ••• right; the name gets the full width below, so it never sits under the dots.
+    # Owner 2026-11-25: fewer boxes. Ultra's theme draws glass on every vertical stack, so the tile is the
+    # only stack: name (with icon) and state are plain texts, ••• sits right of the bar so names get the
+    # full width and never hide behind it.
     on_col = "{{ 'var(--state-light-active-color)' if is_state('%s','on') else 'var(--secondary-text-color)' }}" % entity
-    top = row([text("\u00A0", icon=icon, icon_size=24, icon_color=on_col, design=dict(CLEAR)),
-               drawer(entity, name, tile_state(entity, members))], align="justify", gap=4, design=dict(CLEAR))
-    label = base("vertical", alignment="left", gap=0, gap_unit="px", design=dict(CLEAR),
-                 tap_action={"action": "toggle", "entity": entity}, modules=[
-                     text(name, size=15, weight="600", design={**CLEAR, "white_space": "nowrap"}),
-                     text(template=tile_state(entity, members), size=13, design={**CLEAR, "color": "var(--secondary-text-color)"}),
-                 ])
-    return base("vertical", alignment="left", gap=8, gap_unit="px", modules=[top, label, bar(entity)],
-                design={**CLEAR, "background_color": TINT_OFF, "border_radius": "22px", "padding_top": "10px",
-                        "padding_bottom": "12px", "padding_left": "14px", "padding_right": "10px"})
+    tog = {"action": "toggle", "entity": entity}
+    return base("vertical", alignment="left", gap=6, gap_unit="px", modules=[
+        text(name, size=15, weight="600", icon=icon, icon_size=22, icon_color=on_col, tap=tog,
+             design={"white_space": "nowrap"}),
+        text(template=tile_state(entity, members), size=13, tap=tog, design={"color": "var(--secondary-text-color)"}),
+        row([bar(entity), drawer(entity, name, tile_state(entity, members))], align="justify", gap=6),
+    ], design={**CLEAR, "background_color": TINT_OFF, "border_radius": "22px", "padding_top": "12px",
+               "padding_bottom": "12px", "padding_left": "14px", "padding_right": "10px"})
 
 
 def grid(tiles):

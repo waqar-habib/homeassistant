@@ -17,6 +17,7 @@
 //  R10 scale       more than 6 distinct font sizes in one card                                    warn
 //  R11 inset       a bar or control track starts > 6 px right of the card's text edge (box in box) fail
 //  R12 row height  cards side by side in one row differ in height by > 2 px                      fail
+//  R13 rhythm      vertical gaps between card rows in one section differ by > 3 px               fail
 function uiuxRun(opts) {
   const widths = opts.widths || [430, 820, 1440];
   const paths = opts.paths;
@@ -166,6 +167,16 @@ function uiuxRun(opts) {
       if (Math.abs(a.r.top - b.r.top) <= 2 && Math.abs(a.r.height - b.r.height) > 2)
         res.push({ ctx: `${width}${path}`, card: `${a.c.config?.card_name}|${b.c.config?.card_name}`, rule: "R12 row height", sev: "fail",
           msg: `${a.r.height.toFixed(0)} vs ${b.r.height.toFixed(0)} px` });
+    }
+    // R13: equal vertical gaps between card rows inside a section
+    const bySec = new Map();
+    for (const { c, r } of rects) { let n = c; while (n && !(n.tagName && /GRID-SECTION|HUI-SECTION/.test(n.tagName))) n = n.parentNode || n.host; if (!bySec.has(n)) bySec.set(n, []); bySec.get(n).push(r); }
+    for (const rs of bySec.values()) {
+      const rows = [...new Set(rs.map((r) => Math.round(r.top)))].sort((p, q) => p - q).map((t) => {
+        const rr = rs.filter((r) => Math.abs(r.top - t) <= 2); return { top: t, bottom: Math.max(...rr.map((r) => r.bottom)) }; });
+      const gaps = []; for (let i = 1; i < rows.length; i++) gaps.push(rows[i].top - rows[i - 1].bottom);
+      if (gaps.length > 1 && Math.max(...gaps) - Math.min(...gaps) > 3)
+        res.push({ ctx: `${width}${path}`, card: "section", rule: "R13 rhythm", sev: "fail", msg: `row gaps ${gaps.map((g) => g.toFixed(0)).join("/")} px` });
     }
     f.remove();
     return { ctx: `${width}${path}`, cards: cards.length, res };

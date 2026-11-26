@@ -9,7 +9,8 @@ Structure instead of styling:
   - one type scale: 12 caption, 13 state, 15 tile name, 17 card name, 22 headline, 32 metric
     (Ultra's clock module keeps its own sizes);
   - a tile is: name (with icon) / value / footer row [state, •••] so every ••• sits in the same place;
-    tiles side by side get the same grid rows (2, climate 3) so heights match;
+    only like tiles share a row (equal content = equal height; Ultra cards do not stretch to grid rows,
+    and fixed rows leave uneven gaps);
   - no brightness bar on tiles (Liquid Glass gives each slider its own pane); bars live in the drawers.
 No custom colours, fonts, backgrounds, borders, padding or margins. Data colours only (swatches,
 state icons). One functional exception: 84 px bottom padding in drawers clears HA's tab bar.
@@ -128,7 +129,7 @@ def on_col(e):
     return "{{ '%s' if is_state('%s','on') else '' }}" % (ON, e)
 
 
-def tile(name, icon, icon_col, value=None, state=None, ctrl=None, tap=None, hold=None, cols=6, rows=2):
+def tile(name, icon, icon_col, value=None, state=None, ctrl=None, tap=None, hold=None, cols=6, rows=None):
     """name / value / footer [state, ctrl]. The footer is a 50/50 row, so ctrl sits at the same
     place in every tile."""
     mods = [text(name, NAME, "600", icon=icon, icon_size=20, icon_color=icon_col)]
@@ -339,7 +340,7 @@ def climate_tile(e, name):
     ], e, icon="mdi:tune-variant")
     value = stack([tpl("{{ state_attr('%s','current_temperature') | round(0) | int }}°" % e, size=METRIC, weight="300"),
                    tpl("Set " + rng, size=STATE)], gap=2)
-    return tile(name, "mdi:thermostat", "", value=value, state=mode, ctrl=c_drawer, rows=3)
+    return tile(name, "mdi:thermostat", "", value=value, state=mode, ctrl=c_drawer)
 
 
 home_view = {"type": "sections", "title": "Home", "path": "home", "icon": "mdi:home",

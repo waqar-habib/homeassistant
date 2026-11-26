@@ -1,11 +1,11 @@
 # HANDOFF
 
-Last updated: 2026-11-26 07:40 CST (Mac, session end). Pi 5: dashboards `habib-home-uc` (Home and Lights tabs replaced) and `uc-home-test` changed; no YAML, automation or entity changed. networkpi: unchanged, not touched.
+Last updated: 2026-11-26 08:20 CST (Mac, session end). Pi 5: dashboards `habib-home-uc` (Home and Lights tabs replaced) and `uc-home-test` changed; no YAML, automation or entity changed. networkpi: unchanged, not touched.
 
-## Habib Glass look on the Ultra dashboards (session end 2026-11-26 07:40 CST, Mac, D91)
-1. **Done:** owner revisions applied (tight 12 px nesting, evergreen card tint, thin numbers and bold names) and all open Lights items: every room, Upstairs plugs, Outdoor, power pills, one shared drawer per room, 40 px colour discs, themed lock, garage and thermostat drawers. Rendered at phone, 820 and desktop. Live on `/uc-home-test` and `/habib-home-uc` (Media tab kept). `main` = `6f3a474` (squash of `feat/ultra-home-sections`). Backup `dashboards/ultra/habib-home-uc-backup-2026-11-26-pre-glass.json`. Note `docs/sessions/2026-11-26-ultra-glass-look.md`.
-2. **Owner next:** review `/habib-home-uc` on the iPhone; OK a daytime test of one lamp (toggle, swatch). Unlock and garage need a long press in their drawers.
-3. **Claude next (resume point):** Media tab in the same look without `native_card` (I79); `script.climate_step` and setpoint steppers (I81, Tier 2 on the Pi); MKH dashboard; hide `uc-home-test` before cutover; cutover only on GREEN LIGHT.
+## Ultra dashboards: structure done, Ultra styling as shipped (session end 2026-11-26 08:20 CST, Mac, D91 then D92)
+1. **Done:** all rooms, Upstairs plugs, Outdoor, power buttons, one shared drawer per room, Home card with lock and garage drawers (long press to unlock/open), thermostat drawer. Styling: Ultra Liquid Glass as shipped (D92 reverted the D91 custom evergreen look). Live on `/habib-home-uc` (Home, Lights; Media unchanged) and `/uc-home-test`. `main` = `bccc988`. Note `docs/sessions/2026-11-26-ultra-glass-look.md`.
+2. **Owner next:** review `/habib-home-uc` on the iPhone; OK a daytime test of one lamp (toggle, swatch).
+3. **Claude next (resume point):** `script.climate_step` and setpoint steppers (I81, Tier 2 on the Pi); MKH dashboard; Media tab without `native_card` (I79); hide `uc-home-test` before cutover; cutover only on GREEN LIGHT.
 
 ## Lights tab and themed drawers (session end 2026-11-25 23:40 CST, Mac, D88-D90)
 1. **Done:** wireframes v0.4 approved; GREEN LIGHT. Groups live: `light.{living_room,bedroom,nursery,upstairs,downstairs}_lights`, `switch.outdoor_lights`. Lights prototype (Floors + Living Room, themed bottom drawer) on `/uc-home-test`, branch `feat/ultra-home-sections` (`068360f`, not merged). Owner iPhone review fixed: prayer spacing, Adhan chip width, 'prayers complete' line removed, light names visible, one box per tile.

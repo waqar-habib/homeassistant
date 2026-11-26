@@ -29,3 +29,12 @@
 
 ## Resume point
 Owner: review `/habib-home-uc` (and `/uc-home-test`) on the iPhone; OK a daytime lamp test. Claude next: Media tab in the Habib Glass look without `native_card`; `script.climate_step` + steppers (I81); then MKH; hide `uc-home-test` from the sidebar before cutover.
+
+## Later the same morning: reverted to Ultra's own styling (D92, ~08:15 CST)
+1. Owner: the custom evergreen scheme and margin changes overwrote Liquid Glass with custom elements; use Ultra's out-of-the-box styling and only what the package offers, for less work and maintenance.
+2. Generator v3 (`build_home_sections_test.py`): `uc_theme: liquid_glass`, no view theme, no custom colours, fonts, backgrounds, borders, shadows, padding or margins. Hero back to Ultra's clock and weather modules; prayer markdown keeps layout only (theme colours); drawers use Ultra's default panel. Structure from v2 kept. Config 100 KB (was 198 KB).
+3. Rendered at 430 (Home and Lights), desktop with sidebar, and the Downstairs drawer (view-only). Live on `uc-home-test` and `habib-home-uc` (Media tab unchanged). `main` = `bccc988`; rollback to v2 = `dashboards/ultra/habib-home-uc.json` at `6f3a474`.
+4. Ultra's slider shows its own padded pane around the bar; left as shipped.
+
+## Resume point (updated)
+Owner: review `/habib-home-uc` on the iPhone; OK a daytime lamp test. Claude next: `script.climate_step` + steppers (I81); MKH dashboard; Media tab without `native_card` (I79); hide `uc-home-test` before cutover.

@@ -19,6 +19,10 @@ Last updated: 2026-11-25 23:10 CST (Mac). Pi 5: 6 group helpers added (D90, back
 4. **Note:** garage opened 18:48:49 and closed 18:54:49 outside HA (no HA context); owner informed.
 5. **Next (Claude):** I79 test on one card (Ultra modules instead of `native_card`), then audit defects 2–10. Note `docs/sessions/2026-11-25-ultra-uiux-e2e.md`.
 
+## Away climate (2026-11-25 late, Pi 5): live, first departure is the test
+1. **Done:** `packages/away_climate.yaml`. When either person is away 10 min, both Nests go to heat/cool 68/78; nothing on return. Backup `pre-away-climate` (e028dd1e). Note `docs/sessions/2026-11-25-away-climate.md`.
+2. **Owner next:** check Apple Home for any automation that sets cool on arrival. **Claude next:** read the trace after the first departure.
+
 ## Ultra Card MVP (2026-11-25 ~18:20 CST, Pi 5, D86): built, owner review next
 1. **State:** Ultra Card v3.14.6 + Connect v1.12.6 (not signed in) installed by the owner from the Marketplace; HA restarted ~18:08 CST; backup `pre-ultra-card` (cbccac46). New dashboard `habib-home-uc` "Habib Home (Ultra)" (admin only): Home, Lights, Media tabs, FreeSpace, Liquid Glass. Merge `d48c28e`. Old dashboards untouched.
 2. **Owner next:** open it on the Mac and iPhone (Reset frontend cache on the iPhone if blank); rearrange by hand (`docs/ultra-card-howto.md`); report anything broken. Confirm the unknown HaCasa Nova resource (I78).

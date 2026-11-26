@@ -1,11 +1,11 @@
 # HANDOFF
 
-Last updated: 2026-11-25 23:10 CST (Mac). Pi 5: 6 group helpers added (D90, backup `pre-light-groups`); `uc-home-test` has a Lights prototype; no other config changed. networkpi: unchanged, not touched.
+Last updated: 2026-11-25 23:40 CST (Mac, session end). Pi 5: 6 group helpers added (D90, backup `pre-light-groups`); `uc-home-test` has a Lights prototype; no other config changed. networkpi: unchanged, not touched.
 
-## Lights tab and themed drawers (2026-11-25 23:10 CST, Mac, D88-D90)
-1. **Done:** wireframes v0.4 approved; GREEN LIGHT. Groups live: `light.{living_room,bedroom,nursery,upstairs,downstairs}_lights`, `switch.outdoor_lights`. Lights prototype (Floors + Living Room, themed bottom drawer) on `/uc-home-test`, branch `feat/ultra-home-sections` (`f3e7917`).
+## Lights tab and themed drawers (session end 2026-11-25 23:40 CST, Mac, D88-D90)
+1. **Done:** wireframes v0.4 approved; GREEN LIGHT. Groups live: `light.{living_room,bedroom,nursery,upstairs,downstairs}_lights`, `switch.outdoor_lights`. Lights prototype (Floors + Living Room, themed bottom drawer) on `/uc-home-test`, branch `feat/ultra-home-sections` (`068360f`, not merged). Owner iPhone review fixed: prayer spacing, Adhan chip width, 'prayers complete' line removed, light names visible, one box per tile.
 2. **Owner next:** look at `/uc-home-test/lights` on the iPhone (now in the sidebar as "UC Home test", admin only; hide again before cutover); OK a daytime test of one lamp (toggle, swatch).
-3. **Claude next:** remaining rooms, Outdoor, room power buttons, smaller config; then themed climate, lock, garage drawers (D90, view-only tests); then into `habib-home-uc`. Squash-merge the branch (see the session note on `31a90a0`).
+3. **Claude next (resume point):** bigger colour dots in the drawer; remaining rooms (Bedroom, Nursery, Upstairs + plugs), Outdoor card, room power buttons, one shared drawer per room to shrink config (~100 KB for 7 tiles now); then themed climate, lock, garage drawers (D90, view-only tests); then into `habib-home-uc`. Squash-merge the branch (see the session note on `31a90a0`).
 
 ## Ultra Home tab on Sections (2026-11-25 21:30 CST, Mac, D87)
 1. **Done:** wireframes v0.1 accepted; Sections for the Home tab. Test dashboard `/uc-home-test` with Hero, Prayer, Climate as Ultra Cards, rendered at 430 / 820 / desktop; Ultra-module cards update live (I79 does not apply to them). Generator on branch `feat/ultra-home-sections` (`65acf5f`, not merged).

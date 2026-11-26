@@ -39,3 +39,7 @@ Claude next: test toggle and a swatch on a lamp in daytime with the owner's OK; 
 1. Prayer: gap between prayer name and time; Adhan chip only as wide as its text; "Today's prayers complete" removed.
 2. Light tiles: names hid behind •••; too many nested boxes. Now one tinted tile per light: icon + name, state, then the bar with ••• to its right.
 3. Ultra facts learned: the Liquid Glass theme puts a pane (blur + shadow) on every block that sets a background, and on the slider (`data-uc-role="pane"`). Opt out per block with numeric `box_shadow_*` values (strings like "0px" build an invalid shadow) and `backdrop_filter: none`. The slider has a hard-coded 16 px padding; negative margins plus `width: calc(100% + 28px)` cancel it. Empty or NBSP text shows the editor placeholder.
+
+## Session end 23:40 CST
+- State: `main` docs only; config work on branch `feat/ultra-home-sections` (`068360f`, unmerged, squash-merge later because of `31a90a0`). HA changes this session: dashboard `uc-home-test` (shown in sidebar, admin only), 6 group helpers. networkpi untouched.
+- Resume point: see HANDOFF "Lights tab and themed drawers", item 3.

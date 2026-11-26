@@ -34,3 +34,8 @@ Owner: review `/uc-home-test` (Mac and iPhone), answer surfaces A or B, edit lig
 
 ## Resume point (updated)
 Claude next: test toggle and a swatch on a lamp in daytime with the owner's OK; shrink the config; build the remaining rooms, Outdoor and the room power buttons; render at 430 / 820 / desktop; then themed climate, lock and garage drawers (view-only tests); then move into `habib-home-uc`.
+
+## Owner review 23:10 (iPhone) and fixes (branch `068360f`)
+1. Prayer: gap between prayer name and time; Adhan chip only as wide as its text; "Today's prayers complete" removed.
+2. Light tiles: names hid behind •••; too many nested boxes. Now one tinted tile per light: icon + name, state, then the bar with ••• to its right.
+3. Ultra facts learned: the Liquid Glass theme puts a pane (blur + shadow) on every block that sets a background, and on the slider (`data-uc-role="pane"`). Opt out per block with numeric `box_shadow_*` values (strings like "0px" build an invalid shadow) and `backdrop_filter: none`. The slider has a hard-coded 16 px padding; negative margins plus `width: calc(100% + 28px)` cancel it. Empty or NBSP text shows the editor placeholder.

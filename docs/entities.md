@@ -291,3 +291,15 @@ Findings:
 
 ## Phone sensors enabled 2026-11-25 (Waqar's iPhone, `mobile_app`)
 `sensor.waqars_iphone_activity` (working since 15:16 CST), `sensor.waqars_iphone_audio_output`, `binary_sensor.waqars_iphone_focus`, `sensor.waqars_iphone_focus_name` (unavailable while no Focus is on), `sensor.waqars_iphone_connection_type`, `sensor.waqars_iphone_ssid`, `sensor.waqars_iphone_last_update_trigger`, `sensor.waqars_iphone_location_permission`, `sensor.waqars_iphone_steps`, `sensor.waqars_iphone_current_pace` (unavailable until moving). The other 24 sensors on each phone stay disabled. Maham's phone: none enabled yet (I74).
+
+## Group helpers created 2026-11-25 (D89, D90; UI group helpers, backup `pre-light-groups`)
+| Entity | Members | Colour modes |
+|---|---|---|
+| `light.living_room_lights` | buffet, console_lamp, floor_lamp, side_table | color_temp/rgbw |
+| `light.bedroom_lights` | dresser, mahams_lamp, waqars_lamp | color_temp/hs |
+| `light.nursery_lights` | bookshelf, changing_table, nursery_floor_lamp (Hatch excluded) | color_temp/hs/rgbw |
+| `light.upstairs_lights` | game_room, upstairs_guest, study_lamp (plugs excluded: their light wrappers are disabled) | color_temp/rgbw |
+| `light.downstairs_lights` | light.living_room_lights, light.bedroom_lights (Nursery excluded) | color_temp/hs/rgbw |
+| `switch.outdoor_lights` | switch.outdoor_porch, switch.outdoor_driveway | on/off |
+
+Note: `light.study_study_floor_lamp` and `light.upstairs_guest_guest_nightstand` (switch_as_x) are disabled by the owner; use the `switch.*` entities.

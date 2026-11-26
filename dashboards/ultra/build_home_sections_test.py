@@ -441,7 +441,7 @@ SECURE_COL = ("{{ '%s' if is_state('%s','locked') and is_state('%s','closed') el
 
 
 def item(name, state_tpl, icon, col_tpl, tap=None, extra=None):
-    mods = [text(name, "title-sm", align="center", white_space="nowrap", icon=icon, icon_size=18, icon_color=col_tpl),
+    mods = [text(name, "title-sm", align="center", icon=icon, icon_size=18, icon_color=col_tpl),
             text(template=state_tpl, style="label", color=DIM, align="center")]
     if extra:
         mods.append(extra)

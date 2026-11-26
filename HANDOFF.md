@@ -1,6 +1,11 @@
 # HANDOFF
 
-Last updated: 2026-11-25 19:27 CST (Mac). Pi 5: Ultra dashboards audited, no config changed. networkpi: unchanged, not touched.
+Last updated: 2026-11-25 21:30 CST (Mac). Pi 5: throwaway dashboard `uc-home-test` added (admin only, hidden); no other config changed. networkpi: unchanged, not touched.
+
+## Ultra Home tab on Sections (2026-11-25 21:30 CST, Mac, D87)
+1. **Done:** wireframes v0.1 accepted; Sections for the Home tab. Test dashboard `/uc-home-test` with Hero, Prayer, Climate as Ultra Cards, rendered at 430 / 820 / desktop; Ultra-module cards update live (I79 does not apply to them). Generator on branch `feat/ultra-home-sections` (`65acf5f`, not merged).
+2. **Owner next:** look at `/uc-home-test`; choose card surface A (frosted) or B (soft tint); edit the light card wireframes v0.2 (canvas artifact 3ib7jm5EkaxchB3fZXcSdS).
+3. **Claude next:** move the 3 cards into `habib-home-uc` Home tab (Sections), back up first; then light cards; then audit defects 2–10. Note `docs/sessions/2026-11-25-ultra-home-sections.md`.
 
 ## Ultra vs WH-next e2e audit (2026-11-25 19:27 CST, Mac)
 1. **Done:** full UI/UX audit in Chrome, report `docs/design/audit-2026-11-25-ultra-vs-wh-next.md` (`e51625f`). Scorecard Ultra / WH-next: function 2/4, editability 4/1, others 3–4. Nothing left changed; both dashboard configs equal their pre-test copies.

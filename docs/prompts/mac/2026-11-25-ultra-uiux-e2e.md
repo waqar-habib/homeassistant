@@ -1,0 +1,30 @@
+# Prompt: end-to-end UI/UX test, Habib Home (Ultra) vs habib-wh-next (Chrome, clicks allowed with limits)
+
+Target: mac
+Date: 2026-11-25
+Tier: 0 (look, measure, open dialogs) plus limited Tier 2 clicks listed below (each reverted at once), plus a Tier 1 docs commit.
+GREEN LIGHT: yes, owner 2026-11-25 ("Run an end-to-end UI/UX test suite (clicking included), using Claude in Chrome"). It does NOT cover: unlocking, opening the garage, the Nursery, thermostat setpoints, playing audio, saving any dashboard change that is not undone.
+
+```
+You are the Mac Claude Code session. Use Claude in Chrome. Load the tools in one ToolSearch call (tabs_context_mcp, tabs_create_mcp, tabs_close_mcp, navigate, computer, read_page, resize_window, javascript_tool, read_console_messages, gif_creator), call tabs_context_mcp first, work in a new tab and close it at the end. Avoid anything that opens a browser (JavaScript) dialog. If Home Assistant shows a login page, STOP and tell the owner: never type a password or token. Use the HA address the owner is signed in to (try https://ha.thehabibfam.cc, then http://192.168.1.36:8123). Step codes only with full phrases (D58). Screenshots stay in the scratchpad, never in the repo (public).
+
+Setup: git checkout main && git pull --rebase. Read docs/ultra-card-plan.md, docs/ultra-card-howto.md, docs/sessions/2026-11-25-ultra-card-mvp.md, and dashboards/ultra/habib-home-uc-2026-11-25-mvp.json (what was intended). Dashboards under test: /habib-home-uc (tabs home, lights, media; Ultra Card, Liquid Glass, FreeSpace) and /habib-wh-next (custom ui-* cards, the current reference).
+
+CLICK RULES (real devices, night, baby asleep):
+- ALLOWED: open any more-info dialog and close it with its X or Escape; switch tabs; expand/collapse sections; toggle light.study_lamp once and toggle it back within 10 s; toggle switch.skip_evening_lights_tonight on and back off within 10 s; drag the Study Lamp brightness slider and put it back to the value you read first.
+- ALLOWED in edit mode on /habib-home-uc only: select a card, drag it, resize it, then undo with Cmd+Z until the original position is back (FreeSpace saves on every release; undo saves the original again). Confirm with javascript_tool or a re-read that x/y/w/h match the seed file. Open the Ultra Card editor (double-click a card) and close it with Cancel, never Save. On /habib-wh-next open edit mode and close it without saving.
+- NEVER: any control inside the Front door or Garage dialog (lock, unlock, open, close); anything in the Nursery (incl. Noor's Bedtime, Changing Table, Bookshelf, Floor Lamp); thermostat setpoint or mode; media play, volume or source; Pause Prayer; delete; Pro, sign-in, Hub account, preset gallery downloads.
+- If a dialog shows unexpected controls, a click toggles something not listed, or anything is left changed, STOP, put it back if allowed, and report it first.
+
+Part A, render and console (both dashboards). Viewports: 430x932, 393x852, 820x1180, 1180x820, 1440x900, 1920x1080 (say which the window could not reach). At each: screenshot every tab (scroll if taller); javascript_tool, read only, through shadow roots: horizontal overflow, cards overlapping (bounding boxes intersect), text clipped (scrollWidth > clientWidth) or cut-off badges, cards whose content is taller than the card, blank cards, cards showing a configuration error. On phones record the stacking order on /habib-home-uc and whether it reads sensibly. Read the console (pattern: ultra|uc-|lovelace|error) per dashboard.
+
+Part B, visual quality. Per dashboard: does Liquid Glass reach the built-in tiles, thermostats, markdown and media cards inside the Ultra Cards, or do they sit as opaque HA cards inside glass (describe; sample the colours)? Wallpaper behind the view; text contrast of primary and secondary text (estimate ratios from screenshot pixels, lightest and darkest card); tap target sizes of tiles, sliders, tab bar, dialog buttons (measure, flag under 44 px); typography (font family actually used, sizes); spacing consistency; the prayer table (next prayer bold, times correct vs the sensors); weather and clock module rendering.
+
+Part C, function (allowed clicks only). Per dashboard: each tile opens the right dialog with the right entity (front door, garage, both thermostats, weather, both HomePods, each non-Nursery lamp); Study Lamp toggle and slider round trip work and state shows within 2 s; Skip Evening Lights round trip works; tab navigation and back button; deep links /habib-home-uc/lights and /media load directly. Note any tap that did something other than expected.
+
+Part D, editability (the owner's top priority). On /habib-home-uc: time and count of steps to (1) move a card, (2) resize, (3) open the Ultra editor on a card, (4) find where to add a new card and a new tab (do not create them), (5) undo; does drag work with mouse and with the touch emulation (DevTools device mode, if reachable)? Does the phone layout follow without edits? On /habib-wh-next: can a card be moved or resized in HA edit mode at all (expected: no, one ui-page container)? Restore everything; prove /habib-home-uc matches the seed positions.
+
+Part E, scorecard. Score both dashboards 1 to 5 on: looks, readability, layout at phone, layout at desktop, function, speed (time to first render, from performance.now / navigation timing), editability by hand, safety (lock and garage need a dialog). One line of evidence per score. Then the top 10 defects of /habib-home-uc, ranked, each with viewport, screenshot file name (scratchpad), cause if known, and the smallest fix (drag in UI, Ultra editor setting, or config change).
+
+Output: write docs/design/audit-2026-11-25-ultra-vs-wh-next.md (findings, scorecard, defects, what was clicked and that each was reverted). Commit "docs(design): Ultra vs WH-next e2e UI/UX audit" and push to main (Tier 1). Then the session protocol (session note, HANDOFF, issues I77). Reply to the owner in under 15 lines: scorecard, top 3 defects, anything left changed (should be none), and the commit ID.
+```

@@ -19,10 +19,7 @@
       "Bash(git ls-remote:*)",
       "Bash(git rev-parse:*)",
       "Bash(git cat-file:*)",
-      "Bash(git merge-base:*)",
-      "Read(//Users/whabib/Desktop/Claude/resume-agent/**)",
-      "Read(//Users/whabib/Desktop/Claude/budgeter/**)",
-      "Read(//Users/whabib/Desktop/Claude/hijrah/**)"
+      "Bash(git merge-base:*)"
     ],
     "deny": [
       "Read(secrets.yaml)",
@@ -32,22 +29,7 @@
       "Bash(git push --force:*)",
       "Bash(git push -f:*)",
       "Bash(git push --force-with-lease:*)",
-      "Bash(git push --mirror:*)",
-      "Read(//Users/whabib/Desktop/Claude/resume-agent/**/.env*)",
-      "Read(//Users/whabib/Desktop/Claude/resume-agent/**/secrets/**)",
-      "Read(//Users/whabib/Desktop/Claude/resume-agent/**/*.pem)",
-      "Read(//Users/whabib/Desktop/Claude/resume-agent/**/*.key)",
-      "Read(//Users/whabib/Desktop/Claude/resume-agent/**/credentials*)",
-      "Read(//Users/whabib/Desktop/Claude/budgeter/**/.env*)",
-      "Read(//Users/whabib/Desktop/Claude/budgeter/**/secrets/**)",
-      "Read(//Users/whabib/Desktop/Claude/budgeter/**/*.pem)",
-      "Read(//Users/whabib/Desktop/Claude/budgeter/**/*.key)",
-      "Read(//Users/whabib/Desktop/Claude/budgeter/**/credentials*)",
-      "Read(//Users/whabib/Desktop/Claude/hijrah/**/.env*)",
-      "Read(//Users/whabib/Desktop/Claude/hijrah/**/secrets/**)",
-      "Read(//Users/whabib/Desktop/Claude/hijrah/**/*.pem)",
-      "Read(//Users/whabib/Desktop/Claude/hijrah/**/*.key)",
-      "Read(//Users/whabib/Desktop/Claude/hijrah/**/credentials*)"
+      "Bash(git push --mirror:*)"
     ],
     "ask": [
       "Bash(ha core restart:*)",

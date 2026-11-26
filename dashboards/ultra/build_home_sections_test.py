@@ -177,9 +177,10 @@ def act(service, entity, **data):
     return {"action": "perform-action", "perform_action": service, "target": {"entity_id": entity}, "data": data}
 
 
-CLEAR = {"background_color": "transparent", "padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px",
-         "padding_right": "0px", "box_shadow_h": "0px", "box_shadow_v": "0px", "box_shadow_blur": "0px",
-         "box_shadow_spread": "0px", "box_shadow_color": "transparent", "backdrop_filter": "none"}
+CLEAR = {  # no theme pane: own (zero) shadow so Ultra skips its pane shadow, no blur; numbers, not "0px"
+    "padding_top": "0px", "padding_bottom": "0px", "padding_left": "0px", "padding_right": "0px",
+    "box_shadow_h": 0, "box_shadow_v": 0, "box_shadow_blur": 0, "box_shadow_spread": 0,
+    "box_shadow_color": "transparent", "backdrop_filter": "none"}
 
 
 INK, INK2 = "#10224D", "#4A5675"  # drawers sit outside the card, so theme text colours fall back to HA's
@@ -196,7 +197,7 @@ def bar(entity, height=34, ink="var(--primary-text-color)"):
         value_size=13, value_suffix="%", show_toggle=False, show_color_picker=False, haptic_feedback=True,
         show_bar_label=False, value_color=ink,
         # Ultra hard-codes padding: 16px on the slider pane after the design styles; negative margins cancel it.
-        design={**CLEAR, "margin_top": "-16px", "margin_bottom": "-16px", "margin_left": "-16px", "margin_right": "-16px"})
+        design={**CLEAR, "margin_top": "-12px", "margin_bottom": "-12px", "margin_left": "-16px", "margin_right": "-12px"})
 
 
 def swatch(label, colour, tap):

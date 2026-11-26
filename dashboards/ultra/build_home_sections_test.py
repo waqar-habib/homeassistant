@@ -195,7 +195,8 @@ def bar(entity, height=34, ink="var(--primary-text-color)"):
         dynamic_fill_color=True, show_icon=False, show_name=False, show_state=False, show_value=True,
         value_size=13, value_suffix="%", show_toggle=False, show_color_picker=False, haptic_feedback=True,
         show_bar_label=False, value_color=ink,
-        design=dict(CLEAR))
+        # Ultra hard-codes padding: 16px on the slider pane after the design styles; negative margins cancel it.
+        design={**CLEAR, "margin_top": "-16px", "margin_bottom": "-16px", "margin_left": "-16px", "margin_right": "-16px"})
 
 
 def swatch(label, colour, tap):

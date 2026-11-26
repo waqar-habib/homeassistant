@@ -474,7 +474,8 @@ def lock_state():
 
 home = ucard("Home", [
     heading("Home"),
-    well([stack([text(template=SECURE, style="title", icon="mdi:shield-check-outline", icon_size=22,
+    # Ultra pads a top-level vertical block twice (wrapper and content); inside a grid it is padded once.
+    grid([well([stack([text(template=SECURE, style="title", icon="mdi:shield-check-outline", icon_size=22,
                       icon_color=SECURE_COL),
                  text("Doors and garage", "label", DIM, padding_left="30px")], gap=0),
           grid([
@@ -484,7 +485,7 @@ home = ucard("Home", [
                    "{{ '%s' if is_state('%s','closed') else '%s' }}" % (MINT, GARAGE, ROSE), extra=garage_drawer),
               item("Porch", "{{ states('%s') | capitalize }}" % OUT, "mdi:lightbulb-outline", icon_col(OUT),
                    tap=toggle(OUT)),
-          ], columns=3)], gap=12, radius=22, p=(12, 12)),
+          ], columns=3)], gap=12, radius=22, p=(12, 12))], columns=1),
     grid([
         well([text("Skip Evening Lights", "title-sm", icon="mdi:weather-night", icon_size=20,
                    icon_color=icon_col("switch.skip_evening_lights_tonight")),

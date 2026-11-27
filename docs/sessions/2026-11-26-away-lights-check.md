@@ -21,3 +21,9 @@ No config, device, or helper was changed. Lamps were left on; owner decides.
 1. Owner: decide the away behavior (see `docs/issues.md` I83).
 2. Owner: say whether to turn the four lamps off now.
 3. Claude: after the decision, make the change on a branch, back up first (`pre-away-lights-fix`), run `ha core check`, and read the next away trace.
+
+## Design review: Away Day and Away Night (owner request, later 2026-11-26, read-only)
+Proposed: Away Day (all away: thermostats heat/cool 68 to 78) and Away Night (sunset, nobody home: validate thermostats, one lamp per room at 100% and 3500 K, all lights off except Outdoor 3 h after sunset).
+Verified live: `climate.upstairs` and `climate.downstairs` modes are off/heat/cool/heat_cool (no separate "auto": heat_cool is auto); both already heat_cool 68/78. Lamp entities: `light.dresser` (Master), `light.console_lamp` (Living Room), `light.bookshelf` (Nursery), `light.game_room`, `light.upstairs_guest`, `light.study_lamp` (friendly name Nightstand).
+Gaps found: Bookshelf is a Nursery lamp (owner excluded Nursery lights 2026-11-15); a turn_on with no colour data leaves AiDot lamps red (console lamp and game room were red 255,0,0 tonight, I52); a delay or fixed timer is lost on restart (I83); nothing handles leaving after sunset or returning during the 3 h; "all lights off" must skip the Hatch and Porch and include the two plug lamps; Away Day currently triggers on either person, the new text says all.
+Status: awaiting owner answers; nothing built.

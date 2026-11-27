@@ -1,4 +1,9 @@
 ## Away lights check (2026-11-26 23:31 CST, Pi 5, read-only, I83): lamps still on, owner decision needed
+## Garage arrival LIVE (2026-11-27, Pi 5): switch ON, first real open is the test
+1. **Done:** the arrival notice said "Test" because `arrival_garage_live` was OFF (by design). Trace showed every safety check passed on Waqar's drive home. Switch turned ON on the owner's request. Note `docs/sessions/2026-11-27-garage-live.md`.
+2. **Claude next:** read the trace at the next arrival (door opens, "Garage Door is opening now." notice, 15 minute still-open notice). Rollback: switch OFF.
+3. **Paused:** Away Day / Away Night design (owner answers pending, see the 2026-11-26 away lights section below).
+
 1. **Done:** sunset 17:29:55 on: 4 lamps on, condition passed (both away). A Home Assistant restart at about 17:30 CST cancelled the 2-hour delay, so the off step never ran. Lamps still on at 23:31. No config changed. Note `docs/sessions/2026-11-26-away-lights-check.md`.
 2. **Owner next:** (a) turn the four lamps off now (say "go"); (b) confirm the spec: 4 hours and all lights off except Outdoor, or the current 2 hours and four lamps.
 3. **Claude next:** after the owner decides, a restart-safe off time (no delay in the run), backup `pre-away-lights-fix`, `ha core check`, read the next away trace.

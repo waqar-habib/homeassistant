@@ -1,4 +1,8 @@
-# HANDOFF
+## Away lights check (2026-11-26 23:31 CST, Pi 5, read-only, I83): lamps still on, owner decision needed
+1. **Done:** sunset 17:29:55 on: 4 lamps on, condition passed (both away). A Home Assistant restart at about 17:30 CST cancelled the 2-hour delay, so the off step never ran. Lamps still on at 23:31. No config changed. Note `docs/sessions/2026-11-26-away-lights-check.md`.
+2. **Owner next:** (a) turn the four lamps off now (say "go"); (b) confirm the spec: 4 hours and all lights off except Outdoor, or the current 2 hours and four lamps.
+3. **Claude next:** after the owner decides, a restart-safe off time (no delay in the run), backup `pre-away-lights-fix`, `ha core check`, read the next away trace.
+
 
 Last updated: 2026-11-26 08:50 CST (Mac, session end). Pi 5: dashboards `habib-home-uc` (Home and Lights tabs replaced) and `uc-home-test` changed; no YAML, automation or entity changed. networkpi: unchanged, not touched.
 
